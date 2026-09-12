@@ -1,0 +1,130 @@
+.header {
+  background: #fbfaf6;
+  border-bottom: 1px solid #d5d4ce;
+  padding: 12px 24px 18px;
+}
+
+.phone-status {
+  align-items: center;
+  display: flex;
+  height: 26px;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.device-island {
+  background: #090909;
+  border-radius: 18px;
+  height: 34px;
+  left: 50%;
+  position: absolute;
+  top: -2px;
+  transform: translateX(-50%);
+  width: 104px;
+}
+
+.main-row {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+}
+
+.logo {
+  color: #090909;
+  font-size: 37px;
+  font-weight: 900;
+}
+
+.driver-label {
+  color: #282828;
+  font-size: 9px;
+  margin-bottom: 8px;
+  margin-left: 8px;
+}
+
+.badge {
+  align-items: center;
+  background: #ffe71f;
+  border: 1px solid #090909;
+  border-radius: 9px;
+  display: flex;
+  height: 18px;
+  justify-content: center;
+  width: 18px;
+}
+
+.avatar {
+  background: #d6d0c7;
+  border-radius: 24px;
+  height: 48px;
+  overflow: hidden;
+  width: 48px;
+}
+
+.location-row {
+  align-items: center;
+  display: flex;
+  margin-top: 14px;
+}
+
+.footer {
+  background: #fbfaf6;
+  border-top: 1px solid #d5d4ce;
+}
+
+.pin-bar {
+  align-items: center;
+  background: #202020;
+  color: #d9d9d9;
+  display: flex;
+  gap: 10px;
+  height: 42px;
+  justify-content: center;
+}
+
+.footer-tabs {
+  align-items: center;
+  display: flex;
+  height: 110px;
+  justify-content: space-around;
+  padding: 13px 17px 0;
+}
+
+.footer-tab {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  height: 92px;
+}
+
+.footer-icon-box {
+  align-items: center;
+  display: flex;
+  height: 39px;
+  justify-content: center;
+  margin-bottom: 5px;
+  width: 39px;
+}
+
+.footer-icon-box.active {
+  background: #090909;
+  border-radius: 5px;
+}
+
+.footer-icon.active {
+  color: #ffe71f;
+}
+
+.footer-label {
+  color: #090909;
+  font-size: 13px;
+}
+
+.footer-active-line {
+  background: #ffe71f;
+  border-radius: 2px;
+  height: 3px;
+  margin-top: 11px;
+  width: 34px;
+}
