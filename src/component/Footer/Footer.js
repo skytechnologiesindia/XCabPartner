@@ -2,7 +2,6 @@ import React, { useContext } from 'react';
 import {
   Image,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -14,45 +13,34 @@ const TABS = [
   {
     key: 'Desk',
     label: 'DESK',
-    icon: icons.desk,
-    iconActive: icons.deskActive,
-    iconInactive: icons.deskInactive,
-    isDesk: true,
+    icon: icons.deskInactive || icons.desk,
   },
   {
     key: 'Rides',
     label: 'RIDES',
     icon: icons.rides,
-    iconActive: icons.ridesActive || icons.rides,
-    iconInactive: icons.rides,
   },
   {
     key: 'Earnings',
     label: 'EARNINGS',
     icon: icons.earnings,
-    iconActive: icons.earningsActive || icons.earnings,
-    iconInactive: icons.earnings,
   },
   {
     key: 'Alerts',
     label: 'ALERTS',
-    icon: icons.alerts,
-    iconActive: icons.alertsActive || icons.alerts,
-    iconInactive: icons.alerts,
+    icon: icons.bellOutline || icons.alerts,
+    badge: '2',
   },
   {
     key: 'Profile',
     label: 'PROFILE',
     icon: icons.profile,
-    iconActive: icons.profileActive || icons.profile,
-    iconInactive: icons.profile,
   },
 ];
 
 /**
- * Modern floating bottom tab bar matching reference UI.
- * Compatible both with React Navigation (as `tabBar={props => <Footer {...props} />}`)
- * and standalone usage with `activeTab` and `onTabChange`.
+ * Integrated bottom navigation footer matching XCAB design system.
+ * Uses inline styling for direct presentation control.
  */
 function Footer(props) {
   const contextInsets = useContext(SafeAreaInsetsContext);
@@ -69,7 +57,6 @@ function Footer(props) {
   const currentTabName = state
     ? state.routes[state.index]?.name
     : activeTab || 'Desk';
-
 
   const handleTabPress = (tabKey, routeIndex, routeKey, routeName) => {
     if (navigation && state) {
@@ -93,19 +80,52 @@ function Footer(props) {
 
   return (
     <View
-      style={[
-        styles.wrapper,
-        { paddingBottom: Math.max(bottomInset, 8) },
-      ]}
+      style={{
+        backgroundColor: '#F7F5EF',
+        borderTopColor: '#DDD9CF',
+        borderTopWidth: 1,
+        paddingTop: 8,
+        paddingBottom: Math.max(bottomInset, 8),
+        width: '100%',
+      }}
     >
       {!hidePinBar ? (
-        <View style={styles.pinBar}>
-          <Text style={styles.lockIcon}>▢</Text>
-          <Text style={styles.pinText}>Never start without the rider PIN.</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: colors.graphite950,
+            borderRadius: 8,
+            flexDirection: 'row',
+            gap: 6,
+            height: 28,
+            justifyContent: 'center',
+            marginBottom: 8,
+            marginHorizontal: 16,
+          }}
+        >
+          <Text style={{ color: colors.ivory100, fontSize: 11 }}>▢</Text>
+          <Text
+            style={{
+              color: colors.ivory100,
+              fontSize: 10,
+              fontWeight: '500',
+            }}
+          >
+            Never start without the rider PIN.
+          </Text>
         </View>
       ) : null}
 
-      <View style={styles.floatingBar}>
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          height: 52,
+          justifyContent: 'space-between',
+          paddingHorizontal: 6,
+          width: '100%',
+        }}
+      >
         {TABS.map((tab, index) => {
           const isActive =
             currentTabName.toLowerCase() === tab.key.toLowerCase();
@@ -122,6 +142,21 @@ function Footer(props) {
           const routeKey = route ? route.key : tab.key;
           const routeName = route ? route.name : tab.key;
 
+          const tint = isActive ? '#FFC928' : '#687078';
+
+          const iconWidth =
+            tab.key === 'Rides'
+              ? 23
+              : tab.key === 'Earnings' || tab.key === 'Profile'
+              ? 21
+              : 22;
+          const iconHeight =
+            tab.key === 'Rides'
+              ? 20
+              : tab.key === 'Earnings' || tab.key === 'Profile'
+              ? 21
+              : 22;
+
           return (
             <Pressable
               key={tab.key}
@@ -129,71 +164,89 @@ function Footer(props) {
               accessibilityRole="tab"
               accessibilityState={{ selected: isActive }}
               accessibilityLabel={tab.label}
-              style={({ pressed }) => [
-                styles.tabItem,
-                pressed && styles.tabItemPressed,
-              ]}
-              onPress={() => handleTabPress(tab.key, effectiveIndex, routeKey, routeName)}
+              style={({ pressed }) => ({
+                alignItems: 'center',
+                flex: 1,
+                height: '100%',
+                justifyContent: 'center',
+                opacity: pressed ? 0.7 : 1,
+              })}
+              onPress={() =>
+                handleTabPress(tab.key, effectiveIndex, routeKey, routeName)
+              }
             >
-              {/* Icon Container */}
+              {/* Icon Container with optional notification badge */}
               <View
-                style={[
-                  styles.iconSlot,
-                  isActive && !tab.isDesk && styles.activeIconSlot,
-                ]}
+                style={{
+                  alignItems: 'center',
+                  height: 24,
+                  justifyContent: 'center',
+                  position: 'relative',
+                  width: 28,
+                }}
               >
-                {tab.isDesk ? (
-                  isActive ? (
-                    <Image
-                      source={icons.deskActive}
-                      style={styles.deskActiveImg}
-                      resizeMode="contain"
-                    />
-                  ) : (
-                    <Image
-                      source={icons.deskInactive}
-                      style={styles.deskInactiveImg}
-                      resizeMode="contain"
-                    />
-                  )
-                ) : (
-                  <Image
-                    source={
-                      isActive
-                        ? tab.iconActive || tab.icon
-                        : tab.iconInactive || tab.icon
-                    }
-                    style={[
-                      styles.standardIcon,
-                      isActive ? styles.activeIconTint : styles.inactiveIconTint,
-                      tab.key === 'Rides' && styles.carIcon,
-                      tab.key === 'Earnings' && styles.earningsIcon,
-                      tab.key === 'Alerts' && styles.alertsIcon,
-                      tab.key === 'Profile' && styles.profileIcon,
-                    ]}
-                    resizeMode="contain"
-                  />
-                )}
+                <Image
+                  source={tab.icon}
+                  style={{
+                    height: iconHeight,
+                    tintColor: tint,
+                    width: iconWidth,
+                  }}
+                  resizeMode="contain"
+                />
+                {tab.badge ? (
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      backgroundColor: '#FFC928',
+                      borderRadius: 7.5,
+                      height: 15,
+                      justifyContent: 'center',
+                      position: 'absolute',
+                      right: -5,
+                      top: -3,
+                      width: 15,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: '#17191C',
+                        fontSize: 9.5,
+                        fontWeight: '700',
+                        includeFontPadding: false,
+                        lineHeight: 11,
+                        textAlign: 'center',
+                      }}
+                    >
+                      {tab.badge}
+                    </Text>
+                  </View>
+                ) : null}
               </View>
 
               {/* Label */}
               <Text
-                style={[
-                  styles.tabLabel,
-                  isActive ? styles.tabLabelActive : styles.tabLabelInactive,
-                ]}
+                style={{
+                  color: isActive ? '#17191C' : '#687078',
+                  fontSize: 10,
+                  fontWeight: isActive ? '700' : '600',
+                  letterSpacing: 0.4,
+                  marginTop: 4,
+                  textTransform: 'uppercase',
+                }}
               >
                 {tab.label}
               </Text>
 
               {/* Active Indicator Underline */}
               <View
-                style={[
-                  styles.indicator,
-                  isActive
-                    ? styles.activeIndicator
-                    : styles.inactiveIndicator,
-                ]}
+                style={{
+                  backgroundColor: isActive ? '#FFC928' : 'transparent',
+                  borderRadius: 1.5,
+                  height: 2.5,
+                  marginTop: 4,
+                  width: 28,
+                }}
               />
             </Pressable>
           );
@@ -203,132 +256,4 @@ function Footer(props) {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: 'transparent',
-    paddingHorizontal: 12,
-    paddingTop: 4,
-  },
-  pinBar: {
-    alignItems: 'center',
-    backgroundColor: colors.graphite950,
-    borderRadius: 8,
-    flexDirection: 'row',
-    gap: 6,
-    height: 28,
-    justifyContent: 'center',
-    marginBottom: 8,
-  },
-  lockIcon: {
-    color: colors.ivory100,
-    fontSize: 11,
-  },
-  pinText: {
-    color: colors.ivory100,
-    fontSize: 10,
-    fontWeight: '500',
-  },
-  floatingBar: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E8DE',
-    borderRadius: 32,
-    borderWidth: 1,
-    elevation: 8,
-    flexDirection: 'row',
-    height: 74,
-    justifyContent: 'space-between',
-    paddingHorizontal: 6,
-    paddingVertical: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.08,
-    shadowRadius: 12,
-  },
-  tabItem: {
-    alignItems: 'center',
-    flex: 1,
-    height: '100%',
-    justifyContent: 'center',
-  },
-  tabItemPressed: {
-    opacity: 0.7,
-    transform: [{ scale: 0.95 }],
-  },
-  iconSlot: {
-    alignItems: 'center',
-    height: 38,
-    justifyContent: 'center',
-    width: 44,
-  },
-  activeIconSlot: {
-    backgroundColor: '#121418',
-    borderRadius: 12,
-    height: 36,
-    width: 42,
-  },
-  activeIconTint: {
-    tintColor: '#FFD21A',
-  },
-  inactiveIconTint: {
-    tintColor: '#5C5E62',
-  },
-  deskActiveImg: {
-    height: 38,
-    width: 44,
-  },
-  deskInactiveImg: {
-    height: 22,
-    tintColor: '#5C5E62',
-    width: 22,
-  },
-  standardIcon: {
-    height: 22,
-    width: 22,
-  },
-  carIcon: {
-    height: 21,
-    width: 23,
-  },
-  earningsIcon: {
-    height: 23,
-    width: 23,
-  },
-  alertsIcon: {
-    height: 23,
-    width: 23,
-  },
-  profileIcon: {
-    height: 21,
-    width: 21,
-  },
-  tabLabel: {
-    fontSize: 10,
-    letterSpacing: 0.5,
-    marginTop: 3,
-    textTransform: 'uppercase',
-  },
-  tabLabelActive: {
-    color: '#0F1014',
-    fontWeight: '800',
-  },
-  tabLabelInactive: {
-    color: '#5C5E62',
-    fontWeight: '600',
-  },
-  indicator: {
-    borderRadius: 2,
-    height: 3,
-    marginTop: 3,
-    width: 32,
-  },
-  activeIndicator: {
-    backgroundColor: '#FFD21A', // Bright Dispatch Yellow
-  },
-  inactiveIndicator: {
-    backgroundColor: 'transparent',
-  },
-});
-
 export default Footer;
-

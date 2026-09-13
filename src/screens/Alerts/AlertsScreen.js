@@ -1,306 +1,205 @@
-import React, {useState} from 'react';
-import {Pressable, ScrollView, Text, View} from 'react-native';
-import {colors, radius} from '../../assets/colors/colors';
+import React, { useMemo, useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  AlertCard,
+  AlertsFilterTabs,
+  MarkAllReadButton,
+  alertsData as initialAlertsData,
+  getFilteredAlerts,
+  getUnreadCount,
+} from '../../component/alerts';
 
-const filters = ['All', 'Trips', 'Payouts'];
+/**
+ * AlertsScreen
+ * Main alerts screen composing filter tabs, notification cards,
+ * unread badges, and "Mark all as read" functionality.
+ */
+function AlertsScreen({ navigation }) {
+  const [alerts, setAlerts] = useState(initialAlertsData);
+  const [activeFilter, setActiveFilter] = useState('all');
 
-const alerts = [
-  {
-    id: 1,
-    category: 'Trips',
-    barColor: colors.yellow500,
-    title: 'New ride request',
-    detailTitle: 'Pickup in 4 min',
-    time: 'NOW',
-    lines: [
-      {icon: '●', text: 'Main Road, Ranchi'},
-      {icon: '○', text: 'Lalpur Market'},
-    ],
-  },
-  {
-    id: 2,
-    category: 'Payouts',
-    barColor: colors.graphite400,
-    title: 'Settlement confirmed',
-    detailTitle: 'Trip XC-1048',
-    time: '12 min ago',
-    lines: [
-      {icon: '₹', text: 'Payout of ₹180 credited'},
-      {icon: '', text: 'Wallet Balance: ₹1,248'},
-    ],
-  },
-  {
-    id: 3,
-    category: 'Trips',
-    barColor: colors.coral500,
-    title: 'Documents expire in 14 days',
-    detailTitle: 'Update RC',
-    time: 'YESTERDAY',
-    lines: [
-      {icon: '⚠', text: 'Vehicle RC will expire on 24 May 2025'},
-      {icon: '', text: 'Update now to avoid disruptions'},
-    ],
-  },
-  {
-    id: 4,
-    category: 'Trips',
-    barColor: colors.green500,
-    title: 'High demand zone',
-    detailTitle: 'Morabadi',
-    time: 'MON 08:20',
-    lines: [
-      {icon: '↗', text: 'Higher earnings expected in your area'},
-      {icon: '', text: '7:00 PM – 10:00 PM'},
-    ],
-  },
-];
+  // Filtered alerts based on selected category tab
+  const visibleAlerts = useMemo(() => {
+    return getFilteredAlerts(alerts, activeFilter);
+  }, [alerts, activeFilter]);
 
-function AlertsScreen() {
-  const [activeFilter, setActiveFilter] = useState('All');
+  // Dynamic unread count formatted with leading zero (e.g. "02")
+  const unreadCount = useMemo(() => {
+    return getUnreadCount(alerts);
+  }, [alerts]);
 
-  const visibleAlerts =
-    activeFilter === 'All'
-      ? alerts
-      : alerts.filter(alert => alert.category === activeFilter);
+  // Mark all alerts as read
+  const handleMarkAllRead = () => {
+    setAlerts(prevAlerts =>
+      prevAlerts.map(item => ({
+        ...item,
+        unread: false,
+      })),
+    );
+  };
+
+  // Handle tap on single alert card
+  const handleAlertPress = alert => {
+    // Mark this alert as read
+    setAlerts(prevAlerts =>
+      prevAlerts.map(item =>
+        item.id === alert.id ? { ...item, unread: false } : item,
+      ),
+    );
+
+    // Navigate to corresponding destination if available
+    if (alert.targetScreen && navigation && navigation.navigate) {
+      navigation.navigate(alert.targetScreen);
+    }
+  };
 
   return (
-    <ScrollView
-      style={{
-        backgroundColor: colors.ivory50,
-        flex: 1,
-      }}
-      contentContainerStyle={{
-        paddingBottom: 110,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-      }}
-      showsVerticalScrollIndicator={false}>
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          gap: 10,
-          marginBottom: 16,
-        }}>
-        <Text
-          style={{
-            color: colors.graphite950,
-            fontSize: 30,
-            fontWeight: '900',
-            letterSpacing: -0.5,
-          }}>
-          Alerts
-        </Text>
-        <View
-          style={{
-            backgroundColor: colors.yellow500,
-            borderRadius: radius.sm,
-            paddingHorizontal: 8,
-            paddingVertical: 4,
-          }}>
-          <Text
-            style={{
-              color: colors.graphite950,
-              fontSize: 12,
-              fontWeight: '800',
-            }}>
-            02
-          </Text>
-        </View>
-      </View>
-
-      <View
-        style={{
-          flexDirection: 'row',
-          gap: 8,
-          marginBottom: 16,
-        }}>
-        {filters.map(filter => {
-          const isActive = filter === activeFilter;
-          return (
-            <Pressable
-              key={filter}
-              style={[
-                {
-                  backgroundColor: colors.sage100,
-                  borderColor: colors.line,
-                  borderRadius: radius.sm,
-                  borderWidth: 1,
-                  paddingHorizontal: 14,
-                  paddingVertical: 8,
-                },
-                isActive && {
-                  backgroundColor: colors.graphite950,
-                  borderColor: colors.graphite950,
-                },
-              ]}
-              onPress={() => setActiveFilter(filter)}>
-              <Text
-                style={[
-                  {
-                    color: colors.graphite950,
-                    fontSize: 12,
-                    fontWeight: '700',
-                  },
-                  isActive && {
-                    color: colors.white,
-                  },
-                ]}>
-                {filter}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <View
-        style={{
-          gap: 12,
-          marginBottom: 18,
-        }}>
-        {visibleAlerts.map(alert => (
-          <AlertCard key={alert.id} alert={alert} />
-        ))}
-      </View>
-
-      <Pressable
-        style={{
-          alignItems: 'center',
-          borderColor: colors.line,
-          borderRadius: radius.sm,
-          borderWidth: 1,
-          flexDirection: 'row',
-          gap: 8,
-          height: 48,
-          justifyContent: 'center',
-        }}>
-        <Text
-          style={{
-            color: colors.graphite950,
-            fontSize: 14,
-          }}>
-          ♬
-        </Text>
-        <Text
-          style={{
-            color: colors.graphite950,
-            fontSize: 13,
-            fontWeight: '700',
-          }}>
-          Mark all as read
-        </Text>
-      </Pressable>
-    </ScrollView>
-  );
-}
-
-function AlertCard({alert}) {
-  return (
-    <View
-      style={{
-        backgroundColor: colors.sage100,
-        borderColor: colors.line,
-        borderRadius: radius.md,
-        borderWidth: 1,
-        flexDirection: 'row',
-        overflow: 'hidden',
-      }}>
-      <View
-        style={{
-          width: 5,
-          backgroundColor: alert.barColor,
-        }}
-      />
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: 12,
-          paddingVertical: 12,
-        }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            marginBottom: 8,
-          }}>
-          <Text
-            style={{
-              color: colors.graphite950,
-              flex: 1,
-              fontSize: 13,
-              fontWeight: '700',
-              marginRight: 8,
-            }}
-            numberOfLines={1}>
-            {alert.title} ·{' '}
-            <Text style={{fontWeight: '800'}}>{alert.detailTitle}</Text>
-          </Text>
-          <Text
-            style={{
-              color: colors.graphite600,
-              fontSize: 9,
-              fontWeight: '700',
-              letterSpacing: 0.4,
-            }}>
-            {alert.time}
-          </Text>
-        </View>
-
-        <View style={{gap: 4}}>
-          {alert.lines.map((line, index) => (
-            <View
-              key={index}
-              style={{
-                alignItems: 'center',
-                flexDirection: 'row',
-                gap: 6,
-              }}>
-              {line.icon ? (
-                <Text
-                  style={{
-                    color: colors.graphite600,
-                    fontSize: 10,
-                    width: 12,
-                  }}>
-                  {line.icon}
-                </Text>
-              ) : null}
-              <Text
-                style={{
-                  color: colors.graphite600,
-                  fontSize: 11,
-                }}>
-                {line.text}
-              </Text>
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* 1. Page Title & Unread Count Badge */}
+        <View style={styles.titleSection}>
+          <View style={styles.titleRow}>
+            <Text style={styles.titleText}>Alerts</Text>
+            <View style={styles.badgePill}>
+              <Text style={styles.badgeText}>{unreadCount}</Text>
             </View>
-          ))}
+          </View>
+          <Text style={styles.subtitleText}>
+            Stay updated with important notifications
+          </Text>
         </View>
-      </View>
 
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-          paddingRight: 12,
-        }}>
-        <Text
-          style={{
-            alignItems: 'center',
-            backgroundColor: colors.graphite950,
-            borderRadius: radius.sm,
-            color: colors.white,
-            fontSize: 18,
-            fontWeight: '800',
-            height: 30,
-            lineHeight: 30,
-            textAlign: 'center',
-            width: 30,
-          }}>
-          ›
-        </Text>
-      </View>
+        {/* 2. Filter Tabs: All, Trips, Payouts */}
+        <AlertsFilterTabs
+          activeFilter={activeFilter}
+          onSelectFilter={setActiveFilter}
+        />
+
+        {/* 3. Alert Cards List */}
+        {visibleAlerts.length > 0 ? (
+          <View style={styles.listContainer}>
+            {visibleAlerts.map(alert => (
+              <AlertCard
+                key={alert.id}
+                alert={alert}
+                onPress={handleAlertPress}
+              />
+            ))}
+          </View>
+        ) : (
+          <View style={styles.emptyContainer}>
+            <View style={styles.emptyIconCircle}>
+              <Text style={styles.emptyIcon}>🔔</Text>
+            </View>
+            <Text style={styles.emptyTitle}>No alerts yet</Text>
+            <Text style={styles.emptySubtitle}>
+              You&apos;re all caught up.
+            </Text>
+          </View>
+        )}
+
+        {/* 4. Mark All As Read Button */}
+        {visibleAlerts.length > 0 ? (
+          <MarkAllReadButton onPress={handleMarkAllRead} />
+        ) : null}
+      </ScrollView>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F7F5EF',
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 110,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  titleSection: {
+    marginBottom: 16,
+  },
+  titleRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+  },
+  titleText: {
+    color: '#17191C',
+    fontSize: 30,
+    fontWeight: '800',
+    letterSpacing: -0.6,
+  },
+  badgePill: {
+    alignItems: 'center',
+    backgroundColor: '#FFC928',
+    borderRadius: 8,
+    justifyContent: 'center',
+    marginLeft: 10,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+  },
+  badgeText: {
+    color: '#17191C',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.2,
+  },
+  subtitleText: {
+    color: '#687078',
+    fontSize: 14,
+    fontWeight: '400',
+    marginTop: 4,
+  },
+  listContainer: {
+    marginBottom: 8,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    borderColor: '#E6E2D8',
+    borderRadius: 20,
+    borderWidth: 1,
+    justifyContent: 'center',
+    marginVertical: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 40,
+  },
+  emptyIconCircle: {
+    alignItems: 'center',
+    backgroundColor: '#F4F2EB',
+    borderRadius: 28,
+    height: 56,
+    justifyContent: 'center',
+    marginBottom: 12,
+    width: 56,
+  },
+  emptyIcon: {
+    fontSize: 24,
+  },
+  emptyTitle: {
+    color: '#17191C',
+    fontSize: 16,
+    fontWeight: '700',
+    marginBottom: 4,
+  },
+  emptySubtitle: {
+    color: '#687078',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+});
 
 export default AlertsScreen;

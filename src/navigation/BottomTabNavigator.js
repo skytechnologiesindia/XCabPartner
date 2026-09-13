@@ -15,6 +15,7 @@ const NavigationContext = createContext({
   onTripChange: () => {},
   onEditProfile: () => {},
   onOpenSettings: () => {},
+  onOpenVehicleDocuments: () => {},
 });
 
 const renderCustomTabBar = props => <Footer {...props} hidePinBar={true} />;
@@ -60,25 +61,28 @@ function EarningsScreenWrapper() {
   );
 }
 
-function AlertsScreenWrapper() {
+function AlertsScreenWrapper({ navigation }) {
   return (
     <TabScreenContainer>
       <Header subtitle="DRIVER CONSOLE" />
-      <AlertsScreen />
+      <AlertsScreen navigation={navigation} />
     </TabScreenContainer>
   );
 }
 
 function ProfileScreenWrapper({ navigation }) {
-  const { onEditProfile, onOpenSettings } = useContext(NavigationContext);
+  const { onEditProfile, onOpenSettings, onOpenVehicleDocuments } =
+    useContext(NavigationContext);
 
   return (
     <TabScreenContainer>
       <Header subtitle="DRIVER CONSOLE" />
       <ProfileScreen
+        navigation={navigation}
         onEditProfile={onEditProfile}
-        onGoOffline={() => navigation && navigation.navigate('Desk')}
         onOpenSettings={onOpenSettings}
+        onOpenVehicleDocuments={onOpenVehicleDocuments}
+        onLogout={() => navigation && navigation.navigate('Desk')}
       />
     </TabScreenContainer>
   );
@@ -89,6 +93,7 @@ export function BottomTabNavigator({
   onTripChange,
   onEditProfile,
   onOpenSettings,
+  onOpenVehicleDocuments,
   initialRouteName = 'Desk',
 }) {
   const contextValue = {
@@ -96,6 +101,7 @@ export function BottomTabNavigator({
     onTripChange,
     onEditProfile,
     onOpenSettings,
+    onOpenVehicleDocuments,
   };
 
   return (

@@ -10,6 +10,7 @@ import BottomTabNavigator from './src/navigation/BottomTabNavigator';
 import EditProfileScreen from './src/screens/EditProfile/EditProfileScreen';
 import EnterPinScreen from './src/screens/EnterPin/EnterPinScreen';
 import SettingsScreen from './src/screens/Settings/SettingsScreen';
+import VehicleDocumentsScreen from './src/screens/VehicleDocuments/VehicleDocumentsScreen';
 import { colors } from './src/assets/colors/colors';
 
 const paper = colors.ivory50 || '#F7F5EE';
@@ -31,6 +32,7 @@ function DriverDesk() {
   const [tripStage, setTripStage] = useState('onTrip');
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [editProfileOpen, setEditProfileOpen] = useState(false);
+  const [vehicleDocumentsOpen, setVehicleDocumentsOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -40,6 +42,7 @@ function DriverDesk() {
           onTripChange={setTripStage}
           onEditProfile={() => setEditProfileOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
+          onOpenVehicleDocuments={() => setVehicleDocumentsOpen(true)}
         />
         {editProfileOpen ? (
           <View style={StyleSheet.absoluteFill}>
@@ -53,6 +56,14 @@ function DriverDesk() {
         {settingsOpen ? (
           <View style={StyleSheet.absoluteFill}>
             <SettingsScreen onLogout={() => setSettingsOpen(false)} />
+          </View>
+        ) : null}
+        {vehicleDocumentsOpen ? (
+          <View style={StyleSheet.absoluteFill}>
+            <VehicleDocumentsScreen
+              onBack={() => setVehicleDocumentsOpen(false)}
+              onUpdateVehicle={() => setEditProfileOpen(true)}
+            />
           </View>
         ) : null}
         {tripStage === 'enterPin' ? (

@@ -1,343 +1,181 @@
-import React, {useState} from 'react';
-import {Pressable, ScrollView, Text, View} from 'react-native';
-import {colors, radius} from '../../assets/colors/colors';
+import React, { useMemo, useState } from 'react';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import {
+  MOCK_RIDES,
+  RideCard,
+  RideDetailsModal,
+  RideFilterTabs,
+  getFilterCounts,
+  getFilteredRides,
+  groupRidesByDate,
+} from '../../component/rides';
 
-const filters = ['All', 'Completed', 'Cancelled'];
-
-const rides = [
-  {
-    id: '9F3A7B21',
-    pickup: 'Main Road',
-    drop: 'Lalpur Market',
-    when: 'TODAY',
-    duration: '18 MIN',
-    fare: '180',
-    status: 'Completed',
-  },
-  {
-    id: '7C9E2D11',
-    pickup: 'Airport Road',
-    drop: 'Kanke',
-    when: 'YESTERDAY',
-    duration: '26 MIN',
-    fare: '245',
-    status: 'Completed',
-  },
-  {
-    id: '3B6D4E90',
-    pickup: 'Station Road',
-    drop: 'Morabadi',
-    when: '27 AUG',
-    duration: null,
-    fare: null,
-    status: 'Cancelled',
-  },
-];
-
+/**
+ * RidesScreen
+ * Displays driver ride history grouped by date with filtering capabilities (All, Completed, Cancelled).
+ * Reuses the global header above and global bottom navigation below.
+ */
 function RidesScreen() {
-  const [activeFilter, setActiveFilter] = useState('All');
+  const [activeFilter, setActiveFilter] = useState('all');
+  const [selectedRide, setSelectedRide] = useState(null);
 
-  const visibleRides =
-    activeFilter === 'All'
-      ? rides
-      : rides.filter(ride => ride.status === activeFilter);
+  // Filter counts
+  const counts = useMemo(() => getFilterCounts(MOCK_RIDES), []);
 
-  return (
-    <ScrollView
-      style={{
-        backgroundColor: colors.ivory50,
-        flex: 1,
-      }}
-      contentContainerStyle={{
-        paddingBottom: 110,
-        paddingHorizontal: 16,
-        paddingTop: 16,
-      }}
-      showsVerticalScrollIndicator={false}>
-      <Text
-        style={{
-          color: colors.graphite950,
-          fontSize: 32,
-          fontWeight: '900',
-          letterSpacing: -0.6,
-          marginBottom: 16,
-        }}>
-        Rides
-      </Text>
-
-      <View
-        style={{
-          backgroundColor: colors.sage100,
-          borderRadius: radius.md,
-          flexDirection: 'row',
-          gap: 4,
-          marginBottom: 16,
-          padding: 4,
-        }}>
-        {filters.map(filter => {
-          const isActive = filter === activeFilter;
-          return (
-            <Pressable
-              key={filter}
-              style={[
-                {
-                  alignItems: 'center',
-                  borderRadius: radius.sm,
-                  flex: 1,
-                  paddingVertical: 9,
-                },
-                isActive && {
-                  backgroundColor: colors.yellow500,
-                },
-              ]}
-              onPress={() => setActiveFilter(filter)}>
-              <Text
-                style={[
-                  {
-                    color: colors.graphite600,
-                    fontSize: 12,
-                    fontWeight: '700',
-                  },
-                  isActive && {
-                    color: colors.graphite950,
-                  },
-                ]}>
-                {filter}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-
-      <View style={{gap: 12}}>
-        {visibleRides.map(ride => (
-          <RideCard key={ride.id} ride={ride} />
-        ))}
-      </View>
-
-      <View
-        style={{
-          alignItems: 'center',
-          backgroundColor: colors.sage100,
-          borderColor: colors.line,
-          borderRadius: radius.md,
-          borderWidth: 1,
-          flexDirection: 'row',
-          gap: 10,
-          marginTop: 16,
-          paddingHorizontal: 14,
-          paddingVertical: 12,
-        }}>
-        <Text
-          style={{
-            color: colors.graphite950,
-            fontSize: 16,
-          }}>
-          ▤
-        </Text>
-        <Text
-          style={{
-            color: colors.graphite950,
-            flex: 1,
-            fontSize: 12,
-            fontWeight: '800',
-          }}>
-          07 RIDES · ₹1,240 TODAY
-        </Text>
-        <Text
-          style={{
-            color: colors.graphite950,
-            fontSize: 18,
-            fontWeight: '700',
-          }}>
-          ›
-        </Text>
-      </View>
-    </ScrollView>
-  );
-}
-
-function RideCard({ride}) {
-  const isCancelled = ride.status === 'Cancelled';
-  const dotColor = isCancelled ? colors.coral500 : colors.yellow500;
+  // Filtered and grouped rides
+  const groupedRides = useMemo(() => {
+    const filtered = getFilteredRides(MOCK_RIDES, activeFilter);
+    return groupRidesByDate(filtered);
+  }, [activeFilter]);
 
   return (
-    <View
-      style={{
-        backgroundColor: colors.graphite950,
-        borderRadius: radius.md,
-        overflow: 'hidden',
-        padding: 14,
-      }}>
-      <View style={{flexDirection: 'row'}}>
-        <View
-          style={{
-            alignItems: 'center',
-            marginRight: 12,
-            width: 12,
-          }}>
-          <View
-            style={{
-              borderRadius: 6,
-              borderWidth: 3,
-              height: 12,
-              width: 12,
-              borderColor: dotColor,
-            }}
-          />
-          <View
-            style={{
-              borderLeftColor: colors.graphite600,
-              borderLeftWidth: 1,
-              borderStyle: 'dashed',
-              flex: 1,
-              marginVertical: 4,
-            }}
-          />
-          <View
-            style={{
-              borderColor: colors.ivory100,
-              borderRadius: 6,
-              borderWidth: 2,
-              height: 12,
-              width: 12,
-            }}
-          />
-        </View>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'space-between',
-          }}>
-          <Text
-            style={{
-              color: colors.white,
-              fontSize: 16,
-              fontWeight: '800',
-            }}>
-            {ride.pickup}
-          </Text>
-          <Text
-            style={{
-              color: colors.white,
-              fontSize: 16,
-              fontWeight: '800',
-            }}>
-            {ride.drop}
+    <View style={styles.container}>
+      <ScrollView
+        style={styles.scroll}
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* 1. Page Title & Subtitle */}
+        <View style={styles.titleSection}>
+          <Text style={styles.titleText}>Rides</Text>
+          <Text style={styles.subtitleText}>
+            View and manage all your rides
           </Text>
         </View>
-      </View>
 
-      <View
-        style={{
-          backgroundColor: colors.graphite800,
-          height: 1,
-          marginVertical: 12,
-        }}
+        {/* 2. Filter Tabs: All (12), Completed (9), Cancelled (3) */}
+        <RideFilterTabs
+          activeFilter={activeFilter}
+          onSelectFilter={setActiveFilter}
+          counts={counts}
+        />
+
+        {/* 3. Grouped Ride List */}
+        {groupedRides.length === 0 ? (
+          <View style={styles.emptyStateContainer}>
+            <View style={styles.emptyIconCircle}>
+              <Text style={styles.emptyIcon}>🚗</Text>
+            </View>
+            <Text style={styles.emptyTitle}>No rides found</Text>
+            <Text style={styles.emptySubtitle}>
+              You don&apos;t have any rides under the &quot;{activeFilter}&quot; filter.
+            </Text>
+          </View>
+        ) : (
+          groupedRides.map(group => (
+            <View key={group.dateGroup} style={styles.dateGroupContainer}>
+              {/* Date Header: e.g. "Today" | "18 Sep 2025" */}
+              <View style={styles.dateHeaderRow}>
+                <Text style={styles.dateGroupTitle}>{group.dateGroup}</Text>
+                <Text style={styles.dateText}>{group.date}</Text>
+              </View>
+
+              {/* Ride Cards in this group */}
+              {group.rides.map(ride => (
+                <RideCard
+                  key={ride.id}
+                  ride={ride}
+                  onPressDetails={setSelectedRide}
+                />
+              ))}
+            </View>
+          ))
+        )}
+      </ScrollView>
+
+      {/* 4. Full Trip Details Modal */}
+      <RideDetailsModal
+        visible={!!selectedRide}
+        ride={selectedRide}
+        onClose={() => setSelectedRide(null)}
       />
-
-      <View
-        style={{
-          alignItems: 'center',
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-        }}>
-        <Text
-          style={{
-            color: colors.graphite400,
-            fontSize: 11,
-            fontWeight: '600',
-          }}>
-          {ride.duration
-            ? `${ride.when} · ${ride.duration} · ₹${ride.fare}`
-            : `${ride.when} · CANCELLED`}
-        </Text>
-
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            gap: 8,
-          }}>
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: colors.graphite800,
-              borderRadius: radius.sm,
-              gap: 3,
-              paddingHorizontal: 8,
-              paddingVertical: 6,
-            }}>
-            <Text
-              style={[
-                {
-                  color: colors.green500,
-                  fontSize: 12,
-                  fontWeight: '800',
-                },
-                isCancelled && {
-                  color: colors.coral500,
-                },
-              ]}>
-              {isCancelled ? '✕' : '✓'}
-            </Text>
-            <Text
-              style={[
-                {
-                  color: colors.green500,
-                  fontSize: 8,
-                  fontWeight: '800',
-                  letterSpacing: 0.4,
-                },
-                isCancelled && {
-                  color: colors.coral500,
-                },
-              ]}>
-              {isCancelled ? 'CANCELLED' : 'COMPLETED'}
-            </Text>
-          </View>
-          <View
-            style={{
-              alignItems: 'center',
-              backgroundColor: colors.graphite800,
-              borderRadius: radius.sm,
-              height: 30,
-              justifyContent: 'center',
-              width: 30,
-            }}>
-            <Text
-              style={{
-                color: colors.white,
-                fontSize: 16,
-                fontWeight: '800',
-              }}>
-              ›
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      <View
-        style={{
-          alignSelf: 'flex-start',
-          backgroundColor: colors.graphite800,
-          borderRadius: radius.sm,
-          marginTop: 10,
-          paddingHorizontal: 8,
-          paddingVertical: 4,
-        }}>
-        <Text
-          style={{
-            color: colors.graphite400,
-            fontSize: 9,
-            fontWeight: '600',
-            letterSpacing: 0.4,
-          }}>
-          TRIP ID: {ride.id}
-        </Text>
-      </View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    backgroundColor: '#F7F5EF',
+    flex: 1,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 110,
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  titleSection: {
+    marginBottom: 16,
+  },
+  titleText: {
+    color: '#17191C',
+    fontSize: 30,
+    fontWeight: '800',
+    letterSpacing: -0.6,
+  },
+  subtitleText: {
+    color: '#687078',
+    fontSize: 14,
+    fontWeight: '400',
+    marginTop: 4,
+  },
+  dateGroupContainer: {
+    marginBottom: 10,
+  },
+  dateHeaderRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 12,
+    marginTop: 4,
+  },
+  dateGroupTitle: {
+    color: '#17191C',
+    fontSize: 16,
+    fontWeight: '700',
+    letterSpacing: -0.2,
+  },
+  dateText: {
+    color: '#687078',
+    fontSize: 13,
+    fontWeight: '500',
+  },
+  emptyStateContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 48,
+  },
+  emptyIconCircle: {
+    alignItems: 'center',
+    backgroundColor: '#EBE7DC',
+    borderRadius: 32,
+    height: 64,
+    justifyContent: 'center',
+    marginBottom: 14,
+    width: 64,
+  },
+  emptyIcon: {
+    fontSize: 28,
+  },
+  emptyTitle: {
+    color: '#17191C',
+    fontSize: 17,
+    fontWeight: '700',
+    marginBottom: 6,
+  },
+  emptySubtitle: {
+    color: '#687078',
+    fontSize: 13,
+    textAlign: 'center',
+  },
+});
 
 export default RidesScreen;

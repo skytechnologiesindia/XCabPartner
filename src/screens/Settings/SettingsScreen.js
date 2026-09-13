@@ -1,8 +1,8 @@
-import React, {useState} from 'react';
-import {Pressable, ScrollView, Switch, Text, View} from 'react-native';
-import {colors, radius} from '../../assets/colors/colors';
+import React, { useState } from 'react';
+import { Pressable, ScrollView, Switch, Text, View } from 'react-native';
+import { colors, radius } from '../../assets/colors/colors';
 
-function SettingsScreen({onLogout}) {
+function SettingsScreen({ onLogout }) {
   const [autoAccept, setAutoAccept] = useState(false);
   const [busyMode, setBusyMode] = useState(false);
   const [voiceGuidance, setVoiceGuidance] = useState(true);
@@ -73,7 +73,7 @@ function SettingsScreen({onLogout}) {
                 color: colors.graphite950,
                 fontSize: 20,
                 lineHeight: 22,
-                transform: [{rotate: '180deg'}],
+                transform: [{ rotate: '180deg' }],
               }}>
               ♧
             </Text>
@@ -204,7 +204,7 @@ function SettingsScreen({onLogout}) {
       <Section icon="◐" label="ACCOUNT">
         <LinkRow label="Personal details" />
         <LinkRow label="Vehicle & documents" />
-        <LinkRow label="Payout account" />
+        {/* <LinkRow label="Payout account" /> */}
       </Section>
 
       <Section icon="◑" label="SUPPORT">
@@ -287,9 +287,9 @@ function SettingsScreen({onLogout}) {
   );
 }
 
-function Section({icon, label, children}) {
+function Section({ icon, label, children }) {
   return (
-    <View style={{marginBottom: 14}}>
+    <View style={{ marginBottom: 14 }}>
       <View
         style={{
           alignItems: 'center',
@@ -329,7 +329,7 @@ function Section({icon, label, children}) {
   );
 }
 
-function ToggleRow({label, value, onValueChange}) {
+function ToggleRow({ label, value, onValueChange }) {
   return (
     <View
       style={{
@@ -358,7 +358,7 @@ function ToggleRow({label, value, onValueChange}) {
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{false: colors.sage200, true: colors.yellow500}}
+          trackColor={{ false: colors.sage200, true: colors.yellow500 }}
           thumbColor={value ? colors.graphite950 : colors.white}
         />
         <Text
@@ -375,7 +375,7 @@ function ToggleRow({label, value, onValueChange}) {
   );
 }
 
-function LinkRow({label, value}) {
+function LinkRow({ label, value }) {
   return (
     <Pressable
       style={{
