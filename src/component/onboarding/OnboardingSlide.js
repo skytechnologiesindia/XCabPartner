@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -28,54 +27,159 @@ function OnboardingSlide({
 
   return (
     <ScrollView
-      style={styles.scroll}
-      contentContainerStyle={styles.scrollContent}
+      style={{
+        backgroundColor: '#F7F5EF',
+        flex: 1,
+      }}
+      contentContainerStyle={{
+        backgroundColor: '#F7F5EF',
+        flexGrow: 1,
+        justifyContent: 'space-between',
+        paddingBottom: 24,
+        paddingHorizontal: 20,
+        paddingTop: 8,
+      }}
       bounces={false}
       showsVerticalScrollIndicator={false}
       nestedScrollEnabled={true}
     >
       {/* 1. Optional Top Bar: Skip Button (for standalone use) */}
       {showTopBar ? (
-        <View style={styles.topBar}>
-          <View style={styles.topSpacer} />
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            minHeight: 32,
+            width: '100%',
+          }}>
+          <View style={{ flex: 1 }} />
           <OnboardingSkip onSkip={onSkip} />
         </View>
       ) : null}
 
       {/* 2. Optional XCAB Master Logo (Shown on Slide 1) */}
       {slide.showBrandLogo ? (
-        <View style={styles.brandBlock}>
-          <View style={styles.logoRow}>
-            <Text style={styles.logoX}>X</Text>
-            <Text style={styles.logoCab}>CAB</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginTop: 4,
+          }}>
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+            }}>
+            <Text
+              style={{
+                color: '#FFC928',
+                fontSize: 38,
+                fontWeight: '900',
+                letterSpacing: -1,
+              }}>
+              X
+            </Text>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 38,
+                fontWeight: '900',
+                letterSpacing: -1,
+              }}>
+              CAB
+            </Text>
           </View>
-          <Text style={styles.driverAppText}>D R I V E R   A P P</Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 10,
+              fontWeight: '700',
+              letterSpacing: 4,
+              marginTop: 1,
+            }}>
+            D R I V E R   A P P
+          </Text>
         </View>
       ) : (
-        <View style={styles.brandSpacer} />
+        <View style={{ height: 12 }} />
       )}
 
       {/* 3. Main Headlines */}
-      <View style={[styles.textBlock, !slide.showBrandLogo && styles.textBlockSpaced]}>
+      <View
+        style={{
+          alignItems: 'center',
+          marginTop: slide.showBrandLogo ? 10 : 14,
+          paddingHorizontal: 8,
+        }}>
         {slide.titlePrefix ? (
-          <Text style={styles.titleDark}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 25,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+              lineHeight: 31,
+              textAlign: 'center',
+            }}>
             {slide.titlePrefix}
-            <Text style={styles.titleYellow}>{slide.highlightedTitle}</Text>
+            <Text
+              style={{
+                color: '#FFC928',
+                fontSize: 25,
+                fontWeight: '900',
+                letterSpacing: -0.5,
+                lineHeight: 31,
+                textAlign: 'center',
+              }}>
+              {slide.highlightedTitle}
+            </Text>
             {slide.titleSuffix}
           </Text>
         ) : (
           <>
             {slide.title ? (
-              <Text style={styles.titleDark}>{slide.title}</Text>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 25,
+                  fontWeight: '900',
+                  letterSpacing: -0.5,
+                  lineHeight: 31,
+                  textAlign: 'center',
+                }}>
+                {slide.title}
+              </Text>
             ) : null}
             {slide.highlightedTitle ? (
-              <Text style={styles.titleYellow}>{slide.highlightedTitle}</Text>
+              <Text
+                style={{
+                  color: '#FFC928',
+                  fontSize: 25,
+                  fontWeight: '900',
+                  letterSpacing: -0.5,
+                  lineHeight: 31,
+                  textAlign: 'center',
+                }}>
+                {slide.highlightedTitle}
+              </Text>
             ) : null}
           </>
         )}
 
         {/* Supporting Description */}
-        <Text style={styles.descriptionText}>{slide.description}</Text>
+        <Text
+          style={{
+            color: '#687078',
+            fontSize: 12.5,
+            fontWeight: '500',
+            letterSpacing: 0.1,
+            lineHeight: 17,
+            marginTop: 8,
+            textAlign: 'center',
+          }}>
+          {slide.description}
+        </Text>
       </View>
 
       {/* 4. Center Hero Illustration */}
@@ -83,7 +187,12 @@ function OnboardingSlide({
 
       {/* 5. Optional Bottom Controls: Progress Dots & Primary CTA (for standalone use) */}
       {showBottomControls ? (
-        <View style={styles.bottomControls}>
+        <View
+          style={{
+            paddingBottom: 6,
+            paddingTop: 8,
+            width: '100%',
+          }}>
           <OnboardingProgress total={totalSlides} current={currentIndex} />
           <OnboardingButton
             label={slide.buttonLabel || 'Next'}
@@ -94,99 +203,5 @@ function OnboardingSlide({
     </ScrollView>
   );
 }
-
-const styles = StyleSheet.create({
-  scroll: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingBottom: 24,
-    paddingHorizontal: 20,
-    paddingTop: 8,
-  },
-  topBar: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 32,
-    width: '100%',
-  },
-  topSpacer: {
-    flex: 1,
-  },
-  brandBlock: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 4,
-  },
-  brandSpacer: {
-    height: 12,
-  },
-  logoRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  logoX: {
-    color: '#FFC928',
-    fontSize: 38,
-    fontWeight: '900',
-    letterSpacing: -1,
-  },
-  logoCab: {
-    color: '#17191C',
-    fontSize: 38,
-    fontWeight: '900',
-    letterSpacing: -1,
-  },
-  driverAppText: {
-    color: '#687078',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 4,
-    marginTop: 1,
-  },
-  textBlock: {
-    alignItems: 'center',
-    marginTop: 10,
-    paddingHorizontal: 8,
-  },
-  textBlockSpaced: {
-    marginTop: 14,
-  },
-  titleDark: {
-    color: '#17191C',
-    fontSize: 25,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-    lineHeight: 31,
-    textAlign: 'center',
-  },
-  titleYellow: {
-    color: '#FFC928',
-    fontSize: 25,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-    lineHeight: 31,
-    textAlign: 'center',
-  },
-  descriptionText: {
-    color: '#687078',
-    fontSize: 12.5,
-    fontWeight: '500',
-    letterSpacing: 0.1,
-    lineHeight: 17,
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  bottomControls: {
-    paddingBottom: 6,
-    paddingTop: 8,
-    width: '100%',
-  },
-});
 
 export default OnboardingSlide;

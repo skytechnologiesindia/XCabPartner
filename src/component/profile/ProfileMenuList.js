@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import ProfileMenuItem from './ProfileMenuItem';
 import { menuItemsData } from './profileData';
 
@@ -9,7 +9,7 @@ import { menuItemsData } from './profileData';
  */
 function ProfileMenuList({ items = menuItemsData, onItemPress }) {
   return (
-    <View style={styles.container}>
+    <View style={{ marginBottom: 14 }}>
       {items.map(item => (
         <ProfileMenuItem
           key={item.id}
@@ -22,11 +22,5 @@ function ProfileMenuList({ items = menuItemsData, onItemPress }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 14,
-  },
-});
 
 export default ProfileMenuList;

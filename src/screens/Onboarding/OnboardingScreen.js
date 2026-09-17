@@ -3,7 +3,6 @@ import {
   FlatList,
   Platform,
   StatusBar,
-  StyleSheet,
   View,
   useWindowDimensions,
 } from 'react-native';
@@ -116,7 +115,7 @@ function OnboardingScreen({
 
   const renderSlideItem = useCallback(
     ({ item }) => (
-      <View style={[styles.slideWrapper, { width: screenWidth }]}>
+      <View style={{ flex: 1, width: screenWidth }}>
         <OnboardingSlide slide={item} />
       </View>
     ),
@@ -132,7 +131,12 @@ function OnboardingScreen({
   const buttonLabel = isLastSlide ? 'Get Started' : 'Next';
 
   return (
-    <View style={[styles.container, { paddingTop: safeTopPadding }]}>
+    <View
+      style={{
+        backgroundColor: '#F7F5EF',
+        flex: 1,
+        paddingTop: safeTopPadding,
+      }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
@@ -140,12 +144,20 @@ function OnboardingScreen({
       />
 
       {/* 1. Top Bar: Skip button at top right */}
-      <View style={styles.topBar}>
-        <View style={styles.topSpacer} />
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          minHeight: 32,
+          paddingHorizontal: 20,
+          width: '100%',
+        }}>
+        <View style={{ flex: 1 }} />
         {!isLastSlide ? (
           <OnboardingSkip onSkip={handleSkip} />
         ) : (
-          <View style={styles.skipPlaceholder} />
+          <View style={{ height: 32, width: 48 }} />
         )}
       </View>
 
@@ -172,13 +184,18 @@ function OnboardingScreen({
         initialNumToRender={3}
         maxToRenderPerBatch={3}
         windowSize={5}
-        style={styles.carouselList}
+        style={{ flex: 1 }}
       />
 
       {/* 3. Bottom Controls: Progress dots & CTA button */}
       <View
-        style={[styles.bottomControls, { paddingBottom: safeBottomPadding }]}
-      >
+        style={{
+          backgroundColor: '#F7F5EF',
+          paddingBottom: safeBottomPadding,
+          paddingHorizontal: 20,
+          paddingTop: 4,
+          width: '100%',
+        }}>
         <OnboardingProgress
           total={onboardingSlides.length}
           current={currentSlide}
@@ -189,39 +206,5 @@ function OnboardingScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  topBar: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    minHeight: 32,
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-  topSpacer: {
-    flex: 1,
-  },
-  skipPlaceholder: {
-    height: 32,
-    width: 48,
-  },
-  carouselList: {
-    flex: 1,
-  },
-  slideWrapper: {
-    flex: 1,
-  },
-  bottomControls: {
-    backgroundColor: '#F7F5EF',
-    paddingHorizontal: 20,
-    paddingTop: 4,
-    width: '100%',
-  },
-});
 
 export default OnboardingScreen;

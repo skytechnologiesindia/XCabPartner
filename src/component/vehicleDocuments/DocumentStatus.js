@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 /**
  * DocumentStatus
@@ -9,11 +9,46 @@ function DocumentStatus({ status = 'valid' }) {
   const config = getStatusConfig(status);
 
   return (
-    <View style={[styles.pill, { backgroundColor: config.bgColor }]}>
-      <View style={[styles.iconCircle, { backgroundColor: config.textColor }]}>
-        <Text style={styles.iconText}>{config.icon}</Text>
+    <View
+      style={{
+        alignItems: 'center',
+        borderRadius: 14,
+        flexDirection: 'row',
+        paddingHorizontal: 8,
+        paddingVertical: 3.5,
+        backgroundColor: config.bgColor,
+      }}
+    >
+      <View
+        style={{
+          alignItems: 'center',
+          borderRadius: 7,
+          height: 14,
+          justifyContent: 'center',
+          marginRight: 4.5,
+          width: 14,
+          backgroundColor: config.textColor,
+        }}
+      >
+        <Text
+          style={{
+            color: '#FFFFFF',
+            fontSize: 9,
+            fontWeight: '900',
+            lineHeight: 10,
+          }}
+        >
+          {config.icon}
+        </Text>
       </View>
-      <Text style={[styles.labelText, { color: config.textColor }]}>
+      <Text
+        style={{
+          fontSize: 11.5,
+          fontWeight: '700',
+          letterSpacing: 0.1,
+          color: config.textColor,
+        }}
+      >
         {config.label}
       </Text>
     </View>
@@ -58,34 +93,5 @@ function getStatusConfig(status) {
       };
   }
 }
-
-const styles = StyleSheet.create({
-  pill: {
-    alignItems: 'center',
-    borderRadius: 14,
-    flexDirection: 'row',
-    paddingHorizontal: 8,
-    paddingVertical: 3.5,
-  },
-  iconCircle: {
-    alignItems: 'center',
-    borderRadius: 7,
-    height: 14,
-    justifyContent: 'center',
-    marginRight: 4.5,
-    width: 14,
-  },
-  iconText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '900',
-    lineHeight: 10,
-  },
-  labelText: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    letterSpacing: 0.1,
-  },
-});
 
 export default DocumentStatus;

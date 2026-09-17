@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Pressable,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -88,16 +87,48 @@ function OtpForm({
   const formattedTimer = `00:${timer < 10 ? `0${timer}` : timer}`;
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        width: '100%',
+      }}>
       {/* 1. Header Titles */}
-      <Text style={styles.titleText}>Enter OTP</Text>
-      <Text style={styles.subtitleText}>
+      <Text
+        style={{
+          color: '#17191C',
+          fontSize: 27,
+          fontWeight: '900',
+          letterSpacing: -0.6,
+        }}>
+        Enter OTP
+      </Text>
+      <Text
+        style={{
+          color: '#687078',
+          fontSize: 13.5,
+          fontWeight: '400',
+          lineHeight: 20,
+          marginTop: 8,
+          marginBottom: 20,
+        }}>
         We’ve sent a 6-digit code to{'\n'}
-        <Text style={styles.phoneHighlight}>{formattedPhone}</Text>
+        <Text
+          style={{
+            color: '#17191C',
+            fontWeight: '700',
+          }}>
+          {formattedPhone}
+        </Text>
       </Text>
 
       {/* 2. 6-Cell Discrete OTP Input Grid */}
-      <View style={styles.otpGrid}>
+      <View
+        style={{
+          flexDirection: 'row',
+          gap: 8,
+          justifyContent: 'space-between',
+          width: '100%',
+        }}>
         {digits.map((digit, index) => {
           const isFocused = focusedIndex === index;
           const isError = !!errorMessage;
@@ -106,9 +137,30 @@ function OtpForm({
               key={`otp-input-${index}`}
               ref={el => (inputsRef.current[index] = el)}
               style={[
-                styles.otpCell,
-                isFocused && styles.otpCellFocused,
-                isError && styles.otpCellError,
+                {
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#DDD9CF',
+                  borderRadius: 12,
+                  borderWidth: 1.5,
+                  color: '#17191C',
+                  fontSize: 20,
+                  fontWeight: '800',
+                  height: 54,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 1 },
+                  shadowOpacity: 0.04,
+                  shadowRadius: 3,
+                  elevation: 1,
+                  width: 48,
+                },
+                isFocused && {
+                  borderColor: '#FFC928',
+                  borderWidth: 2,
+                  backgroundColor: '#FFFEFA',
+                },
+                isError && {
+                  borderColor: '#EF4444',
+                },
               ]}
               value={digit}
               onChangeText={text => handleChangeText(text, index)}
@@ -128,14 +180,44 @@ function OtpForm({
 
       {/* Error Message */}
       {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
+        <Text
+          style={{
+            color: '#EF4444',
+            fontSize: 12,
+            fontWeight: '500',
+            marginTop: 8,
+            textAlign: 'center',
+          }}>
+          {errorMessage}
+        </Text>
       ) : null}
 
       {/* 3. Timer & Resend Option */}
-      <View style={styles.resendRow}>
-        <Text style={styles.resendPrompt}>Didn’t receive the code? </Text>
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'center',
+          marginTop: 18,
+          marginBottom: 8,
+        }}>
+        <Text
+          style={{
+            color: '#687078',
+            fontSize: 12.5,
+            fontWeight: '400',
+          }}>
+          Didn’t receive the code?{' '}
+        </Text>
         {timer > 0 ? (
-          <Text style={styles.timerText}>Resend in {formattedTimer}</Text>
+          <Text
+            style={{
+              color: '#9CA3AF',
+              fontSize: 12.5,
+              fontWeight: '600',
+            }}>
+            Resend in {formattedTimer}
+          </Text>
         ) : (
           <Pressable
             onPress={handleResendPress}
@@ -143,97 +225,20 @@ function OtpForm({
             accessibilityRole="button"
             accessibilityLabel="Resend OTP code"
           >
-            <Text style={styles.resendActiveText}>Resend OTP</Text>
+            <Text
+              style={{
+                color: '#FFC928',
+                fontSize: 12.5,
+                fontWeight: '800',
+                textDecorationLine: 'underline',
+              }}>
+              Resend OTP
+            </Text>
           </Pressable>
         )}
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 13.5,
-    fontWeight: '400',
-    lineHeight: 20,
-    marginTop: 8,
-    marginBottom: 20,
-  },
-  phoneHighlight: {
-    color: '#17191C',
-    fontWeight: '700',
-  },
-  otpGrid: {
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  otpCell: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#DDD9CF',
-    borderRadius: 12,
-    borderWidth: 1.5,
-    color: '#17191C',
-    fontSize: 20,
-    fontWeight: '800',
-    height: 54,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-    width: 48,
-  },
-  otpCellFocused: {
-    borderColor: '#FFC928',
-    borderWidth: 2,
-    backgroundColor: '#FFFEFA',
-  },
-  otpCellError: {
-    borderColor: '#EF4444',
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-  resendRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 18,
-    marginBottom: 8,
-  },
-  resendPrompt: {
-    color: '#687078',
-    fontSize: 12.5,
-    fontWeight: '400',
-  },
-  timerText: {
-    color: '#9CA3AF',
-    fontSize: 12.5,
-    fontWeight: '600',
-  },
-  resendActiveText: {
-    color: '#FFC928',
-    fontSize: 12.5,
-    fontWeight: '800',
-    textDecorationLine: 'underline',
-  },
-});
 
 export default OtpForm;

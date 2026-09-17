@@ -1,5 +1,5 @@
 import React, {useEffect, useRef} from 'react';
-import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
+import {Animated, Easing, Text, View} from 'react-native';
 
 const NUM_DOTS = 12;
 
@@ -26,26 +26,89 @@ function ScanningBar() {
   });
 
   return (
-    <View style={styles.card}>
-      <View style={styles.leftSection}>
+    <View
+      style={{
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderColor: '#ECE7DB',
+        borderRadius: 20,
+        borderWidth: 1,
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginBottom: 12,
+        marginHorizontal: 16,
+        paddingHorizontal: 14,
+        paddingVertical: 13,
+        shadowColor: '#000',
+        shadowOffset: {width: 0, height: 1},
+        shadowOpacity: 0.04,
+        shadowRadius: 3,
+        elevation: 1,
+      }}>
+      <View
+        style={{
+          alignItems: 'center',
+          flex: 1,
+          flexDirection: 'row',
+          marginRight: 10,
+        }}>
         {/* Green Dual-Ring Status Dot */}
-        <View style={styles.indicatorOuter}>
-          <View style={styles.indicatorInner} />
+        <View
+          style={{
+            alignItems: 'center',
+            backgroundColor: 'rgba(34, 197, 94, 0.22)',
+            borderRadius: 16,
+            height: 32,
+            justifyContent: 'center',
+            width: 32,
+          }}>
+          <View
+            style={{
+              backgroundColor: '#10B981',
+              borderRadius: 6,
+              height: 12,
+              width: 12,
+            }}
+          />
         </View>
 
         {/* Text Hierarchy */}
-        <View style={styles.textWrap}>
-          <Text style={styles.title} numberOfLines={1}>
+        <View
+          style={{
+            flex: 1,
+            marginLeft: 10,
+          }}>
+          <Text
+            style={{
+              color: '#111315',
+              fontSize: 13.5,
+              fontWeight: '700',
+              letterSpacing: -0.1,
+            }}
+            numberOfLines={1}>
             No active trip – scanning for requests
           </Text>
-          <Text style={styles.subtitle} numberOfLines={1}>
+          <Text
+            style={{
+              color: '#6B7280',
+              fontSize: 11,
+              marginTop: 2,
+            }}
+            numberOfLines={1}>
             You&apos;ll get notified immediately.
           </Text>
         </View>
       </View>
 
       {/* Animated Radar Scanning Indicator */}
-      <Animated.View style={[styles.radarContainer, {transform: [{rotate: spin}]}]}>
+      <Animated.View
+        style={{
+          alignItems: 'center',
+          height: 34,
+          justifyContent: 'center',
+          transform: [{rotate: spin}],
+          width: 34,
+        }}>
         {Array.from({length: NUM_DOTS}).map((_, index) => {
           const angle = (index * (360 / NUM_DOTS) * Math.PI) / 180;
           const radius = 13;
@@ -56,13 +119,15 @@ function ScanningBar() {
           return (
             <View
               key={index}
-              style={[
-                styles.radarDot,
-                {
-                  opacity,
-                  transform: [{translateX: x}, {translateY: y}],
-                },
-              ]}
+              style={{
+                backgroundColor: '#10B981',
+                borderRadius: 2.2,
+                height: 4.4,
+                opacity,
+                position: 'absolute',
+                transform: [{translateX: x}, {translateY: y}],
+                width: 4.4,
+              }}
             />
           );
         })}
@@ -70,74 +135,5 @@ function ScanningBar() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#ECE7DB',
-    borderRadius: 20,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    marginHorizontal: 16,
-    paddingHorizontal: 14,
-    paddingVertical: 13,
-    shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  leftSection: {
-    alignItems: 'center',
-    flex: 1,
-    flexDirection: 'row',
-    marginRight: 10,
-  },
-  indicatorOuter: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(34, 197, 94, 0.22)',
-    borderRadius: 16,
-    height: 32,
-    justifyContent: 'center',
-    width: 32,
-  },
-  indicatorInner: {
-    backgroundColor: '#10B981',
-    borderRadius: 6,
-    height: 12,
-    width: 12,
-  },
-  textWrap: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  title: {
-    color: '#111315',
-    fontSize: 13.5,
-    fontWeight: '700',
-    letterSpacing: -0.1,
-  },
-  subtitle: {
-    color: '#6B7280',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  radarContainer: {
-    alignItems: 'center',
-    height: 34,
-    justifyContent: 'center',
-    width: 34,
-  },
-  radarDot: {
-    backgroundColor: '#10B981',
-    borderRadius: 2.2,
-    height: 4.4,
-    position: 'absolute',
-    width: 4.4,
-  },
-});
 
 export default ScanningBar;

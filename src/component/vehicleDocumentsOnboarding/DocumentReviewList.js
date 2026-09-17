@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import DocumentReviewCard from './DocumentReviewCard';
 import { documentTypes } from './vehicleDocumentsOnboardingData';
 
@@ -18,7 +18,7 @@ function DocumentReviewList({
   onDeleteDocument,
 }) {
   return (
-    <View style={styles.container}>
+    <View style={{ paddingHorizontal: 20, width: '100%' }}>
       {documentTypes.map(doc => (
         <DocumentReviewCard
           key={doc.id}
@@ -31,12 +31,5 @@ function DocumentReviewList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-});
 
 export default DocumentReviewList;

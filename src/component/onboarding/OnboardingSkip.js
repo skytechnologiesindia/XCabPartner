@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Pressable,
-  StyleSheet,
   Text,
 } from 'react-native';
 
@@ -13,33 +12,28 @@ function OnboardingSkip({ onSkip }) {
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.skipButton,
-        pressed && styles.skipButtonPressed,
+        {
+          paddingHorizontal: 8,
+          paddingVertical: 4,
+        },
+        pressed && { opacity: 0.6 },
       ]}
       onPress={onSkip}
       hitSlop={{ top: 12, bottom: 12, left: 16, right: 16 }}
       accessibilityRole="button"
       accessibilityLabel="Skip onboarding"
     >
-      <Text style={styles.skipText}>Skip</Text>
+      <Text
+        style={{
+          color: '#17191C',
+          fontSize: 14.5,
+          fontWeight: '600',
+          letterSpacing: -0.1,
+        }}>
+        Skip
+      </Text>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  skipButton: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-  },
-  skipButtonPressed: {
-    opacity: 0.6,
-  },
-  skipText: {
-    color: '#17191C',
-    fontSize: 14.5,
-    fontWeight: '600',
-    letterSpacing: -0.1,
-  },
-});
 
 export default OnboardingSkip;

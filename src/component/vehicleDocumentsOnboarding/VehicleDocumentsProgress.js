@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 /**
  * VehicleDocumentsProgress
@@ -12,7 +12,15 @@ function VehicleDocumentsProgress({
 }) {
   return (
     <View
-      style={styles.container}
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 8,
+        justifyContent: 'center',
+        marginTop: 6,
+        marginBottom: 16,
+        width: '100%',
+      }}
       accessibilityRole="progressbar"
       accessibilityLabel={`Step ${step} of ${totalSteps}`}
     >
@@ -22,8 +30,14 @@ function VehicleDocumentsProgress({
           <View
             key={`veh-doc-seg-${index}`}
             style={[
-              styles.segment,
-              isFilled ? styles.segmentFilled : styles.segmentUnfilled,
+              {
+                borderRadius: 2,
+                height: 3.5,
+                width: 42,
+              },
+              isFilled
+                ? { backgroundColor: '#FFC928' }
+                : { backgroundColor: '#DDD9CF' },
             ]}
           />
         );
@@ -31,28 +45,5 @@ function VehicleDocumentsProgress({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginTop: 6,
-    marginBottom: 16,
-    width: '100%',
-  },
-  segment: {
-    borderRadius: 2,
-    height: 3.5,
-    width: 42,
-  },
-  segmentFilled: {
-    backgroundColor: '#FFC928',
-  },
-  segmentUnfilled: {
-    backgroundColor: '#DDD9CF',
-  },
-});
 
 export default VehicleDocumentsProgress;

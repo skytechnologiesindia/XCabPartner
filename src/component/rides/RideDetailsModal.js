@@ -1,460 +1,615 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
   Dimensions,
-  Modal,
+  Easing,
   PanResponder,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import RideStatus from './RideStatus';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
-const DISMISS_THRESHOLD = 90;
+const DISMISS_THRESHOLD = 80;
 
 /**
  * RideDetailsModal
- * Detailed trip review bottom sheet.
- * Features a swipe/drag-down gesture to dismiss (no close cross button).
+ * Detailed trip review bottom sheet overlay.
+ * Uses a pure-animated overlay (no native Modal Dialog lifecycle glitch)
+ * ensuring 100% smooth swipe/drag-down dismiss with ZERO flash or flicker.
  */
 function RideDetailsModal({ visible, ride, onClose }) {
-  const translateY = useRef(new Animated.Value(0)).current;
+  const [isRendered, setIsRendered] = useState(visible);
+  const lastRideRef = useRef(ride);
+  if (ride) {
+    lastRideRef.current = ride;
+  }
+  const currentRide = ride || lastRideRef.current;
 
-  // Reset position whenever modal opens
+  const translateY = useRef(new Animated.Value(SCREEN_HEIGHT)).current;
+  const backdropAnim = useRef(new Animated.Value(0)).current;
+  const isClosingRef = useRef(false);
+
   useEffect(() => {
     if (visible) {
-      translateY.setValue(0);
+      setIsRendered(true);
+      isClosingRef.current = false;
+      translateY.setValue(SCREEN_HEIGHT);
+      backdropAnim.setValue(0);
+
+      Animated.parallel([
+        Animated.timing(translateY, {
+          toValue: 0,
+          duration: 260,
+          easing: Easing.out(Easing.cubic),
+          useNativeDriver: true,
+        }),
+        Animated.timing(backdropAnim, {
+          toValue: 1,
+          duration: 260,
+          useNativeDriver: true,
+        }),
+      ]).start();
+    } else if (isRendered && !isClosingRef.current) {
+      closeModal();
     }
-  }, [visible, translateY]);
+  }, [visible]);
+
+  const closeModal = () => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+
+    Animated.parallel([
+      Animated.timing(translateY, {
+        toValue: SCREEN_HEIGHT,
+        duration: 220,
+        easing: Easing.in(Easing.cubic),
+        useNativeDriver: true,
+      }),
+      Animated.timing(backdropAnim, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }),
+    ]).start(() => {
+      setIsRendered(false);
+      isClosingRef.current = false;
+      if (onClose) {
+        onClose();
+      }
+    });
+  };
 
   // PanResponder to handle drag-down to dismiss
   const panResponder = useRef(
     PanResponder.create({
       onStartShouldSetPanResponder: () => true,
       onMoveShouldSetPanResponder: (_, gestureState) => {
-        // Activate drag gesture when moving downwards
         return gestureState.dy > 4;
       },
       onPanResponderMove: (_, gestureState) => {
         if (gestureState.dy > 0) {
           translateY.setValue(gestureState.dy);
+          const progress = Math.max(0, 1 - gestureState.dy / 350);
+          backdropAnim.setValue(progress);
         }
       },
       onPanResponderRelease: (_, gestureState) => {
-        if (gestureState.dy > DISMISS_THRESHOLD || gestureState.vy > 0.6) {
-          // Animate down and close
-          Animated.timing(translateY, {
-            toValue: SCREEN_HEIGHT,
-            duration: 180,
-            useNativeDriver: true,
-          }).start(() => {
-            onClose && onClose();
-            translateY.setValue(0);
-          });
+        if (gestureState.dy > DISMISS_THRESHOLD || gestureState.vy > 0.5) {
+          closeModal();
         } else {
           // Snap back to top
-          Animated.spring(translateY, {
-            toValue: 0,
-            bounciness: 4,
-            useNativeDriver: true,
-          }).start();
+          Animated.parallel([
+            Animated.spring(translateY, {
+              toValue: 0,
+              bounciness: 4,
+              useNativeDriver: true,
+            }),
+            Animated.timing(backdropAnim, {
+              toValue: 1,
+              duration: 150,
+              useNativeDriver: true,
+            }),
+          ]).start();
         }
       },
     }),
   ).current;
 
-  if (!ride) return null;
+  if (!isRendered || !currentRide) return null;
 
-  const isCancelled = ride.status === 'cancelled';
-  const breakdown = ride.breakdown || {};
+  const isCancelled = currentRide.status === 'cancelled';
+  const breakdown = currentRide.breakdown || {};
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="fade"
-      onRequestClose={onClose}
-    >
-      <View style={styles.overlay}>
-        {/* Semi-transparent backdrop tap to dismiss */}
+    <View
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        justifyContent: 'flex-end',
+      }}>
+      {/* Semi-transparent backdrop tap to dismiss */}
+      <Animated.View
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.45)',
+          opacity: backdropAnim,
+        }}>
         <Pressable
-          style={styles.backdrop}
-          onPress={onClose}
+          style={{ flex: 1 }}
+          onPress={closeModal}
           accessibilityRole="button"
           accessibilityLabel="Dismiss trip details"
         />
+      </Animated.View>
 
-        {/* Animated draggable bottom sheet */}
-        <Animated.View
-          style={[
-            styles.sheet,
-            {
-              transform: [{ translateY }],
-            },
-          ]}
-        >
-          {/* Top Drag & Drop Handle Area (PanResponder enabled) */}
-          <View {...panResponder.panHandlers} style={styles.dragArea}>
-            <View style={styles.handle} />
+      {/* Animated draggable bottom sheet */}
+      <Animated.View
+        style={{
+          backgroundColor: '#F7F5EF',
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
+          maxHeight: '85%',
+          paddingBottom: 28,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+          transform: [{ translateY }],
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: -4 },
+          shadowOpacity: 0.15,
+          shadowRadius: 12,
+          elevation: 16,
+        }}>
+        {/* Top Drag & Drop Handle Area (PanResponder enabled) */}
+        <View
+          {...panResponder.panHandlers}
+          style={{
+            paddingBottom: 6,
+            paddingTop: 4,
+            width: '100%',
+          }}>
+          <View
+            style={{
+              alignSelf: 'center',
+              backgroundColor: '#D0CCC2',
+              borderRadius: 3,
+              height: 5,
+              marginBottom: 14,
+              width: 48,
+            }}
+          />
 
-            {/* Header Row (Cross button removed as requested) */}
-            <View style={styles.headerRow}>
-              <View>
-                <Text style={styles.title}>Trip Details</Text>
-                <Text style={styles.tripId}>#{ride.id} · {ride.date}</Text>
+          {/* Header Row */}
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              marginBottom: 12,
+            }}>
+            <View>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 20,
+                  fontWeight: '800',
+                }}>
+                Trip Details
+              </Text>
+              <Text
+                style={{
+                  color: '#687078',
+                  fontSize: 12,
+                  fontWeight: '500',
+                  marginTop: 2,
+                }}>
+                #{currentRide.id} · {currentRide.date}
+              </Text>
+            </View>
+          </View>
+        </View>
+
+        <ScrollView
+          showsVerticalScrollIndicator={false}
+          contentContainerStyle={{
+            gap: 12,
+            paddingBottom: 16,
+          }}>
+          {/* Status & Fare Banner */}
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#FFFFFF',
+              borderColor: '#E6E2D8',
+              borderRadius: 16,
+              borderWidth: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              padding: 16,
+            }}>
+            <View>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 26,
+                  fontWeight: '900',
+                  letterSpacing: -0.5,
+                }}>
+                {currentRide.fare}
+              </Text>
+              <Text
+                style={{
+                  color: '#687078',
+                  fontSize: 12,
+                  fontWeight: '500',
+                  marginTop: 2,
+                }}>
+                Paid via {currentRide.paymentMethod || 'N/A'}
+              </Text>
+            </View>
+            <RideStatus status={currentRide.status} />
+          </View>
+
+          {/* Route Timeline */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderColor: '#E6E2D8',
+              borderRadius: 16,
+              borderWidth: 1,
+              padding: 16,
+            }}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 14,
+                fontWeight: '700',
+                letterSpacing: -0.2,
+                marginBottom: 12,
+              }}>
+              Route
+            </Text>
+
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 12,
+              }}>
+              <View
+                style={{
+                  backgroundColor: '#FFFFFF',
+                  borderColor: '#FFC928',
+                  borderRadius: 6,
+                  borderWidth: 3,
+                  height: 12,
+                  marginTop: 4,
+                  width: 12,
+                }}
+              />
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 10,
+                    fontWeight: '700',
+                    letterSpacing: 0.5,
+                  }}>
+                  PICKUP
+                </Text>
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 14,
+                    fontWeight: '600',
+                    marginTop: 2,
+                  }}>
+                  {currentRide.pickup}, {currentRide.pickupCity}
+                </Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    marginTop: 2,
+                  }}>
+                  {currentRide.time}
+                </Text>
+              </View>
+            </View>
+
+            <View
+              style={{
+                borderColor: '#DDD9CF',
+                borderLeftWidth: 1.5,
+                borderStyle: 'dashed',
+                height: 20,
+                marginLeft: 5,
+                marginVertical: 3,
+              }}
+            />
+
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 12,
+              }}>
+              <View
+                style={{
+                  backgroundColor: '#17191C',
+                  borderColor: '#17191C',
+                  borderRadius: 6,
+                  borderWidth: 3,
+                  height: 12,
+                  marginTop: 4,
+                  width: 12,
+                }}
+              />
+              <View style={{flex: 1}}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 10,
+                    fontWeight: '700',
+                    letterSpacing: 0.5,
+                  }}>
+                  DROP-OFF
+                </Text>
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 14,
+                    fontWeight: '600',
+                    marginTop: 2,
+                  }}>
+                  {currentRide.drop}, {currentRide.dropCity}
+                </Text>
               </View>
             </View>
           </View>
 
-          <ScrollView
-            showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.content}
+          {/* Trip Stats */}
+          <View
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderColor: '#E6E2D8',
+              borderRadius: 16,
+              borderWidth: 1,
+              flexDirection: 'row',
+              paddingVertical: 14,
+            }}>
+            <View style={{alignItems: 'center', flex: 1}}>
+              <Text
+                style={{
+                  color: '#687078',
+                  fontSize: 11,
+                  fontWeight: '500',
+                }}>
+                Distance
+              </Text>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '700',
+                  marginTop: 3,
+                }}>
+                {currentRide.distance}
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: '#DDD9CF',
+                width: 1,
+              }}
+            />
+            <View style={{alignItems: 'center', flex: 1}}>
+              <Text
+                style={{
+                  color: '#687078',
+                  fontSize: 11,
+                  fontWeight: '500',
+                }}>
+                Duration
+              </Text>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '700',
+                  marginTop: 3,
+                }}>
+                {currentRide.duration}
+              </Text>
+            </View>
+            <View
+              style={{
+                backgroundColor: '#DDD9CF',
+                width: 1,
+              }}
+            />
+            <View style={{alignItems: 'center', flex: 1}}>
+              <Text
+                style={{
+                  color: '#687078',
+                  fontSize: 11,
+                  fontWeight: '500',
+                }}>
+                Rider
+              </Text>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '700',
+                  marginTop: 3,
+                }}>
+                {currentRide.rider}
+              </Text>
+            </View>
+          </View>
+
+          {/* Cancellation Notice if cancelled */}
+          {isCancelled ? (
+            <View
+              style={{
+                backgroundColor: '#FDE6E3',
+                borderColor: '#F8B6AC',
+                borderRadius: 14,
+                borderWidth: 1,
+                padding: 14,
+              }}>
+              <Text
+                style={{
+                  color: '#F26B5B',
+                  fontSize: 13,
+                  fontWeight: '700',
+                }}>
+                Cancellation Reason
+              </Text>
+              <Text
+                style={{
+                  color: '#9C3D32',
+                  fontSize: 12,
+                  marginTop: 2,
+                }}>
+                {currentRide.cancellationReason || 'Cancelled before trip started.'}
+              </Text>
+            </View>
+          ) : null}
+
+          {/* Fare Breakdown */}
+          {!isCancelled ? (
+            <View
+              style={{
+                backgroundColor: '#FFFFFF',
+                borderColor: '#E6E2D8',
+                borderRadius: 16,
+                borderWidth: 1,
+                padding: 16,
+              }}>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '700',
+                  letterSpacing: -0.2,
+                  marginBottom: 12,
+                }}>
+                Fare Breakdown
+              </Text>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 4,
+                }}>
+                <Text style={{color: '#687078', fontSize: 13}}>Base Fare</Text>
+                <Text style={{color: '#17191C', fontSize: 13, fontWeight: '600'}}>
+                  {breakdown.baseFare || '₹50'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 4,
+                }}>
+                <Text style={{color: '#687078', fontSize: 13}}>Distance Fare</Text>
+                <Text style={{color: '#17191C', fontSize: 13, fontWeight: '600'}}>
+                  {breakdown.distanceFare || '₹95'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 4,
+                }}>
+                <Text style={{color: '#687078', fontSize: 13}}>Time Fare</Text>
+                <Text style={{color: '#17191C', fontSize: 13, fontWeight: '600'}}>
+                  {breakdown.timeFare || '₹35'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 4,
+                }}>
+                <Text style={{color: '#687078', fontSize: 13}}>Platform Fee & Taxes</Text>
+                <Text style={{color: '#17191C', fontSize: 13, fontWeight: '600'}}>
+                  {breakdown.taxes || '₹15'}
+                </Text>
+              </View>
+              <View
+                style={{
+                  backgroundColor: '#EBE7DC',
+                  height: 1,
+                  marginVertical: 8,
+                }}
+              />
+              <View
+                style={{
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  paddingVertical: 4,
+                }}>
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 14,
+                    fontWeight: '700',
+                  }}>
+                  Driver Net Earnings
+                </Text>
+                <Text
+                  style={{
+                    color: '#18A66A',
+                    fontSize: 16,
+                    fontWeight: '800',
+                  }}>
+                  {breakdown.driverEarning || currentRide.fare}
+                </Text>
+              </View>
+            </View>
+          ) : null}
+
+          {/* Done Button */}
+          <Pressable
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#FFC928',
+              borderRadius: 14,
+              justifyContent: 'center',
+              marginTop: 8,
+              paddingVertical: 14,
+            }}
+            onPress={closeModal}
+            accessibilityRole="button"
+            accessibilityLabel="Done"
           >
-            {/* Status & Fare Banner */}
-            <View style={styles.statusBanner}>
-              <View>
-                <Text style={styles.fareAmount}>{ride.fare}</Text>
-                <Text style={styles.paymentMethod}>
-                  Paid via {ride.paymentMethod || 'N/A'}
-                </Text>
-              </View>
-              <RideStatus status={ride.status} />
-            </View>
-
-            {/* Route Timeline */}
-            <View style={styles.cardSection}>
-              <Text style={styles.sectionHeading}>Route</Text>
-
-              <View style={styles.routeItem}>
-                <View style={[styles.dot, styles.pickupDot]} />
-                <View style={styles.routeTextCol}>
-                  <Text style={styles.routeRole}>PICKUP</Text>
-                  <Text style={styles.routeAddress}>
-                    {ride.pickup}, {ride.pickupCity}
-                  </Text>
-                  <Text style={styles.routeTime}>{ride.time}</Text>
-                </View>
-              </View>
-
-              <View style={styles.routeConnector} />
-
-              <View style={styles.routeItem}>
-                <View style={[styles.dot, styles.dropDot]} />
-                <View style={styles.routeTextCol}>
-                  <Text style={styles.routeRole}>DROP-OFF</Text>
-                  <Text style={styles.routeAddress}>
-                    {ride.drop}, {ride.dropCity}
-                  </Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Trip Stats */}
-            <View style={styles.statsRow}>
-              <View style={styles.statBox}>
-                <Text style={styles.statLabel}>Distance</Text>
-                <Text style={styles.statValue}>{ride.distance}</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statBox}>
-                <Text style={styles.statLabel}>Duration</Text>
-                <Text style={styles.statValue}>{ride.duration}</Text>
-              </View>
-              <View style={styles.statDivider} />
-              <View style={styles.statBox}>
-                <Text style={styles.statLabel}>Rider</Text>
-                <Text style={styles.statValue}>{ride.rider}</Text>
-              </View>
-            </View>
-
-            {/* Cancellation Notice if cancelled */}
-            {isCancelled ? (
-              <View style={styles.cancelledNotice}>
-                <Text style={styles.cancelledTitle}>Cancellation Reason</Text>
-                <Text style={styles.cancelledDesc}>
-                  {ride.cancellationReason || 'Cancelled before trip started.'}
-                </Text>
-              </View>
-            ) : null}
-
-            {/* Fare Breakdown */}
-            {!isCancelled ? (
-              <View style={styles.cardSection}>
-                <Text style={styles.sectionHeading}>Fare Breakdown</Text>
-                <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>Base Fare</Text>
-                  <Text style={styles.breakdownValue}>
-                    {breakdown.baseFare || '₹50'}
-                  </Text>
-                </View>
-                <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>Distance Fare</Text>
-                  <Text style={styles.breakdownValue}>
-                    {breakdown.distanceFare || '₹95'}
-                  </Text>
-                </View>
-                <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>Time Fare</Text>
-                  <Text style={styles.breakdownValue}>
-                    {breakdown.timeFare || '₹35'}
-                  </Text>
-                </View>
-                <View style={styles.breakdownRow}>
-                  <Text style={styles.breakdownLabel}>Platform Fee & Taxes</Text>
-                  <Text style={styles.breakdownValue}>
-                    {breakdown.taxes || '₹15'}
-                  </Text>
-                </View>
-                <View style={styles.divider} />
-                <View style={styles.breakdownRow}>
-                  <Text style={styles.earningLabel}>Driver Net Earnings</Text>
-                  <Text style={styles.earningValue}>
-                    {breakdown.driverEarning || ride.fare}
-                  </Text>
-                </View>
-              </View>
-            ) : null}
-
-            {/* Done Button */}
-            <Pressable
-              style={styles.actionButton}
-              onPress={onClose}
-              accessibilityRole="button"
-              accessibilityLabel="Done"
-            >
-              <Text style={styles.actionButtonText}>Done</Text>
-            </Pressable>
-          </ScrollView>
-        </Animated.View>
-      </View>
-    </Modal>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 15,
+                fontWeight: '700',
+              }}>
+              Done
+            </Text>
+          </Pressable>
+        </ScrollView>
+      </Animated.View>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    backgroundColor: 'rgba(0,0,0,0.45)',
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    flex: 1,
-  },
-  sheet: {
-    backgroundColor: '#F7F5EF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '85%',
-    paddingBottom: 28,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  dragArea: {
-    paddingBottom: 6,
-    paddingTop: 4,
-    width: '100%',
-  },
-  handle: {
-    alignSelf: 'center',
-    backgroundColor: '#D0CCC2',
-    borderRadius: 3,
-    height: 5,
-    marginBottom: 14,
-    width: 48,
-  },
-  headerRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-  },
-  title: {
-    color: '#17191C',
-    fontSize: 20,
-    fontWeight: '800',
-  },
-  tripId: {
-    color: '#687078',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  content: {
-    gap: 12,
-    paddingBottom: 16,
-  },
-  statusBanner: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 16,
-    borderWidth: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    padding: 16,
-  },
-  fareAmount: {
-    color: '#17191C',
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  paymentMethod: {
-    color: '#687078',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 2,
-  },
-  cardSection: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-  },
-  sectionHeading: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-    marginBottom: 12,
-  },
-  routeItem: {
-    flexDirection: 'row',
-    gap: 12,
-  },
-  dot: {
-    borderRadius: 6,
-    borderWidth: 3,
-    height: 12,
-    marginTop: 4,
-    width: 12,
-  },
-  pickupDot: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#FFC928',
-  },
-  dropDot: {
-    backgroundColor: '#17191C',
-    borderColor: '#17191C',
-  },
-  routeConnector: {
-    borderColor: '#DDD9CF',
-    borderLeftWidth: 1.5,
-    borderStyle: 'dashed',
-    height: 20,
-    marginLeft: 5,
-    marginVertical: 3,
-  },
-  routeTextCol: {
-    flex: 1,
-  },
-  routeRole: {
-    color: '#687078',
-    fontSize: 10,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-  },
-  routeAddress: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  routeTime: {
-    color: '#687078',
-    fontSize: 11,
-    marginTop: 2,
-  },
-  statsRow: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 16,
-    borderWidth: 1,
-    flexDirection: 'row',
-    paddingVertical: 14,
-  },
-  statBox: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  statDivider: {
-    backgroundColor: '#DDD9CF',
-    width: 1,
-  },
-  statLabel: {
-    color: '#687078',
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  statValue: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '700',
-    marginTop: 3,
-  },
-  cancelledNotice: {
-    backgroundColor: '#FDE6E3',
-    borderColor: '#F8B6AC',
-    borderRadius: 14,
-    borderWidth: 1,
-    padding: 14,
-  },
-  cancelledTitle: {
-    color: '#F26B5B',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  cancelledDesc: {
-    color: '#9C3D32',
-    fontSize: 12,
-    marginTop: 2,
-  },
-  breakdownRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingVertical: 4,
-  },
-  breakdownLabel: {
-    color: '#687078',
-    fontSize: 13,
-  },
-  breakdownValue: {
-    color: '#17191C',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  divider: {
-    backgroundColor: '#EBE7DC',
-    height: 1,
-    marginVertical: 8,
-  },
-  earningLabel: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  earningValue: {
-    color: '#18A66A',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  actionButton: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 14,
-    justifyContent: 'center',
-    marginTop: 8,
-    paddingVertical: 14,
-  },
-  actionButtonText: {
-    color: '#17191C',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-});
 
 export default RideDetailsModal;

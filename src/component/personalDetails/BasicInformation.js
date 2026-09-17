@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 import PersonalDetailRow from './PersonalDetailRow';
 
 /**
@@ -18,8 +18,32 @@ function BasicInformation({ data, onEditField }) {
   const addressLine2 = data?.address?.line2 || 'Jharkhand - 834001';
 
   return (
-    <View style={styles.card}>
-      <Text style={styles.sectionTitle}>Basic Information</Text>
+    <View
+      style={{
+        backgroundColor: '#FFFFFF',
+        borderColor: '#EFECE6',
+        borderRadius: 16,
+        borderWidth: 1,
+        marginBottom: 12,
+        paddingHorizontal: 16,
+        paddingTop: 16,
+        paddingBottom: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.04,
+        shadowRadius: 4,
+        elevation: 1.5,
+      }}>
+      <Text
+        style={{
+          color: '#17191C',
+          fontSize: 16.5,
+          fontWeight: '800',
+          letterSpacing: -0.3,
+          marginBottom: 4,
+        }}>
+        Basic Information
+      </Text>
 
       {/* 1. Full Name (Read-only / Verified) */}
       <PersonalDetailRow
@@ -81,30 +105,5 @@ function BasicInformation({ data, onEditField }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#EFECE6',
-    borderRadius: 16,
-    borderWidth: 1,
-    marginBottom: 12,
-    paddingHorizontal: 16,
-    paddingTop: 16,
-    paddingBottom: 4,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 4,
-    elevation: 1.5,
-  },
-  sectionTitle: {
-    color: '#17191C',
-    fontSize: 16.5,
-    fontWeight: '800',
-    letterSpacing: -0.3,
-    marginBottom: 4,
-  },
-});
 
 export default BasicInformation;

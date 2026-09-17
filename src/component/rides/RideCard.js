@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 import RideRoute from './RideRoute';
 import RideMeta from './RideMeta';
 import RideStatus from './RideStatus';
@@ -17,8 +17,23 @@ function RideCard({ ride, onPressDetails }) {
   return (
     <Pressable
       style={({ pressed }) => [
-        styles.cardContainer,
-        pressed && styles.cardPressed,
+        {
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E6E2D8',
+          borderRadius: 18,
+          borderWidth: 1,
+          marginBottom: 14,
+          padding: 14,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 8,
+          elevation: 2,
+        },
+        pressed && {
+          opacity: 0.95,
+          transform: [{ scale: 0.995 }],
+        },
       ]}
       accessibilityRole="button"
       accessibilityLabel={`Trip to ${ride.drop}, fare ${ride.fare}`}
@@ -37,7 +52,14 @@ function RideCard({ ride, onPressDetails }) {
       />
 
       {/* 2. Middle: Metadata Chips + Status Badge */}
-      <View style={styles.middleRow}>
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 14,
+        }}
+      >
         <RideMeta
           duration={ride.duration}
           distance={ride.distance}
@@ -47,82 +69,61 @@ function RideCard({ ride, onPressDetails }) {
       </View>
 
       {/* 3. Bottom Bar: Trip ID & View Details CTA */}
-      <View style={styles.bottomBar}>
-        <Text style={styles.tripIdText}>Trip ID: #{ride.id}</Text>
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F4F2EB',
+          borderRadius: 10,
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          marginTop: 12,
+          paddingHorizontal: 12,
+          paddingVertical: 7,
+        }}
+      >
+        <Text
+          style={{
+            color: '#687078',
+            fontSize: 12,
+            fontWeight: '600',
+            letterSpacing: -0.1,
+          }}
+        >
+          Trip ID: #{ride.id}
+        </Text>
 
         <Pressable
           style={({ pressed }) => [
-            styles.detailsButton,
-            pressed && styles.detailsButtonPressed,
+            {
+              backgroundColor: '#FFFFFF',
+              borderColor: '#17191C',
+              borderRadius: 6,
+              borderWidth: 1,
+              paddingHorizontal: 12,
+              paddingVertical: 5,
+            },
+            pressed && {
+              backgroundColor: '#F0EFEA',
+            },
           ]}
           onPress={() => onPressDetails && onPressDetails(ride)}
           accessibilityRole="button"
           accessibilityLabel={`View details for Trip ${ride.id}`}
         >
-          <Text style={styles.detailsButtonText}>View Details</Text>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 11.5,
+              fontWeight: '700',
+              letterSpacing: -0.1,
+            }}
+          >
+            View Details
+          </Text>
         </Pressable>
       </View>
     </Pressable>
   );
 }
-
-const styles = StyleSheet.create({
-  cardContainer: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 18,
-    borderWidth: 1,
-    marginBottom: 14,
-    padding: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 2,
-  },
-  cardPressed: {
-    opacity: 0.95,
-    transform: [{ scale: 0.995 }],
-  },
-  middleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 14,
-  },
-  bottomBar: {
-    alignItems: 'center',
-    backgroundColor: '#F4F2EB',
-    borderRadius: 10,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 7,
-  },
-  tripIdText: {
-    color: '#687078',
-    fontSize: 12,
-    fontWeight: '600',
-    letterSpacing: -0.1,
-  },
-  detailsButton: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#17191C',
-    borderRadius: 6,
-    borderWidth: 1,
-    paddingHorizontal: 12,
-    paddingVertical: 5,
-  },
-  detailsButtonPressed: {
-    backgroundColor: '#F0EFEA',
-  },
-  detailsButtonText: {
-    color: '#17191C',
-    fontSize: 11.5,
-    fontWeight: '700',
-    letterSpacing: -0.1,
-  },
-});
 
 export default RideCard;

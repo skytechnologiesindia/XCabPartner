@@ -5,7 +5,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -52,26 +51,29 @@ function SplashScreen({ onFinish }) {
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 12;
 
   return (
-    <View style={styles.container}>
+    <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
         translucent={true}
       />
 
-      <Animated.View style={[styles.animContainer, { opacity: fadeAnim }]}>
+      <Animated.View style={{ flex: 1, opacity: fadeAnim }}>
         <Pressable
-          style={styles.pressableArea}
+          style={{ flex: 1 }}
           onPress={handleSkipOrFinish}
           accessibilityRole="button"
           accessibilityLabel="XCAB Driver App Starting Screen"
         >
           <ScrollView
-            style={styles.scroll}
-            contentContainerStyle={[
-              styles.scrollContent,
-              { paddingTop: safeTopPadding },
-            ]}
+            style={{ flex: 1 }}
+            contentContainerStyle={{
+              backgroundColor: '#F7F5EF',
+              flexGrow: 1,
+              justifyContent: 'space-between',
+              paddingBottom: 10,
+              paddingTop: safeTopPadding,
+            }}
             bounces={false}
             showsVerticalScrollIndicator={false}
           >
@@ -92,27 +94,5 @@ function SplashScreen({ onFinish }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  animContainer: {
-    flex: 1,
-  },
-  pressableArea: {
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingBottom: 10,
-  },
-});
 
 export default SplashScreen;

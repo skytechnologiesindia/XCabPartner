@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import LogoutButton from './LogoutButton';
 
 /**
@@ -8,18 +8,11 @@ import LogoutButton from './LogoutButton';
  */
 function ProfileActions({ onLogout }) {
   return (
-    <View style={styles.container}>
+    <View style={{ marginBottom: 16, width: '100%' }}>
       {/* Logout Action CTA */}
       <LogoutButton onConfirmLogout={onLogout} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    width: '100%',
-  },
-});
 
 export default ProfileActions;

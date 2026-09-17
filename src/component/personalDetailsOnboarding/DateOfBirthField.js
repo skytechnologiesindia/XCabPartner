@@ -3,7 +3,6 @@ import {
   Modal,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -59,33 +58,95 @@ function DateOfBirthField({
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.label}>Date of Birth</Text>
+    <View
+      style={{
+        marginBottom: 16,
+        width: '100%',
+      }}>
+      <Text
+        style={{
+          color: '#687078',
+          fontSize: 13,
+          fontWeight: '600',
+          marginBottom: 6,
+        }}>
+        Date of Birth
+      </Text>
 
       {/* Trigger Card */}
       <Pressable
         style={({ pressed }) => [
-          styles.inputCard,
-          pressed && styles.inputCardPressed,
-          !!errorMessage && styles.inputCardError,
+          {
+            alignItems: 'center',
+            backgroundColor: '#FFFFFF',
+            borderColor: '#DDD9CF',
+            borderRadius: 14,
+            borderWidth: 1.5,
+            flexDirection: 'row',
+            height: 52,
+            justifyContent: 'space-between',
+            paddingHorizontal: 14,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.04,
+            shadowRadius: 3,
+            elevation: 1,
+          },
+          pressed && { backgroundColor: '#FAF8F1' },
+          !!errorMessage && { borderColor: '#EF4444' },
         ]}
         onPress={handleOpenPicker}
         accessibilityRole="button"
         accessibilityLabel={`Date of birth ${value}`}
       >
-        <View style={styles.iconWrapper}>
-          <Text style={styles.calendarIcon}>📅</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginRight: 10,
+            width: 22,
+          }}>
+          <Text style={{ fontSize: 16 }}>📅</Text>
         </View>
 
-        <Text style={styles.valueText}>{value || 'Select Date of Birth'}</Text>
+        <Text
+          style={{
+            color: '#17191C',
+            flex: 1,
+            fontSize: 15.5,
+            fontWeight: '600',
+            letterSpacing: -0.1,
+          }}>
+          {value || 'Select Date of Birth'}
+        </Text>
 
-        <View style={styles.iconWrapperRight}>
-          <Text style={styles.calendarIconRight}>📅</Text>
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: 22,
+          }}>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 15,
+            }}>
+            📅
+          </Text>
         </View>
       </Pressable>
 
       {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
+        <Text
+          style={{
+            color: '#EF4444',
+            fontSize: 11.5,
+            fontWeight: '500',
+            marginTop: 4,
+            paddingHorizontal: 4,
+          }}>
+          {errorMessage}
+        </Text>
       ) : null}
 
       {/* Date Picker Modal */}
@@ -96,28 +157,102 @@ function DateOfBirthField({
         onRequestClose={() => setModalVisible(false)}
       >
         <Pressable
-          style={styles.modalOverlay}
+          style={{
+            alignItems: 'center',
+            backgroundColor: 'rgba(0,0,0,0.5)',
+            flex: 1,
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+          }}
           onPress={() => setModalVisible(false)}
         >
-          <Pressable style={styles.modalCard} onPress={e => e.stopPropagation()}>
-            <Text style={styles.modalTitle}>Select Date of Birth</Text>
-            <Text style={styles.modalSubtitle}>
+          <Pressable
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 20,
+              padding: 20,
+              width: '100%',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.15,
+              shadowRadius: 10,
+              elevation: 6,
+            }}
+            onPress={e => e.stopPropagation()}
+          >
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 18,
+                fontWeight: '800',
+                textAlign: 'center',
+              }}>
+              Select Date of Birth
+            </Text>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 12.5,
+                fontWeight: '400',
+                marginTop: 4,
+                marginBottom: 16,
+                textAlign: 'center',
+              }}>
               Driver must be at least {personalDetailsConfig.minDriverAge} years old
             </Text>
 
             {/* Selection Wheels */}
-            <View style={styles.pickerRow}>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 8,
+                height: 180,
+                justifyContent: 'space-between',
+                marginBottom: 18,
+              }}>
               {/* Day Column */}
-              <View style={styles.column}>
-                <Text style={styles.colHeader}>Day</Text>
-                <ScrollView style={styles.colScroll} showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  backgroundColor: '#F7F5EF',
+                  borderRadius: 12,
+                  flex: 1,
+                  paddingVertical: 8,
+                }}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    marginBottom: 6,
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                  }}>
+                  Day
+                </Text>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                   {days.map(d => (
                     <Pressable
                       key={`day-${d}`}
-                      style={[styles.colItem, selectedDay === d && styles.colItemSelected]}
+                      style={[
+                        {
+                          alignItems: 'center',
+                          borderRadius: 8,
+                          marginHorizontal: 6,
+                          paddingVertical: 8,
+                        },
+                        selectedDay === d && { backgroundColor: '#FFC928' },
+                      ]}
                       onPress={() => setSelectedDay(d)}
                     >
-                      <Text style={[styles.colItemText, selectedDay === d && styles.colItemTextSelected]}>
+                      <Text
+                        style={[
+                          {
+                            color: '#17191C',
+                            fontSize: 14,
+                            fontWeight: '600',
+                          },
+                          selectedDay === d && { fontWeight: '800' },
+                        ]}>
                         {d}
                       </Text>
                     </Pressable>
@@ -126,16 +261,48 @@ function DateOfBirthField({
               </View>
 
               {/* Month Column */}
-              <View style={styles.column}>
-                <Text style={styles.colHeader}>Month</Text>
-                <ScrollView style={styles.colScroll} showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  backgroundColor: '#F7F5EF',
+                  borderRadius: 12,
+                  flex: 1,
+                  paddingVertical: 8,
+                }}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    marginBottom: 6,
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                  }}>
+                  Month
+                </Text>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                   {MONTHS.map(m => (
                     <Pressable
                       key={`month-${m}`}
-                      style={[styles.colItem, selectedMonth === m && styles.colItemSelected]}
+                      style={[
+                        {
+                          alignItems: 'center',
+                          borderRadius: 8,
+                          marginHorizontal: 6,
+                          paddingVertical: 8,
+                        },
+                        selectedMonth === m && { backgroundColor: '#FFC928' },
+                      ]}
                       onPress={() => setSelectedMonth(m)}
                     >
-                      <Text style={[styles.colItemText, selectedMonth === m && styles.colItemTextSelected]}>
+                      <Text
+                        style={[
+                          {
+                            color: '#17191C',
+                            fontSize: 14,
+                            fontWeight: '600',
+                          },
+                          selectedMonth === m && { fontWeight: '800' },
+                        ]}>
                         {m}
                       </Text>
                     </Pressable>
@@ -144,16 +311,48 @@ function DateOfBirthField({
               </View>
 
               {/* Year Column */}
-              <View style={styles.column}>
-                <Text style={styles.colHeader}>Year</Text>
-                <ScrollView style={styles.colScroll} showsVerticalScrollIndicator={false}>
+              <View
+                style={{
+                  backgroundColor: '#F7F5EF',
+                  borderRadius: 12,
+                  flex: 1,
+                  paddingVertical: 8,
+                }}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    marginBottom: 6,
+                    textAlign: 'center',
+                    textTransform: 'uppercase',
+                  }}>
+                  Year
+                </Text>
+                <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
                   {years.map(y => (
                     <Pressable
                       key={`year-${y}`}
-                      style={[styles.colItem, selectedYear === y && styles.colItemSelected]}
+                      style={[
+                        {
+                          alignItems: 'center',
+                          borderRadius: 8,
+                          marginHorizontal: 6,
+                          paddingVertical: 8,
+                        },
+                        selectedYear === y && { backgroundColor: '#FFC928' },
+                      ]}
                       onPress={() => setSelectedYear(y)}
                     >
-                      <Text style={[styles.colItemText, selectedYear === y && styles.colItemTextSelected]}>
+                      <Text
+                        style={[
+                          {
+                            color: '#17191C',
+                            fontSize: 14,
+                            fontWeight: '600',
+                          },
+                          selectedYear === y && { fontWeight: '800' },
+                        ]}>
                         {y}
                       </Text>
                     </Pressable>
@@ -163,18 +362,50 @@ function DateOfBirthField({
             </View>
 
             {/* Modal Actions */}
-            <View style={styles.modalButtons}>
+            <View
+              style={{
+                flexDirection: 'row',
+                gap: 10,
+              }}>
               <Pressable
-                style={styles.cancelBtn}
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: '#F1EEE5',
+                  borderRadius: 12,
+                  flex: 1,
+                  height: 44,
+                  justifyContent: 'center',
+                }}
                 onPress={() => setModalVisible(false)}
               >
-                <Text style={styles.cancelBtnText}>Cancel</Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 14,
+                    fontWeight: '700',
+                  }}>
+                  Cancel
+                </Text>
               </Pressable>
               <Pressable
-                style={styles.confirmBtn}
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: '#FFC928',
+                  borderRadius: 12,
+                  flex: 1,
+                  height: 44,
+                  justifyContent: 'center',
+                }}
                 onPress={handleConfirm}
               >
-                <Text style={styles.confirmBtnText}>Confirm Date</Text>
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 14,
+                    fontWeight: '800',
+                  }}>
+                  Confirm Date
+                </Text>
               </Pressable>
             </View>
           </Pressable>
@@ -183,175 +414,5 @@ function DateOfBirthField({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginBottom: 16,
-    width: '100%',
-  },
-  label: {
-    color: '#687078',
-    fontSize: 13,
-    fontWeight: '600',
-    marginBottom: 6,
-  },
-  inputCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#DDD9CF',
-    borderRadius: 14,
-    borderWidth: 1.5,
-    flexDirection: 'row',
-    height: 52,
-    justifyContent: 'space-between',
-    paddingHorizontal: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  inputCardPressed: {
-    backgroundColor: '#FAF8F1',
-  },
-  inputCardError: {
-    borderColor: '#EF4444',
-  },
-  iconWrapper: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 10,
-    width: 22,
-  },
-  calendarIcon: {
-    fontSize: 16,
-  },
-  valueText: {
-    color: '#17191C',
-    flex: 1,
-    fontSize: 15.5,
-    fontWeight: '600',
-    letterSpacing: -0.1,
-  },
-  iconWrapperRight: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 22,
-  },
-  calendarIconRight: {
-    color: '#687078',
-    fontSize: 15,
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 11.5,
-    fontWeight: '500',
-    marginTop: 4,
-    paddingHorizontal: 4,
-  },
-  modalOverlay: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: 20,
-    width: '100%',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  modalTitle: {
-    color: '#17191C',
-    fontSize: 18,
-    fontWeight: '800',
-    textAlign: 'center',
-  },
-  modalSubtitle: {
-    color: '#687078',
-    fontSize: 12.5,
-    fontWeight: '400',
-    marginTop: 4,
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  pickerRow: {
-    flexDirection: 'row',
-    gap: 8,
-    height: 180,
-    justifyContent: 'space-between',
-    marginBottom: 18,
-  },
-  column: {
-    backgroundColor: '#F7F5EF',
-    borderRadius: 12,
-    flex: 1,
-    paddingVertical: 8,
-  },
-  colHeader: {
-    color: '#687078',
-    fontSize: 11,
-    fontWeight: '700',
-    marginBottom: 6,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  colScroll: {
-    flex: 1,
-  },
-  colItem: {
-    alignItems: 'center',
-    borderRadius: 8,
-    marginHorizontal: 6,
-    paddingVertical: 8,
-  },
-  colItemSelected: {
-    backgroundColor: '#FFC928',
-  },
-  colItemText: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  colItemTextSelected: {
-    fontWeight: '800',
-  },
-  modalButtons: {
-    flexDirection: 'row',
-    gap: 10,
-  },
-  cancelBtn: {
-    alignItems: 'center',
-    backgroundColor: '#F1EEE5',
-    borderRadius: 12,
-    flex: 1,
-    height: 44,
-    justifyContent: 'center',
-  },
-  cancelBtnText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  confirmBtn: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 12,
-    flex: 1,
-    height: 44,
-    justifyContent: 'center',
-  },
-  confirmBtnText: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-});
 
 export default DateOfBirthField;

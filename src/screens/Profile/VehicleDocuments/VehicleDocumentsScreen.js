@@ -3,7 +3,6 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -81,38 +80,102 @@ function VehicleDocumentsScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
       {/* 1. Secondary Back Header: [<  XCAB] */}
-      <View style={styles.header}>
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F7F5EF',
+          flexDirection: 'row',
+          paddingBottom: 6,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}
+      >
         <Pressable
           style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed,
+            {
+              alignItems: 'center',
+              height: 38,
+              justifyContent: 'center',
+              marginRight: 6,
+              width: 32,
+            },
+            pressed && { opacity: 0.6 },
           ]}
           onPress={handleBack}
           accessibilityRole="button"
           accessibilityLabel="Go back"
           hitSlop={12}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 34,
+              fontWeight: '300',
+              lineHeight: 36,
+              marginTop: -2,
+            }}
+          >
+            ‹
+          </Text>
         </Pressable>
 
-        <View style={styles.brandLockup}>
-          <Text style={styles.logoX}>X</Text>
-          <Text style={styles.logoCab}>CAB</Text>
+        <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+          <Text
+            style={{
+              color: '#FFC928',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
+          >
+            X
+          </Text>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
+          >
+            CAB
+          </Text>
         </View>
       </View>
 
       {/* 2. Main Scroll Content */}
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 40,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Page Title & Advisory Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Vehicle & Documents</Text>
-          <Text style={styles.subtitleText}>
+        <View style={{ marginBottom: 16 }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 30,
+              fontWeight: '800',
+              letterSpacing: -0.6,
+            }}
+          >
+            Vehicle & Documents
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 14,
+              fontWeight: '400',
+              marginTop: 4,
+              lineHeight: 19,
+            }}
+          >
             Manage your vehicle details and keep your documents up to date
           </Text>
         </View>
@@ -127,7 +190,7 @@ function VehicleDocumentsScreen({
         <DocumentsHeader onUploadPress={handleUploadDocument} />
 
         {/* List of Documents */}
-        <View style={styles.documentsList}>
+        <View style={{ marginBottom: 8 }}>
           {documents.map(doc => (
             <DocumentCard
               key={doc.id}
@@ -143,80 +206,5 @@ function VehicleDocumentsScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#F7F5EF',
-    flexDirection: 'row',
-    paddingBottom: 6,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  backButton: {
-    alignItems: 'center',
-    height: 38,
-    justifyContent: 'center',
-    marginRight: 6,
-    width: 32,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  backArrow: {
-    color: '#17191C',
-    fontSize: 34,
-    fontWeight: '300',
-    lineHeight: 36,
-    marginTop: -2,
-  },
-  brandLockup: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  logoX: {
-    color: '#FFC928',
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  logoCab: {
-    color: '#17191C',
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  titleSection: {
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-    lineHeight: 19,
-  },
-  documentsList: {
-    marginBottom: 8,
-  },
-});
 
 export default VehicleDocumentsScreen;

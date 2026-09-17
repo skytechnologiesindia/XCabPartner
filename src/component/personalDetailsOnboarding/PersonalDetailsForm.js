@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import DateOfBirthField from './DateOfBirthField';
 import EmailField from './EmailField';
 import FullNameField from './FullNameField';
@@ -19,7 +19,11 @@ function PersonalDetailsForm({
   errors = {},
 }) {
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        width: '100%',
+      }}>
       {/* 1. Full Name */}
       <FullNameField
         value={formData.fullName}
@@ -50,12 +54,5 @@ function PersonalDetailsForm({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-});
 
 export default PersonalDetailsForm;

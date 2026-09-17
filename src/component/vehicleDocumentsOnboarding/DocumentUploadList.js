@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import DocumentUploadCard from './DocumentUploadCard';
 import { documentTypes } from './vehicleDocumentsOnboardingData';
 
@@ -19,7 +19,7 @@ function DocumentUploadList({
   onRemove,
 }) {
   return (
-    <View style={styles.container}>
+    <View style={{ paddingHorizontal: 20, width: '100%' }}>
       {documentTypes.map(doc => (
         <DocumentUploadCard
           key={doc.id}
@@ -33,12 +33,5 @@ function DocumentUploadList({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-});
 
 export default DocumentUploadList;

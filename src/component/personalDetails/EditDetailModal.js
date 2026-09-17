@@ -5,7 +5,6 @@ import {
   Platform,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -138,15 +137,41 @@ function EditDetailModal({
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        style={styles.overlay}
-      >
+        style={{
+          backgroundColor: 'rgba(17, 19, 21, 0.45)',
+          flex: 1,
+          justifyContent: 'flex-end',
+        }}>
         {/* Backdrop tap to dismiss */}
-        <Pressable style={styles.backdrop} onPress={onClose} />
+        <Pressable style={{ flex: 1 }} onPress={onClose} />
 
         {/* Bottom Sheet Modal Container */}
-        <View style={styles.sheetContainer}>
+        <View
+          style={{
+            backgroundColor: '#FFFFFF',
+            borderTopLeftRadius: 24,
+            borderTopRightRadius: 24,
+            maxHeight: '85%',
+            paddingBottom: Platform.OS === 'ios' ? 34 : 24,
+            paddingHorizontal: 20,
+            paddingTop: 12,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: -3 },
+            shadowOpacity: 0.1,
+            shadowRadius: 8,
+            elevation: 8,
+          }}>
           {/* Top Drag Indicator */}
-          <View style={styles.handleBar} />
+          <View
+            style={{
+              alignSelf: 'center',
+              backgroundColor: '#DDD9CF',
+              borderRadius: 2.5,
+              height: 4,
+              marginBottom: 16,
+              width: 38,
+            }}
+          />
 
           <ScrollView
             bounces={false}
@@ -154,8 +179,23 @@ function EditDetailModal({
             showsVerticalScrollIndicator={false}
           >
             {/* Modal Title & Instructions */}
-            <Text style={styles.sheetTitle}>{modalTitle}</Text>
-            <Text style={styles.sheetSubtitle}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 20,
+                fontWeight: '800',
+                letterSpacing: -0.4,
+              }}>
+              {modalTitle}
+            </Text>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 13,
+                fontWeight: '400',
+                lineHeight: 18,
+                marginTop: 4,
+              }}>
               {isEmail
                 ? 'Update your registered email address for receipts and notices.'
                 : 'Enter your updated residential or operational address.'}
@@ -163,12 +203,32 @@ function EditDetailModal({
 
             {/* Email Field Editing */}
             {isEmail ? (
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>EMAIL ADDRESS</Text>
+              <View style={{ marginTop: 20 }}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    letterSpacing: 0.4,
+                    marginBottom: 6,
+                  }}>
+                  EMAIL ADDRESS
+                </Text>
                 <TextInput
                   style={[
-                    styles.textInput,
-                    emailError ? styles.textInputError : null,
+                    {
+                      backgroundColor: '#FAF9F5',
+                      borderColor: '#DDD9CF',
+                      borderRadius: 10,
+                      borderWidth: 1.2,
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '600',
+                      minHeight: 48,
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                    },
+                    emailError && { borderColor: '#EF4444' },
                   ]}
                   value={email}
                   onChangeText={handleEmailChange}
@@ -179,19 +239,47 @@ function EditDetailModal({
                   autoCorrect={false}
                 />
                 {emailError ? (
-                  <Text style={styles.errorText}>{emailError}</Text>
+                  <Text
+                    style={{
+                      color: '#EF4444',
+                      fontSize: 11.5,
+                      fontWeight: '500',
+                      marginTop: 6,
+                    }}>
+                    {emailError}
+                  </Text>
                 ) : null}
               </View>
             ) : null}
 
             {/* Address Field Editing */}
             {isAddress ? (
-              <View style={styles.inputGroup}>
-                <Text style={styles.inputLabel}>STREET / AREA / LANDMARK</Text>
+              <View style={{ marginTop: 20 }}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    letterSpacing: 0.4,
+                    marginBottom: 6,
+                  }}>
+                  STREET / AREA / LANDMARK
+                </Text>
                 <TextInput
                   style={[
-                    styles.textInput,
-                    addressError ? styles.textInputError : null,
+                    {
+                      backgroundColor: '#FAF9F5',
+                      borderColor: '#DDD9CF',
+                      borderRadius: 10,
+                      borderWidth: 1.2,
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '600',
+                      minHeight: 48,
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                    },
+                    addressError && { borderColor: '#EF4444' },
                   ]}
                   value={addressLine1}
                   onChangeText={handleAddressLine1Change}
@@ -200,13 +288,32 @@ function EditDetailModal({
                   autoCapitalize="words"
                 />
 
-                <Text style={[styles.inputLabel, styles.inputLabelSpaced]}>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 11,
+                    fontWeight: '700',
+                    letterSpacing: 0.4,
+                    marginBottom: 6,
+                    marginTop: 14,
+                  }}>
                   CITY, STATE & PINCODE
                 </Text>
                 <TextInput
                   style={[
-                    styles.textInput,
-                    addressError ? styles.textInputError : null,
+                    {
+                      backgroundColor: '#FAF9F5',
+                      borderColor: '#DDD9CF',
+                      borderRadius: 10,
+                      borderWidth: 1.2,
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '600',
+                      minHeight: 48,
+                      paddingHorizontal: 14,
+                      paddingVertical: 10,
+                    },
+                    addressError && { borderColor: '#EF4444' },
                   ]}
                   value={addressLine2}
                   onChangeText={handleAddressLine2Change}
@@ -215,37 +322,79 @@ function EditDetailModal({
                   autoCapitalize="words"
                 />
                 {addressError ? (
-                  <Text style={styles.errorText}>{addressError}</Text>
+                  <Text
+                    style={{
+                      color: '#EF4444',
+                      fontSize: 11.5,
+                      fontWeight: '500',
+                      marginTop: 6,
+                    }}>
+                    {addressError}
+                  </Text>
                 ) : null}
               </View>
             ) : null}
 
             {/* Action Buttons */}
-            <View style={styles.buttonStack}>
+            <View style={{ marginTop: 24 }}>
               <Pressable
                 style={({ pressed }) => [
-                  styles.saveButton,
-                  isSaveDisabled && styles.saveButtonDisabled,
-                  pressed && !isSaveDisabled && styles.saveButtonPressed,
+                  {
+                    alignItems: 'center',
+                    backgroundColor: '#FFC928',
+                    borderRadius: 10,
+                    height: 48,
+                    justifyContent: 'center',
+                    marginBottom: 10,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 1 },
+                    shadowOpacity: 0.08,
+                    shadowRadius: 2,
+                    elevation: 2,
+                  },
+                  isSaveDisabled && { opacity: 0.45 },
+                  pressed && !isSaveDisabled && { backgroundColor: '#F5BE18' },
                 ]}
                 onPress={handleSave}
                 disabled={isSaveDisabled}
                 accessibilityRole="button"
                 accessibilityLabel="Save Changes"
               >
-                <Text style={styles.saveButtonText}>Save Changes</Text>
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 14.5,
+                    fontWeight: '800',
+                    letterSpacing: -0.1,
+                  }}>
+                  Save Changes
+                </Text>
               </Pressable>
 
               <Pressable
                 style={({ pressed }) => [
-                  styles.cancelButton,
-                  pressed && styles.cancelButtonPressed,
+                  {
+                    alignItems: 'center',
+                    borderColor: '#DDD9CF',
+                    borderRadius: 10,
+                    borderWidth: 1,
+                    height: 44,
+                    justifyContent: 'center',
+                  },
+                  pressed && { backgroundColor: '#F7F5EF' },
                 ]}
                 onPress={onClose}
                 accessibilityRole="button"
                 accessibilityLabel="Cancel"
               >
-                <Text style={styles.cancelButtonText}>Cancel</Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 14,
+                    fontWeight: '700',
+                  }}>
+                  Cancel
+                </Text>
               </Pressable>
             </View>
           </ScrollView>
@@ -254,129 +403,5 @@ function EditDetailModal({
     </Modal>
   );
 }
-
-const styles = StyleSheet.create({
-  overlay: {
-    backgroundColor: 'rgba(17, 19, 21, 0.45)',
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  backdrop: {
-    flex: 1,
-  },
-  sheetContainer: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    maxHeight: '85%',
-    paddingBottom: Platform.OS === 'ios' ? 34 : 24,
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-  },
-  handleBar: {
-    alignSelf: 'center',
-    backgroundColor: '#DDD9CF',
-    borderRadius: 2.5,
-    height: 4,
-    marginBottom: 16,
-    width: 38,
-  },
-  sheetTitle: {
-    color: '#17191C',
-    fontSize: 20,
-    fontWeight: '800',
-    letterSpacing: -0.4,
-  },
-  sheetSubtitle: {
-    color: '#687078',
-    fontSize: 13,
-    fontWeight: '400',
-    lineHeight: 18,
-    marginTop: 4,
-  },
-  inputGroup: {
-    marginTop: 20,
-  },
-  inputLabel: {
-    color: '#687078',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.4,
-    marginBottom: 6,
-  },
-  inputLabelSpaced: {
-    marginTop: 14,
-  },
-  textInput: {
-    backgroundColor: '#FAF9F5',
-    borderColor: '#DDD9CF',
-    borderRadius: 10,
-    borderWidth: 1.2,
-    color: '#17191C',
-    fontSize: 14.5,
-    fontWeight: '600',
-    minHeight: 48,
-    paddingHorizontal: 14,
-    paddingVertical: 10,
-  },
-  textInputError: {
-    borderColor: '#EF4444',
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 11.5,
-    fontWeight: '500',
-    marginTop: 6,
-  },
-  buttonStack: {
-    marginTop: 24,
-  },
-  saveButton: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 10,
-    height: 48,
-    justifyContent: 'center',
-    marginBottom: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.08,
-    shadowRadius: 2,
-    elevation: 2,
-  },
-  saveButtonPressed: {
-    backgroundColor: '#F5BE18',
-  },
-  saveButtonDisabled: {
-    opacity: 0.45,
-  },
-  saveButtonText: {
-    color: '#17191C',
-    fontSize: 14.5,
-    fontWeight: '800',
-    letterSpacing: -0.1,
-  },
-  cancelButton: {
-    alignItems: 'center',
-    borderColor: '#DDD9CF',
-    borderRadius: 10,
-    borderWidth: 1,
-    height: 44,
-    justifyContent: 'center',
-  },
-  cancelButtonPressed: {
-    backgroundColor: '#F7F5EF',
-  },
-  cancelButtonText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-});
 
 export default EditDetailModal;

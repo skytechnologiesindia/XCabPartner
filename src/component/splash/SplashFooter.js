@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 /**
  * SplashFooter
@@ -8,38 +8,44 @@ import { StyleSheet, Text, View } from 'react-native';
  */
 function SplashFooter() {
   return (
-    <View style={styles.container}>
-      <View style={styles.line} />
-      <Text style={styles.brandLineText}>
+    <View
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        justifyContent: 'center',
+        marginTop: 28,
+        paddingHorizontal: 28,
+        width: '100%',
+      }}
+    >
+      <View
+        style={{
+          backgroundColor: '#DDD9CF',
+          flex: 1,
+          height: 1,
+        }}
+      />
+      <Text
+        style={{
+          color: '#7A828A',
+          fontSize: 10,
+          fontWeight: '600',
+          letterSpacing: 2.4,
+          paddingHorizontal: 12,
+          textAlign: 'center',
+        }}
+      >
         DRIVEN BY A BRIGHTER INDIA
       </Text>
-      <View style={styles.line} />
+      <View
+        style={{
+          backgroundColor: '#DDD9CF',
+          flex: 1,
+          height: 1,
+        }}
+      />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 28,
-    paddingHorizontal: 28,
-    width: '100%',
-  },
-  line: {
-    backgroundColor: '#DDD9CF',
-    flex: 1,
-    height: 1,
-  },
-  brandLineText: {
-    color: '#7A828A',
-    fontSize: 10,
-    fontWeight: '600',
-    letterSpacing: 2.4,
-    paddingHorizontal: 12,
-    textAlign: 'center',
-  },
-});
 
 export default SplashFooter;

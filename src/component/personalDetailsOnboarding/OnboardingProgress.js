@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 
 /**
  * OnboardingProgress
@@ -12,7 +12,15 @@ function OnboardingProgress({
 }) {
   return (
     <View
-      style={styles.container}
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 8,
+        justifyContent: 'center',
+        marginTop: 6,
+        marginBottom: 16,
+        width: '100%',
+      }}
       accessibilityRole="progressbar"
       accessibilityLabel={`Step ${step} of ${totalSteps}`}
     >
@@ -21,38 +29,17 @@ function OnboardingProgress({
         return (
           <View
             key={`onboarding-seg-${index}`}
-            style={[
-              styles.segment,
-              isFilled ? styles.segmentFilled : styles.segmentUnfilled,
-            ]}
+            style={{
+              backgroundColor: isFilled ? '#FFC928' : '#DDD9CF',
+              borderRadius: 2,
+              height: 3.5,
+              width: 54,
+            }}
           />
         );
       })}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginTop: 6,
-    marginBottom: 16,
-    width: '100%',
-  },
-  segment: {
-    borderRadius: 2,
-    height: 3.5,
-    width: 54,
-  },
-  segmentFilled: {
-    backgroundColor: '#FFC928',
-  },
-  segmentUnfilled: {
-    backgroundColor: '#DDD9CF',
-  },
-});
 
 export default OnboardingProgress;

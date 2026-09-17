@@ -7,7 +7,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -180,7 +179,7 @@ function VehicleDocumentsReviewScreen({
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
 
   return (
-    <View style={[styles.container, { paddingTop: safeTopPadding }]}>
+    <View style={{ backgroundColor: '#F7F5EF', flex: 1, paddingTop: safeTopPadding }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
@@ -197,16 +196,39 @@ function VehicleDocumentsReviewScreen({
       <VehicleDocumentsProgress step={3} totalSteps={4} />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{ backgroundColor: '#F7F5EF', flex: 1 }}
+        contentContainerStyle={{
+          backgroundColor: '#F7F5EF',
+          flexGrow: 1,
+          justifyContent: 'space-between',
+          paddingTop: 10,
+        }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
         {/* 3. Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Review Your Documents</Text>
-          <Text style={styles.subtitleText}>
+        <View style={{ paddingHorizontal: 20, marginBottom: 16 }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 27,
+              fontWeight: '900',
+              letterSpacing: -0.6,
+              lineHeight: 33,
+            }}
+          >
+            Review Your Documents
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 13.5,
+              fontWeight: '400',
+              lineHeight: 19,
+              marginTop: 6,
+            }}
+          >
             Make sure everything looks correct before you continue.
           </Text>
         </View>
@@ -238,35 +260,115 @@ function VehicleDocumentsReviewScreen({
         onRequestClose={() => setPreviewDoc(null)}
       >
         <Pressable
-          style={styles.modalOverlay}
+          style={{
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.7)',
+            flex: 1,
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+          }}
           onPress={() => setPreviewDoc(null)}
         >
-          <Pressable style={styles.modalCard} onPress={e => e.stopPropagation()}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle} numberOfLines={1}>
+          <Pressable
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderRadius: 20,
+              maxHeight: '80%',
+              padding: 18,
+              width: '100%',
+            }}
+            onPress={e => e.stopPropagation()}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingBottom: 12,
+              }}
+            >
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 16,
+                  fontWeight: '800',
+                  maxWidth: '80%',
+                }}
+                numberOfLines={1}
+              >
                 {previewDoc?.title}
               </Text>
               <Pressable
-                style={styles.modalCloseBtn}
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: '#F1EEE5',
+                  borderRadius: 14,
+                  height: 28,
+                  justifyContent: 'center',
+                  width: 28,
+                }}
                 onPress={() => setPreviewDoc(null)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Text style={styles.modalCloseText}>✕</Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 13,
+                    fontWeight: '700',
+                  }}
+                >
+                  ✕
+                </Text>
               </Pressable>
             </View>
 
-            <View style={styles.previewImageContainer}>
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#F7F5EF',
+                borderRadius: 12,
+                height: 240,
+                justifyContent: 'center',
+                marginVertical: 10,
+                overflow: 'hidden',
+                width: '100%',
+              }}
+            >
               {previewDoc?.uri ? (
                 <Image
                   source={{ uri: previewDoc.uri }}
-                  style={styles.fullPreviewImage}
+                  style={{
+                    height: '100%',
+                    width: '100%',
+                  }}
                   resizeMode="contain"
                 />
               ) : (
-                <View style={styles.placeholderBox}>
-                  <Text style={styles.placeholderIcon}>📄</Text>
-                  <Text style={styles.placeholderTitle}>{previewDoc?.title}</Text>
-                  <Text style={styles.placeholderSubtitle}>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    padding: 16,
+                  }}
+                >
+                  <Text style={{ fontSize: 48, marginBottom: 8 }}>📄</Text>
+                  <Text
+                    style={{
+                      color: '#17191C',
+                      fontSize: 15,
+                      fontWeight: '700',
+                    }}
+                  >
+                    {previewDoc?.title}
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#687078',
+                      fontSize: 12,
+                      marginTop: 4,
+                      textAlign: 'center',
+                    }}
+                  >
                     Official registered document preview.
                   </Text>
                 </View>
@@ -274,10 +376,25 @@ function VehicleDocumentsReviewScreen({
             </View>
 
             <Pressable
-              style={styles.modalDoneBtn}
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#FFC928',
+                borderRadius: 12,
+                height: 44,
+                justifyContent: 'center',
+                marginTop: 6,
+              }}
               onPress={() => setPreviewDoc(null)}
             >
-              <Text style={styles.modalDoneBtnText}>Close Preview</Text>
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '800',
+                }}
+              >
+                Close Preview
+              </Text>
             </Pressable>
           </Pressable>
         </Pressable>
@@ -285,126 +402,5 @@ function VehicleDocumentsReviewScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingTop: 10,
-  },
-  titleSection: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    lineHeight: 33,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 13.5,
-    fontWeight: '400',
-    lineHeight: 19,
-    marginTop: 6,
-  },
-  modalOverlay: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.7)',
-    flex: 1,
-    justifyContent: 'center',
-    paddingHorizontal: 20,
-  },
-  modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    maxHeight: '80%',
-    padding: 18,
-    width: '100%',
-  },
-  modalHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 12,
-  },
-  modalTitle: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '800',
-    maxWidth: '80%',
-  },
-  modalCloseBtn: {
-    alignItems: 'center',
-    backgroundColor: '#F1EEE5',
-    borderRadius: 14,
-    height: 28,
-    justifyContent: 'center',
-    width: 28,
-  },
-  modalCloseText: {
-    color: '#687078',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  previewImageContainer: {
-    alignItems: 'center',
-    backgroundColor: '#F7F5EF',
-    borderRadius: 12,
-    height: 240,
-    justifyContent: 'center',
-    marginVertical: 10,
-    overflow: 'hidden',
-    width: '100%',
-  },
-  fullPreviewImage: {
-    height: '100%',
-    width: '100%',
-  },
-  placeholderBox: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 16,
-  },
-  placeholderIcon: {
-    fontSize: 48,
-    marginBottom: 8,
-  },
-  placeholderTitle: {
-    color: '#17191C',
-    fontSize: 15,
-    fontWeight: '700',
-  },
-  placeholderSubtitle: {
-    color: '#687078',
-    fontSize: 12,
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  modalDoneBtn: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 12,
-    height: 44,
-    justifyContent: 'center',
-    marginTop: 6,
-  },
-  modalDoneBtnText: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '800',
-  },
-});
 
 export default VehicleDocumentsReviewScreen;

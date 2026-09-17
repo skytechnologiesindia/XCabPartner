@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import VehicleRegistrationField from './VehicleRegistrationField';
 import VehicleSelectField from './VehicleSelectField';
 import VehicleSelectModal from './VehicleSelectModal';
@@ -41,7 +41,7 @@ function VehicleDetailsForm({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ paddingHorizontal: 20, width: '100%' }}>
       {/* 1. Vehicle Type */}
       <VehicleSelectField
         label="Vehicle Type"
@@ -138,12 +138,5 @@ function VehicleDetailsForm({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-});
 
 export default VehicleDetailsForm;

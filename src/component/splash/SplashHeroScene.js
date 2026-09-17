@@ -2,7 +2,6 @@ import React from 'react';
 import {
   Dimensions,
   Image,
-  StyleSheet,
   View,
 } from 'react-native';
 import { images } from '../../assets/images';
@@ -21,10 +20,21 @@ function SplashHeroScene() {
   const sceneHeight = Math.min(SCREEN_WIDTH * 0.72, 310);
 
   return (
-    <View style={[styles.container, { height: sceneHeight }]}>
+    <View
+      style={{
+        marginTop: 6,
+        overflow: 'hidden',
+        position: 'relative',
+        width: '100%',
+        height: sceneHeight,
+      }}
+    >
       <Image
         source={images.splashCarScene}
-        style={styles.sceneImage}
+        style={{
+          height: '100%',
+          width: '100%',
+        }}
         resizeMode="cover"
         accessibilityRole="image"
         accessibilityLabel="White XCAB sedan driving on a modern highway toward sunrise skyline"
@@ -32,18 +42,5 @@ function SplashHeroScene() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    marginTop: 6,
-    overflow: 'hidden',
-    position: 'relative',
-    width: '100%',
-  },
-  sceneImage: {
-    height: '100%',
-    width: '100%',
-  },
-});
 
 export default SplashHeroScene;

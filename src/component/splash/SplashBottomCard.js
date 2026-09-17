@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { View } from 'react-native';
 import SplashBenefits from './SplashBenefits';
 import SplashFooter from './SplashFooter';
 import SplashLoadingBar from './SplashLoadingBar';
@@ -17,7 +17,23 @@ function SplashBottomCard({
   thirdBenefitLabel,
 }) {
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        alignItems: 'center',
+        backgroundColor: '#FFFFFF',
+        borderTopLeftRadius: 36,
+        borderTopRightRadius: 36,
+        elevation: 4,
+        marginTop: -26,
+        paddingBottom: 24,
+        paddingTop: 14,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: -3 },
+        shadowOpacity: 0.06,
+        shadowRadius: 10,
+        width: '100%',
+      }}
+    >
       {/* 1. Loading Progress Bar */}
       <SplashLoadingBar duration={duration} onComplete={onComplete} />
 
@@ -29,23 +45,5 @@ function SplashBottomCard({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 36,
-    borderTopRightRadius: 36,
-    elevation: 4,
-    marginTop: -26,
-    paddingBottom: 24,
-    paddingTop: 14,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.06,
-    shadowRadius: 10,
-    width: '100%',
-  },
-});
 
 export default SplashBottomCard;

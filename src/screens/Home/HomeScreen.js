@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, View } from 'react-native';
 import Header from '../../component/Header/Header';
 import {
   AtPickupSheet,
@@ -38,7 +38,12 @@ function HomeScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        backgroundColor: colors.ivory50 || '#F7F5EE',
+        flex: 1,
+        position: 'relative',
+      }}>
       {/* iOS Style XCAB Header */}
       <Header
         onNotificationPress={onNotificationPress}
@@ -48,12 +53,11 @@ function HomeScreen({
 
       {/* Main Dashboard Content */}
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={[
-          styles.scrollContent,
-          (tripStage === 'pickup' || tripStage === 'onTrip') &&
-          styles.scrollContentPickup,
-        ]}
+        style={{flex: 1}}
+        contentContainerStyle={{
+          paddingBottom:
+            tripStage === 'pickup' || tripStage === 'onTrip' ? 360 : 25,
+        }}
         showsVerticalScrollIndicator={false}
         bounces={true}>
         {/* 1. Online / Offline Status Card (Hidden once ride is accepted) */}
@@ -88,7 +92,14 @@ function HomeScreen({
         />
       ) : null}
       {tripStage === 'pickup' ? (
-        <View style={styles.sheetOverlay}>
+        <View
+          style={{
+            bottom: 0,
+            left: 0,
+            position: 'absolute',
+            right: 0,
+            zIndex: 99,
+          }}>
           <AtPickupSheet
             onEnterPin={onEnterPin}
             onCantFind={onCantFind}
@@ -96,7 +107,14 @@ function HomeScreen({
         </View>
       ) : null}
       {tripStage === 'onTrip' ? (
-        <View style={styles.sheetOverlay}>
+        <View
+          style={{
+            bottom: 0,
+            left: 0,
+            position: 'absolute',
+            right: 0,
+            zIndex: 99,
+          }}>
           <EndTripSheet
             onComplete={onCompleteTrip}
             onReportIssue={onReportIssue}
@@ -107,29 +125,4 @@ function HomeScreen({
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.ivory50 || '#F7F5EE',
-    flex: 1,
-    position: 'relative',
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 25,
-  },
-  scrollContentPickup: {
-    paddingBottom: 360,
-  },
-  sheetOverlay: {
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-    right: 0,
-    zIndex: 99,
-  },
-});
-
 export default HomeScreen;
-

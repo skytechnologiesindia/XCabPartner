@@ -6,7 +6,6 @@ import {
   Pressable,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -160,7 +159,7 @@ function VehicleDocumentsOnboardingScreen({
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
 
   return (
-    <View style={[styles.container, { paddingTop: safeTopPadding }]}>
+    <View style={{ backgroundColor: '#F7F5EF', flex: 1, paddingTop: safeTopPadding }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
@@ -177,16 +176,39 @@ function VehicleDocumentsOnboardingScreen({
       <VehicleDocumentsProgress step={3} totalSteps={4} />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{ backgroundColor: '#F7F5EF', flex: 1 }}
+        contentContainerStyle={{
+          backgroundColor: '#F7F5EF',
+          flexGrow: 1,
+          justifyContent: 'space-between',
+          paddingTop: 10,
+        }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
         {/* 3. Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Vehicle Documents</Text>
-          <Text style={styles.subtitleText}>
+        <View style={{ paddingHorizontal: 20, marginBottom: 16 }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 27,
+              fontWeight: '900',
+              letterSpacing: -0.6,
+              lineHeight: 33,
+            }}
+          >
+            Vehicle Documents
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 13.5,
+              fontWeight: '400',
+              lineHeight: 19,
+              marginTop: 6,
+            }}
+          >
             Upload clear photos of the following documents.
           </Text>
         </View>
@@ -222,79 +244,262 @@ function VehicleDocumentsOnboardingScreen({
         onRequestClose={() => setIsPickerVisible(false)}
       >
         <Pressable
-          style={styles.modalOverlay}
+          style={{
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            flex: 1,
+            justifyContent: 'flex-end',
+          }}
           onPress={() => setIsPickerVisible(false)}
         >
-          <Pressable style={styles.modalCard} onPress={e => e.stopPropagation()}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>
+          <Pressable
+            style={{
+              backgroundColor: '#FFFFFF',
+              borderTopLeftRadius: 24,
+              borderTopRightRadius: 24,
+              paddingBottom: 32,
+              paddingHorizontal: 20,
+              paddingTop: 18,
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -3 },
+              shadowOpacity: 0.1,
+              shadowRadius: 8,
+              elevation: 8,
+              width: '100%',
+            }}
+            onPress={e => e.stopPropagation()}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                paddingBottom: 4,
+                width: '100%',
+              }}
+            >
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 17,
+                  fontWeight: '800',
+                  maxWidth: '85%',
+                }}
+              >
                 Upload {selectedDocForUpload?.title}
               </Text>
               <Pressable
-                style={styles.modalCloseBtn}
+                style={{
+                  alignItems: 'center',
+                  backgroundColor: '#F1EEE5',
+                  borderRadius: 14,
+                  height: 28,
+                  justifyContent: 'center',
+                  width: 28,
+                }}
                 onPress={() => setIsPickerVisible(false)}
                 hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
               >
-                <Text style={styles.modalCloseText}>✕</Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 13,
+                    fontWeight: '700',
+                  }}
+                >
+                  ✕
+                </Text>
               </Pressable>
             </View>
 
-            <Text style={styles.modalSubtitle}>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 12.5,
+                marginBottom: 16,
+                marginTop: 4,
+              }}
+            >
               Ensure document is flat, readable and has no glare.
             </Text>
 
             {/* Source Options */}
-            <View style={styles.sourceList}>
+            <View style={{ gap: 10 }}>
               <Pressable
                 style={({ pressed }) => [
-                  styles.sourceOption,
-                  pressed && styles.sourceOptionPressed,
+                  {
+                    alignItems: 'center',
+                    backgroundColor: '#FAFAF8',
+                    borderColor: '#E8E5DB',
+                    borderRadius: 14,
+                    borderWidth: 1.2,
+                    flexDirection: 'row',
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                  },
+                  pressed && { backgroundColor: '#F0ECE1' },
                 ]}
                 onPress={() => handleSelectUploadSource('camera')}
               >
-                <View style={styles.sourceIconBox}>
-                  <Text style={styles.sourceIcon}>📷</Text>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#F1EEE5',
+                    borderRadius: 10,
+                    height: 38,
+                    justifyContent: 'center',
+                    width: 38,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>📷</Text>
                 </View>
-                <View style={styles.sourceTextCol}>
-                  <Text style={styles.sourceTitle}>Take Photo</Text>
-                  <Text style={styles.sourceDesc}>Use your phone camera</Text>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text
+                    style={{
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '700',
+                    }}
+                  >
+                    Take Photo
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#687078',
+                      fontSize: 11.5,
+                      marginTop: 2,
+                    }}
+                  >
+                    Use your phone camera
+                  </Text>
                 </View>
-                <Text style={styles.sourceChevron}>›</Text>
+                <Text
+                  style={{
+                    color: '#9CA3AF',
+                    fontSize: 20,
+                    fontWeight: '600',
+                  }}
+                >
+                  ›
+                </Text>
               </Pressable>
 
               <Pressable
                 style={({ pressed }) => [
-                  styles.sourceOption,
-                  pressed && styles.sourceOptionPressed,
+                  {
+                    alignItems: 'center',
+                    backgroundColor: '#FAFAF8',
+                    borderColor: '#E8E5DB',
+                    borderRadius: 14,
+                    borderWidth: 1.2,
+                    flexDirection: 'row',
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                  },
+                  pressed && { backgroundColor: '#F0ECE1' },
                 ]}
                 onPress={() => handleSelectUploadSource('gallery')}
               >
-                <View style={styles.sourceIconBox}>
-                  <Text style={styles.sourceIcon}>🖼️</Text>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#F1EEE5',
+                    borderRadius: 10,
+                    height: 38,
+                    justifyContent: 'center',
+                    width: 38,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>🖼️</Text>
                 </View>
-                <View style={styles.sourceTextCol}>
-                  <Text style={styles.sourceTitle}>Choose from Photos</Text>
-                  <Text style={styles.sourceDesc}>Select from gallery or files</Text>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text
+                    style={{
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '700',
+                    }}
+                  >
+                    Choose from Photos
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#687078',
+                      fontSize: 11.5,
+                      marginTop: 2,
+                    }}
+                  >
+                    Select from gallery or files
+                  </Text>
                 </View>
-                <Text style={styles.sourceChevron}>›</Text>
+                <Text
+                  style={{
+                    color: '#9CA3AF',
+                    fontSize: 20,
+                    fontWeight: '600',
+                  }}
+                >
+                  ›
+                </Text>
               </Pressable>
 
               <Pressable
                 style={({ pressed }) => [
-                  styles.sourceOption,
-                  styles.demoOption,
-                  pressed && styles.sourceOptionPressed,
+                  {
+                    alignItems: 'center',
+                    backgroundColor: '#FFFDF5',
+                    borderColor: '#FFD966',
+                    borderRadius: 14,
+                    borderWidth: 1.2,
+                    flexDirection: 'row',
+                    paddingHorizontal: 14,
+                    paddingVertical: 12,
+                  },
+                  pressed && { backgroundColor: '#F0ECE1' },
                 ]}
                 onPress={() => handleSelectUploadSource('sample')}
               >
-                <View style={[styles.sourceIconBox, styles.demoIconBox]}>
-                  <Text style={styles.sourceIcon}>⚡</Text>
+                <View
+                  style={{
+                    alignItems: 'center',
+                    backgroundColor: '#FFF4C7',
+                    borderRadius: 10,
+                    height: 38,
+                    justifyContent: 'center',
+                    width: 38,
+                  }}
+                >
+                  <Text style={{ fontSize: 18 }}>⚡</Text>
                 </View>
-                <View style={styles.sourceTextCol}>
-                  <Text style={styles.sourceTitle}>Instant Demo Upload</Text>
-                  <Text style={styles.sourceDesc}>Simulate verified document for testing</Text>
+                <View style={{ flex: 1, marginLeft: 12 }}>
+                  <Text
+                    style={{
+                      color: '#17191C',
+                      fontSize: 14.5,
+                      fontWeight: '700',
+                    }}
+                  >
+                    Instant Demo Upload
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#687078',
+                      fontSize: 11.5,
+                      marginTop: 2,
+                    }}
+                  >
+                    Simulate verified document for testing
+                  </Text>
                 </View>
-                <Text style={styles.sourceChevron}>›</Text>
+                <Text
+                  style={{
+                    color: '#9CA3AF',
+                    fontSize: 20,
+                    fontWeight: '600',
+                  }}
+                >
+                  ›
+                </Text>
               </Pressable>
             </View>
           </Pressable>
@@ -303,145 +508,5 @@ function VehicleDocumentsOnboardingScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingTop: 10,
-  },
-  titleSection: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    lineHeight: 33,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 13.5,
-    fontWeight: '400',
-    lineHeight: 19,
-    marginTop: 6,
-  },
-  modalOverlay: {
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  modalCard: {
-    backgroundColor: '#FFFFFF',
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-    paddingBottom: 32,
-    paddingHorizontal: 20,
-    paddingTop: 18,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -3 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
-    elevation: 8,
-    width: '100%',
-  },
-  modalHeader: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    paddingBottom: 4,
-    width: '100%',
-  },
-  modalTitle: {
-    color: '#17191C',
-    fontSize: 17,
-    fontWeight: '800',
-    maxWidth: '85%',
-  },
-  modalCloseBtn: {
-    alignItems: 'center',
-    backgroundColor: '#F1EEE5',
-    borderRadius: 14,
-    height: 28,
-    justifyContent: 'center',
-    width: 28,
-  },
-  modalCloseText: {
-    color: '#687078',
-    fontSize: 13,
-    fontWeight: '700',
-  },
-  modalSubtitle: {
-    color: '#687078',
-    fontSize: 12.5,
-    marginBottom: 16,
-    marginTop: 4,
-  },
-  sourceList: {
-    gap: 10,
-  },
-  sourceOption: {
-    alignItems: 'center',
-    backgroundColor: '#FAFAF8',
-    borderColor: '#E8E5DB',
-    borderRadius: 14,
-    borderWidth: 1.2,
-    flexDirection: 'row',
-    paddingHorizontal: 14,
-    paddingVertical: 12,
-  },
-  demoOption: {
-    backgroundColor: '#FFFDF5',
-    borderColor: '#FFD966',
-  },
-  sourceOptionPressed: {
-    backgroundColor: '#F0ECE1',
-  },
-  sourceIconBox: {
-    alignItems: 'center',
-    backgroundColor: '#F1EEE5',
-    borderRadius: 10,
-    height: 38,
-    justifyContent: 'center',
-    width: 38,
-  },
-  demoIconBox: {
-    backgroundColor: '#FFF4C7',
-  },
-  sourceIcon: {
-    fontSize: 18,
-  },
-  sourceTextCol: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  sourceTitle: {
-    color: '#17191C',
-    fontSize: 14.5,
-    fontWeight: '700',
-  },
-  sourceDesc: {
-    color: '#687078',
-    fontSize: 11.5,
-    marginTop: 2,
-  },
-  sourceChevron: {
-    color: '#9CA3AF',
-    fontSize: 20,
-    fontWeight: '600',
-  },
-});
 
 export default VehicleDocumentsOnboardingScreen;

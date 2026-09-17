@@ -4,7 +4,6 @@ import {
   Platform,
   ScrollView,
   StatusBar,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -138,7 +137,12 @@ function PersonalDetailsOnboardingScreen({
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
 
   return (
-    <View style={[styles.container, { paddingTop: safeTopPadding }]}>
+    <View
+      style={{
+        backgroundColor: '#F7F5EF',
+        flex: 1,
+        paddingTop: safeTopPadding,
+      }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
@@ -155,16 +159,44 @@ function PersonalDetailsOnboardingScreen({
       <OnboardingProgress step={2} totalSteps={3} />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{
+          backgroundColor: '#F7F5EF',
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          backgroundColor: '#F7F5EF',
+          flexGrow: 1,
+          justifyContent: 'space-between',
+          paddingTop: 10,
+        }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
         {/* 3. Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Your Personal{'\n'}Details</Text>
-          <Text style={styles.subtitleText}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 16,
+          }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 27,
+              fontWeight: '900',
+              letterSpacing: -0.6,
+              lineHeight: 33,
+            }}>
+            Your Personal{'\n'}Details
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 13.5,
+              fontWeight: '400',
+              lineHeight: 19,
+              marginTop: 6,
+            }}>
             Tell us a bit about yourself.
           </Text>
         </View>
@@ -190,40 +222,5 @@ function PersonalDetailsOnboardingScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingTop: 10,
-  },
-  titleSection: {
-    paddingHorizontal: 20,
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    lineHeight: 33,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 13.5,
-    fontWeight: '400',
-    lineHeight: 19,
-    marginTop: 6,
-  },
-});
 
 export default PersonalDetailsOnboardingScreen;

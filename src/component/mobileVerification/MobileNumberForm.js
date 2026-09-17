@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  StyleSheet,
   Text,
   TextInput,
   View,
@@ -31,15 +30,54 @@ function MobileNumberForm({
   };
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        width: '100%',
+      }}>
       {/* 1. Header Titles */}
-      <Text style={styles.titleText}>Enter Your{'\n'}Mobile Number</Text>
-      <Text style={styles.subtitleText}>
+      <Text
+        style={{
+          color: '#17191C',
+          fontSize: 27,
+          fontWeight: '900',
+          letterSpacing: -0.6,
+          lineHeight: 33,
+        }}>
+        Enter Your{'\n'}Mobile Number
+      </Text>
+      <Text
+        style={{
+          color: '#687078',
+          fontSize: 13.5,
+          fontWeight: '400',
+          lineHeight: 19,
+          marginTop: 8,
+          marginBottom: 20,
+        }}>
         We’ll send you a verification code to continue.
       </Text>
 
       {/* 2. Unified Input Card */}
-      <View style={[styles.inputCard, !!errorMessage && styles.inputCardError]}>
+      <View
+        style={[
+          {
+            alignItems: 'center',
+            backgroundColor: '#FFFFFF',
+            borderColor: '#DDD9CF',
+            borderRadius: 14,
+            borderWidth: 1.5,
+            flexDirection: 'row',
+            height: 56,
+            overflow: 'hidden',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 1 },
+            shadowOpacity: 0.04,
+            shadowRadius: 3,
+            elevation: 1,
+          },
+          !!errorMessage && { borderColor: '#EF4444' },
+        ]}>
         <CountryCodeSelector
           countryCode={countryCode}
           countryFlag={countryFlag}
@@ -47,7 +85,15 @@ function MobileNumberForm({
         />
 
         <TextInput
-          style={styles.textInput}
+          style={{
+            color: '#17191C',
+            flex: 1,
+            fontSize: 16,
+            fontWeight: '700',
+            height: '100%',
+            letterSpacing: 0.5,
+            paddingHorizontal: 12,
+          }}
           placeholder="98765 43210"
           placeholderTextColor="#9CA3AF"
           value={phoneNumber}
@@ -62,66 +108,19 @@ function MobileNumberForm({
 
       {/* Error Feedback */}
       {errorMessage ? (
-        <Text style={styles.errorText}>{errorMessage}</Text>
+        <Text
+          style={{
+            color: '#EF4444',
+            fontSize: 12,
+            fontWeight: '500',
+            marginTop: 6,
+            paddingHorizontal: 4,
+          }}>
+          {errorMessage}
+        </Text>
       ) : null}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    width: '100%',
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 27,
-    fontWeight: '900',
-    letterSpacing: -0.6,
-    lineHeight: 33,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 13.5,
-    fontWeight: '400',
-    lineHeight: 19,
-    marginTop: 8,
-    marginBottom: 20,
-  },
-  inputCard: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#DDD9CF',
-    borderRadius: 14,
-    borderWidth: 1.5,
-    flexDirection: 'row',
-    height: 56,
-    overflow: 'hidden',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.04,
-    shadowRadius: 3,
-    elevation: 1,
-  },
-  inputCardError: {
-    borderColor: '#EF4444',
-  },
-  textInput: {
-    color: '#17191C',
-    flex: 1,
-    fontSize: 16,
-    fontWeight: '700',
-    height: '100%',
-    letterSpacing: 0.5,
-    paddingHorizontal: 12,
-  },
-  errorText: {
-    color: '#EF4444',
-    fontSize: 12,
-    fontWeight: '500',
-    marginTop: 6,
-    paddingHorizontal: 4,
-  },
-});
 
 export default MobileNumberForm;

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { Pressable, View } from 'react-native';
 
 /**
  * OnboardingProgress
@@ -13,7 +13,13 @@ function OnboardingProgress({
 }) {
   return (
     <View
-      style={styles.container}
+      style={{
+        alignItems: 'center',
+        flexDirection: 'row',
+        gap: 8,
+        justifyContent: 'center',
+        marginVertical: 18,
+      }}
       accessibilityRole="progressbar"
       accessibilityLabel={`Step ${current + 1} of ${total}`}
     >
@@ -30,8 +36,16 @@ function OnboardingProgress({
           >
             <View
               style={[
-                styles.dot,
-                isActive ? styles.dotActive : styles.dotInactive,
+                {
+                  borderRadius: 4,
+                  height: 8,
+                  width: 8,
+                  backgroundColor: '#DDD9CF',
+                },
+                isActive && {
+                  backgroundColor: '#FFC928',
+                  transform: [{ scale: 1.15 }],
+                },
               ]}
             />
           </Pressable>
@@ -40,27 +54,5 @@ function OnboardingProgress({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    gap: 8,
-    justifyContent: 'center',
-    marginVertical: 18,
-  },
-  dot: {
-    borderRadius: 4,
-    height: 8,
-    width: 8,
-  },
-  dotActive: {
-    backgroundColor: '#FFC928',
-    transform: [{ scale: 1.15 }],
-  },
-  dotInactive: {
-    backgroundColor: '#DDD9CF',
-  },
-});
 
 export default OnboardingProgress;

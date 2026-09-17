@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
 
 /**
  * RideStatus badge
@@ -15,47 +15,55 @@ function RideStatus({ status = 'completed' }) {
   const label = isCancelled ? 'Cancelled' : 'Completed';
 
   return (
-    <View style={[styles.badgeContainer, { backgroundColor: bgColor }]}>
+    <View
+      style={{
+        alignItems: 'center',
+        backgroundColor: bgColor,
+        borderRadius: 10,
+        flexDirection: 'row',
+        gap: 6,
+        paddingHorizontal: 10,
+        paddingVertical: 7,
+      }}
+    >
       {/* Icon Circle */}
-      <View style={[styles.iconCircle, { backgroundColor: textColor }]}>
-        <Text style={styles.iconText}>{iconSymbol}</Text>
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: textColor,
+          borderRadius: 7,
+          height: 14,
+          justifyContent: 'center',
+          width: 14,
+        }}
+      >
+        <Text
+          style={{
+            color: '#FFFFFF',
+            fontSize: 9,
+            fontWeight: '800',
+            includeFontPadding: false,
+            lineHeight: 11,
+            textAlign: 'center',
+          }}
+        >
+          {iconSymbol}
+        </Text>
       </View>
 
       {/* Status Label */}
-      <Text style={[styles.statusText, { color: textColor }]}>{label}</Text>
+      <Text
+        style={{
+          color: textColor,
+          fontSize: 12,
+          fontWeight: '700',
+          letterSpacing: -0.1,
+        }}
+      >
+        {label}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  badgeContainer: {
-    alignItems: 'center',
-    borderRadius: 10,
-    flexDirection: 'row',
-    gap: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 7,
-  },
-  iconCircle: {
-    alignItems: 'center',
-    borderRadius: 7,
-    height: 14,
-    justifyContent: 'center',
-    width: 14,
-  },
-  iconText: {
-    color: '#FFFFFF',
-    fontSize: 9,
-    fontWeight: '800',
-    includeFontPadding: false,
-    lineHeight: 11,
-    textAlign: 'center',
-  },
-  statusText: {
-    fontSize: 12,
-    fontWeight: '700',
-    letterSpacing: -0.1,
-  },
-});
 
 export default RideStatus;

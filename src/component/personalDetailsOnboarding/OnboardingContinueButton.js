@@ -2,7 +2,6 @@ import React from 'react';
 import {
   ActivityIndicator,
   Pressable,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -18,12 +17,37 @@ function OnboardingContinueButton({
   isLoading = false,
 }) {
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        paddingHorizontal: 20,
+        marginTop: 4,
+        width: '100%',
+      }}>
       <Pressable
         style={({ pressed }) => [
-          styles.button,
-          isDisabled && styles.buttonDisabled,
-          !isDisabled && pressed && styles.buttonPressed,
+          {
+            alignItems: 'center',
+            backgroundColor: '#FFC928',
+            borderRadius: 16,
+            height: 52,
+            justifyContent: 'center',
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.08,
+            shadowRadius: 4,
+            elevation: 2,
+            width: '100%',
+          },
+          isDisabled && {
+            backgroundColor: '#EBE7DC',
+            elevation: 0,
+            shadowOpacity: 0,
+          },
+          !isDisabled &&
+            pressed && {
+              backgroundColor: '#F5BE18',
+              transform: [{ scale: 0.99 }],
+            },
         ]}
         onPress={onPress}
         disabled={isDisabled || isLoading}
@@ -33,19 +57,34 @@ function OnboardingContinueButton({
         {isLoading ? (
           <ActivityIndicator color="#17191C" size="small" />
         ) : (
-          <View style={styles.contentRow}>
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
             <Text
               style={[
-                styles.buttonText,
-                isDisabled && styles.buttonTextDisabled,
+                {
+                  color: '#17191C',
+                  fontSize: 16,
+                  fontWeight: '800',
+                  letterSpacing: -0.2,
+                },
+                isDisabled && { color: '#9CA3AF' },
               ]}
             >
               {label}
             </Text>
             <Text
               style={[
-                styles.arrowIcon,
-                isDisabled && styles.arrowIconDisabled,
+                {
+                  color: '#17191C',
+                  fontSize: 16,
+                  fontWeight: '800',
+                  marginLeft: 8,
+                },
+                isDisabled && { color: '#9CA3AF' },
               ]}
             >
               →
@@ -56,58 +95,5 @@ function OnboardingContinueButton({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 20,
-    marginTop: 4,
-    width: '100%',
-  },
-  button: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 16,
-    height: 52,
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    elevation: 2,
-    width: '100%',
-  },
-  buttonPressed: {
-    backgroundColor: '#F5BE18',
-    transform: [{ scale: 0.99 }],
-  },
-  buttonDisabled: {
-    backgroundColor: '#EBE7DC',
-    elevation: 0,
-    shadowOpacity: 0,
-  },
-  contentRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-  },
-  buttonText: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: -0.2,
-  },
-  buttonTextDisabled: {
-    color: '#9CA3AF',
-  },
-  arrowIcon: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '800',
-    marginLeft: 8,
-  },
-  arrowIconDisabled: {
-    color: '#9CA3AF',
-  },
-});
 
 export default OnboardingContinueButton;

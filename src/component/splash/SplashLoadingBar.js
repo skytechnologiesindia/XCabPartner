@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -36,43 +35,47 @@ function SplashLoadingBar({
   });
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 14,
+      }}
+    >
       {/* 1. Progress Bar Track */}
-      <View style={styles.track}>
-        <Animated.View style={[styles.fill, { width: fillWidth }]} />
+      <View
+        style={{
+          backgroundColor: '#ECEAE2',
+          borderRadius: 2.5,
+          height: 4.5,
+          overflow: 'hidden',
+          width: TRACK_WIDTH,
+        }}
+      >
+        <Animated.View
+          style={{
+            backgroundColor: '#FFC928',
+            borderRadius: 2.5,
+            height: '100%',
+            width: fillWidth,
+          }}
+        />
       </View>
 
       {/* 2. Status Label */}
-      <Text style={styles.loadingText}>Loading...</Text>
+      <Text
+        style={{
+          color: '#7A828A',
+          fontSize: 12,
+          fontWeight: '500',
+          letterSpacing: 0.2,
+          marginTop: 8,
+        }}
+      >
+        Loading...
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 14,
-  },
-  track: {
-    backgroundColor: '#ECEAE2',
-    borderRadius: 2.5,
-    height: 4.5,
-    overflow: 'hidden',
-    width: TRACK_WIDTH,
-  },
-  fill: {
-    backgroundColor: '#FFC928',
-    borderRadius: 2.5,
-    height: '100%',
-  },
-  loadingText: {
-    color: '#7A828A',
-    fontSize: 12,
-    fontWeight: '500',
-    letterSpacing: 0.2,
-    marginTop: 8,
-  },
-});
 
 export default SplashLoadingBar;

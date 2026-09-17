@@ -4,7 +4,6 @@ import {
   Platform,
   ScrollView,
   StatusBar,
-  StyleSheet,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -118,7 +117,12 @@ function MobileVerificationScreen({
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
 
   return (
-    <View style={[styles.container, { paddingTop: safeTopPadding }]}>
+    <View
+      style={{
+        backgroundColor: '#F7F5EF',
+        flex: 1,
+        paddingTop: safeTopPadding,
+      }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
@@ -138,8 +142,16 @@ function MobileVerificationScreen({
       />
 
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{
+          backgroundColor: '#F7F5EF',
+          flex: 1,
+        }}
+        contentContainerStyle={{
+          backgroundColor: '#F7F5EF',
+          flexGrow: 1,
+          justifyContent: 'space-between',
+          paddingTop: 10,
+        }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
@@ -185,22 +197,5 @@ function MobileVerificationScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scrollContent: {
-    backgroundColor: '#F7F5EF',
-    flexGrow: 1,
-    justifyContent: 'space-between',
-    paddingTop: 10,
-  },
-});
 
 export default MobileVerificationScreen;
