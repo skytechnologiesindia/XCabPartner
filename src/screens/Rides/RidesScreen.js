@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -18,7 +17,7 @@ import {
 /**
  * RidesScreen
  * Displays driver ride history grouped by date with filtering capabilities (All, Completed, Cancelled).
- * Reuses the global header above and global bottom navigation below.
+ * Reuses the global bottom navigation below.
  */
 function RidesScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
@@ -34,16 +33,44 @@ function RidesScreen() {
   }, [activeFilter]);
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+    <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
+      {/* Fixed Top Header (Non-scrollable) */}
+      <View
+        style={{
+          backgroundColor: '#F7F5EF',
+          borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+          borderBottomWidth: 1,
+          elevation: 2,
+          paddingBottom: 10,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+          zIndex: 10,
+        }}
       >
         {/* 1. Page Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Rides</Text>
-          <Text style={styles.subtitleText}>
+        <View style={{ marginBottom: 12 }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 30,
+              fontWeight: '800',
+              letterSpacing: -0.6,
+            }}
+          >
+            Rides
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 14,
+              fontWeight: '400',
+              marginTop: 4,
+            }}
+          >
             View and manage all your rides
           </Text>
         </View>
@@ -54,25 +81,93 @@ function RidesScreen() {
           onSelectFilter={setActiveFilter}
           counts={counts}
         />
+      </View>
 
+      {/* Scrollable Rides Content */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 110,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 3. Grouped Ride List */}
         {groupedRides.length === 0 ? (
-          <View style={styles.emptyStateContainer}>
-            <View style={styles.emptyIconCircle}>
-              <Text style={styles.emptyIcon}>🚗</Text>
+          <View
+            style={{
+              alignItems: 'center',
+              justifyContent: 'center',
+              paddingHorizontal: 24,
+              paddingVertical: 48,
+            }}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#EBE7DC',
+                borderRadius: 32,
+                height: 64,
+                justifyContent: 'center',
+                marginBottom: 14,
+                width: 64,
+              }}
+            >
+              <Text style={{ fontSize: 28 }}>🚗</Text>
             </View>
-            <Text style={styles.emptyTitle}>No rides found</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 17,
+                fontWeight: '700',
+                marginBottom: 6,
+              }}
+            >
+              No rides found
+            </Text>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 13,
+                textAlign: 'center',
+              }}
+            >
               You don&apos;t have any rides under the &quot;{activeFilter}&quot; filter.
             </Text>
           </View>
         ) : (
           groupedRides.map(group => (
-            <View key={group.dateGroup} style={styles.dateGroupContainer}>
+            <View key={group.dateGroup} style={{ marginBottom: 10 }}>
               {/* Date Header: e.g. "Today" | "18 Sep 2025" */}
-              <View style={styles.dateHeaderRow}>
-                <Text style={styles.dateGroupTitle}>{group.dateGroup}</Text>
-                <Text style={styles.dateText}>{group.date}</Text>
+              <View
+                style={{
+                  alignItems: 'center',
+                  flexDirection: 'row',
+                  justifyContent: 'space-between',
+                  marginBottom: 12,
+                  marginTop: 4,
+                }}
+              >
+                <Text
+                  style={{
+                    color: '#17191C',
+                    fontSize: 16,
+                    fontWeight: '700',
+                    letterSpacing: -0.2,
+                  }}
+                >
+                  {group.dateGroup}
+                </Text>
+                <Text
+                  style={{
+                    color: '#687078',
+                    fontSize: 13,
+                    fontWeight: '500',
+                  }}
+                >
+                  {group.date}
+                </Text>
               </View>
 
               {/* Ride Cards in this group */}
@@ -97,85 +192,5 @@ function RidesScreen() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 110,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  titleSection: {
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-  },
-  dateGroupContainer: {
-    marginBottom: 10,
-  },
-  dateHeaderRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 12,
-    marginTop: 4,
-  },
-  dateGroupTitle: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-  },
-  dateText: {
-    color: '#687078',
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  emptyStateContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 48,
-  },
-  emptyIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#EBE7DC',
-    borderRadius: 32,
-    height: 64,
-    justifyContent: 'center',
-    marginBottom: 14,
-    width: 64,
-  },
-  emptyIcon: {
-    fontSize: 28,
-  },
-  emptyTitle: {
-    color: '#17191C',
-    fontSize: 17,
-    fontWeight: '700',
-    marginBottom: 6,
-  },
-  emptySubtitle: {
-    color: '#687078',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-});
 
 export default RidesScreen;

@@ -14,7 +14,7 @@ import {
   VehicleCard,
   documentsData as initialDocumentsData,
   vehicleData as initialVehicleData,
-} from '../../component/vehicleDocuments';
+} from '../../../component/vehicleDocuments';
 
 /**
  * VehicleDocumentsScreen

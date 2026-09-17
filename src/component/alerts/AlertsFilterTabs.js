@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import globalStyles from '../../assets/styles/styles';
 
 const TABS = [
   { key: 'all', label: 'All' },
@@ -13,7 +14,7 @@ const TABS = [
  */
 function AlertsFilterTabs({ activeFilter = 'all', onSelectFilter }) {
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, globalStyles.mb4, globalStyles.p4]}>
       {TABS.map(tab => {
         const isActive = activeFilter === tab.key;
 
@@ -33,6 +34,7 @@ function AlertsFilterTabs({ activeFilter = 'all', onSelectFilter }) {
             <Text
               style={[
                 styles.tabLabel,
+                globalStyles.ts13,
                 isActive ? styles.tabLabelActive : styles.tabLabelInactive,
               ]}
             >
@@ -50,8 +52,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#EBE7DC',
     borderRadius: 24,
     flexDirection: 'row',
-    marginBottom: 16,
-    padding: 4,
     width: '100%',
   },
   tabItem: {
@@ -73,7 +73,6 @@ const styles = StyleSheet.create({
     opacity: 0.85,
   },
   tabLabel: {
-    fontSize: 13,
     letterSpacing: -0.1,
   },
   tabLabelActive: {

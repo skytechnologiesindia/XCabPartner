@@ -36,14 +36,16 @@ function ProfileCard({ profile, onEditAvatar, onPressCard, onViewVehicle }) {
             style={styles.avatarImage}
             resizeMode="cover"
           />
-          <Pressable
-            style={styles.editBadge}
-            onPress={onEditAvatar || onPressCard}
-            accessibilityRole="button"
-            accessibilityLabel="Edit profile picture"
-          >
-            <Text style={styles.pencilIcon}>✎</Text>
-          </Pressable>
+          {onEditAvatar ? (
+            <Pressable
+              style={styles.editBadge}
+              onPress={onEditAvatar}
+              accessibilityRole="button"
+              accessibilityLabel="Edit profile picture"
+            >
+              <Text style={styles.pencilIcon}>✎</Text>
+            </Pressable>
+          ) : null}
         </View>
 
         {/* Info Column */}

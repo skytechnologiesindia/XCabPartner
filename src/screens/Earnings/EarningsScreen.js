@@ -3,11 +3,11 @@ import {
   Image,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
 import { icons } from '../../assets/icons';
+import styles from '../../assets/styles/styles';
 import {
   EarningsPeriodSelector,
   EarningsStats,
@@ -40,17 +40,54 @@ function EarningsScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+    <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
+      {/* Fixed Top Header (Non-scrollable) */}
+      <View
+        style={[
+          styles.pdb12,
+          styles.pdh16,
+          styles.pdt12,
+          {
+            backgroundColor: '#F7F5EF',
+            borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+            borderBottomWidth: 1,
+            elevation: 2,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.04,
+            shadowRadius: 3,
+            zIndex: 10,
+          },
+        ]}
       >
-        {/* 1. Page Title & Period Selector */}
-        <View style={styles.headerSection}>
-          <View style={styles.titleCol}>
-            <Text style={styles.titleText}>Earnings</Text>
-            <Text style={styles.subtitleText}>
+        <View
+          style={{
+            alignItems: 'center',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+          }}
+        >
+          <View style={[styles.mr12, { flex: 1 }]}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 30,
+                fontWeight: '800',
+                letterSpacing: -0.6,
+              }}
+            >
+              Earnings
+            </Text>
+            <Text
+              style={[
+                styles.ts14,
+                styles.mt4,
+                {
+                  color: '#687078',
+                  fontWeight: '400',
+                },
+              ]}
+            >
               Track your income and transactions
             </Text>
           </View>
@@ -60,7 +97,18 @@ function EarningsScreen({ navigation }) {
             onSelectPeriod={setPeriod}
           />
         </View>
+      </View>
 
+      {/* Scrollable Earnings Content */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 110,
+          paddingHorizontal: 16,
+          paddingTop: 14,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 2. Total Earnings Hero Card with Embedded Chart */}
         <EarningsSummaryCard
           total={currentPeriodData.total}
@@ -90,8 +138,21 @@ function EarningsScreen({ navigation }) {
         {/* 5. Primary Action Button: View Transactions */}
         <Pressable
           style={({ pressed }) => [
-            styles.primaryButton,
-            pressed && styles.primaryButtonPressed,
+            styles.pdh16,
+            styles.mb16,
+            {
+              alignItems: 'center',
+              backgroundColor: pressed ? '#E5B420' : '#FFC928',
+              borderRadius: 14,
+              flexDirection: 'row',
+              height: 48,
+              justifyContent: 'center',
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.06,
+              shadowRadius: 4,
+              elevation: 2,
+            },
           ]}
           onPress={handleViewAllTransactions}
           accessibilityRole="button"
@@ -99,12 +160,40 @@ function EarningsScreen({ navigation }) {
         >
           <Image
             source={icons.statWallet}
-            style={styles.buttonWalletIcon}
+            style={[
+              styles.mr8,
+              {
+                height: 18,
+                width: 18,
+              },
+            ]}
             tintColor="#17191C"
             resizeMode="contain"
           />
-          <Text style={styles.primaryButtonText}>View Transactions</Text>
-          <Text style={styles.buttonArrow}>→</Text>
+          <Text
+            style={[
+              styles.ts15,
+              {
+                color: '#17191C',
+                fontWeight: '800',
+                letterSpacing: -0.1,
+              },
+            ]}
+          >
+            View Transactions
+          </Text>
+          <Text
+            style={[
+              styles.ts16,
+              styles.ml8,
+              {
+                color: '#17191C',
+                fontWeight: '800',
+              },
+            ]}
+          >
+            →
+          </Text>
         </Pressable>
 
         {/* 6. Recent Transactions Section */}
@@ -126,77 +215,5 @@ function EarningsScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 110,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  headerSection: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  titleCol: {
-    flex: 1,
-    marginRight: 10,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-  },
-  primaryButton: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 14,
-    flexDirection: 'row',
-    height: 48,
-    justifyContent: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  primaryButtonPressed: {
-    backgroundColor: '#E5B420',
-  },
-  buttonWalletIcon: {
-    height: 18,
-    marginRight: 8,
-    width: 18,
-  },
-  primaryButtonText: {
-    color: '#17191C',
-    fontSize: 15,
-    fontWeight: '800',
-    letterSpacing: -0.1,
-  },
-  buttonArrow: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '800',
-    marginLeft: 8,
-  },
-});
 
 export default EarningsScreen;

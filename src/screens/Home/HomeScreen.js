@@ -1,5 +1,5 @@
-import React, {useState} from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 import Header from '../../component/Header/Header';
 import {
   AtPickupSheet,
@@ -11,7 +11,7 @@ import {
   ScanningBar,
   StatsRow,
 } from '../../component/home';
-import {colors} from '../../assets/colors/colors';
+import { colors } from '../../assets/colors/colors';
 
 function HomeScreen({
   tripStage = 'scanning',
@@ -52,7 +52,7 @@ function HomeScreen({
         contentContainerStyle={[
           styles.scrollContent,
           (tripStage === 'pickup' || tripStage === 'onTrip') &&
-            styles.scrollContentPickup,
+          styles.scrollContentPickup,
         ]}
         showsVerticalScrollIndicator={false}
         bounces={true}>
@@ -81,12 +81,11 @@ function HomeScreen({
 
       {/* Active Trip Overlays (Anchored directly above footer) */}
       {tripStage === 'request' ? (
-        <View style={styles.sheetOverlay}>
-          <RideRequestSheet
-            onAccept={onAcceptRequest}
-            onDecline={onDeclineRequest}
-          />
-        </View>
+        <RideRequestSheet
+          visible={tripStage === 'request'}
+          onAccept={onAcceptRequest}
+          onDecline={onDeclineRequest}
+        />
       ) : null}
       {tripStage === 'pickup' ? (
         <View style={styles.sheetOverlay}>

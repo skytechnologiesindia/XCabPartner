@@ -1,16 +1,18 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   Animated,
   Easing,
   Image,
+  Modal,
   Platform,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import {colors} from '../../assets/colors/colors';
-import {icons} from '../../assets/icons';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { colors } from '../../assets/colors/colors';
+import { icons } from '../../assets/icons';
 
 const SAMPLE_REQUESTS = [
   {
@@ -52,11 +54,13 @@ const SAMPLE_REQUESTS = [
 ];
 
 function RideRequestSheet({
+  visible = true,
   onAccept,
   onDecline,
   onCallRider,
   onMessageRider,
 }) {
+  const insets = useSafeAreaInsets();
   const [requestIndex, setRequestIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(5);
 
@@ -99,6 +103,11 @@ function RideRequestSheet({
 
   // Start 5-second countdown on mount or when requestIndex changes
   useEffect(() => {
+    if (!visible) {
+      clearTimers();
+      return;
+    }
+
     clearTimers();
     setSecondsLeft(5);
     progressAnim.setValue(1);
@@ -122,7 +131,7 @@ function RideRequestSheet({
     }, 5000);
 
     return () => clearTimers();
-  }, [requestIndex, clearTimers, goToNextRequest, progressAnim]);
+  }, [visible, requestIndex, clearTimers, goToNextRequest, progressAnim]);
 
   const handleAccept = () => {
     clearTimers();
@@ -143,9 +152,32 @@ function RideRequestSheet({
     outputRange: ['0%', '100%'],
   });
 
+  const bottomPadding = (insets?.bottom || 0) > 0 ? insets.bottom + 8 : 16;
+  const sheetContainerStyle = useMemo(
+    () => [styles.sheetContainer, { paddingBottom: bottomPadding }],
+    [bottomPadding],
+  );
+
+  if (!visible) {
+    return null;
+  }
+
   return (
-    <View style={styles.sheetContainer}>
-      <Animated.View style={{opacity: fadeAnim}}>
+    <Modal
+      transparent={true}
+      visible={visible}
+      animationType="fade"
+      statusBarTranslucent={true}
+      onRequestClose={handleDecline}>
+      <View style={styles.backdrop}>
+        <Pressable
+          style={styles.backdropDismissArea}
+          onPress={handleDecline}
+          accessibilityRole="button"
+          accessibilityLabel="Dismiss ride request"
+        />
+        <View style={sheetContainerStyle}>
+          <Animated.View style={{ opacity: fadeAnim }}>
         {/* Header Row: Badge, Title & Rider Contact Buttons */}
         <View style={styles.headerRow}>
           <View style={styles.headerLeft}>
@@ -256,7 +288,7 @@ function RideRequestSheet({
 
       {/* Primary Action: Accept ride with 5-second countdown progress animation */}
       <Pressable
-        style={({pressed}) => [
+        style={({ pressed }) => [
           styles.acceptButton,
           pressed && styles.acceptButtonPressed,
         ]}
@@ -286,7 +318,7 @@ function RideRequestSheet({
 
       {/* Secondary Action: Decline */}
       <Pressable
-        style={({pressed}) => [
+        style={({ pressed }) => [
           styles.declineButton,
           pressed && styles.declineButtonPressed,
         ]}
@@ -305,6 +337,8 @@ function RideRequestSheet({
         </Text>
       </View>
     </View>
+  </View>
+</Modal>
   );
 }
 
@@ -314,20 +348,27 @@ const fontSans = Platform.select({
 });
 
 const styles = StyleSheet.create({
+  backdrop: {
+    backgroundColor: 'rgba(17, 19, 21, 0.65)',
+    flex: 1,
+    justifyContent: 'flex-end',
+  },
+  backdropDismissArea: {
+    flex: 1,
+  },
   sheetContainer: {
     backgroundColor: '#FAF8F1',
     borderColor: '#ECE5D6',
     borderTopLeftRadius: 28,
     borderTopRightRadius: 28,
     borderTopWidth: 1,
-    paddingBottom: 14,
     paddingHorizontal: 16,
     paddingTop: 16,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: -4},
-    shadowOpacity: 0.08,
-    shadowRadius: 10,
-    elevation: 8,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 16,
+    elevation: 12,
     width: '100%',
   },
   headerRow: {
@@ -379,7 +420,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     width: 44,
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.06,
     shadowRadius: 3,
     elevation: 2,
@@ -550,7 +591,7 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     position: 'relative',
     shadowColor: '#000',
-    shadowOffset: {width: 0, height: 1},
+    shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,
     shadowRadius: 2,
     elevation: 2,

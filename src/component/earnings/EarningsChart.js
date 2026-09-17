@@ -1,12 +1,13 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import styles from '../../assets/styles/styles';
 
 const MAX_BAR_HEIGHT = 76;
 const MIN_BAR_HEIGHT = 16;
 
 /**
  * EarningsChart
- * Data-driven bar chart receiving dynamic data array.
+ * Data-driven bar chart receiving dynamic data array with utility styles.
  * Highlights the highest day in bright XCAB Yellow.
  */
 function EarningsChart({ data = [] }) {
@@ -16,7 +17,19 @@ function EarningsChart({ data = [] }) {
   const maxValue = Math.max(...data.map(item => item.value || 0), 1);
 
   return (
-    <View style={styles.chartContainer}>
+    <View
+      style={[
+        styles.mt20,
+        {
+          alignItems: 'flex-end',
+          flexDirection: 'row',
+          height: 128,
+          justifyContent: 'space-between',
+          paddingHorizontal: 2,
+          width: '100%',
+        },
+      ]}
+    >
       {data.map((item, index) => {
         const itemVal = item.value || 0;
         const barHeight = Math.max(
@@ -26,12 +39,25 @@ function EarningsChart({ data = [] }) {
         const isHighest = item.isHighest || itemVal === maxValue;
 
         return (
-          <View key={item.day || index} style={styles.columnContainer}>
+          <View
+            key={item.day || index}
+            style={{
+              alignItems: 'center',
+              flex: 1,
+              height: '100%',
+              justifyContent: 'flex-end',
+            }}
+          >
             {/* Amount Label Above Bar */}
             <Text
               style={[
-                styles.amountLabel,
-                isHighest && styles.amountLabelHighlight,
+                styles.mb8,
+                styles.ts10,
+                {
+                  color: isHighest ? '#FFFFFF' : '#D2D6DC',
+                  fontWeight: isHighest ? '700' : '600',
+                  textAlign: 'center',
+                },
               ]}
               numberOfLines={1}
             >
@@ -39,76 +65,44 @@ function EarningsChart({ data = [] }) {
             </Text>
 
             {/* Bar Slot */}
-            <View style={styles.barSlot}>
+            <View
+              style={{
+                alignItems: 'center',
+                height: MAX_BAR_HEIGHT,
+                justifyContent: 'flex-end',
+                width: '100%',
+              }}
+            >
               <View
-                style={[
-                  styles.bar,
-                  { height: barHeight },
-                  isHighest ? styles.barHighest : styles.barNormal,
-                ]}
+                style={{
+                  backgroundColor: isHighest ? '#FFC928' : '#4E5259',
+                  borderRadius: 4,
+                  height: barHeight,
+                  maxWidth: 24,
+                  width: '75%',
+                }}
               />
             </View>
 
             {/* Day Label Below Bar */}
-            <Text style={styles.dayLabel}>{item.day}</Text>
+            <Text
+              style={[
+                styles.ts11,
+                styles.mt8,
+                {
+                  color: '#8E9398',
+                  fontWeight: '600',
+                  textAlign: 'center',
+                },
+              ]}
+            >
+              {item.day}
+            </Text>
           </View>
         );
       })}
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  chartContainer: {
-    alignItems: 'flex-end',
-    flexDirection: 'row',
-    height: 128,
-    justifyContent: 'space-between',
-    marginTop: 18,
-    paddingHorizontal: 2,
-    width: '100%',
-  },
-  columnContainer: {
-    alignItems: 'center',
-    flex: 1,
-    height: '100%',
-    justifyContent: 'flex-end',
-  },
-  amountLabel: {
-    color: '#D2D6DC',
-    fontSize: 9.5,
-    fontWeight: '600',
-    marginBottom: 6,
-    textAlign: 'center',
-  },
-  amountLabelHighlight: {
-    color: '#FFFFFF',
-    fontWeight: '700',
-  },
-  barSlot: {
-    alignItems: 'center',
-    height: MAX_BAR_HEIGHT,
-    justifyContent: 'flex-end',
-    width: '100%',
-  },
-  bar: {
-    borderRadius: 4,
-    maxWidth: 24,
-    width: '75%',
-  },
-  barHighest: {
-    backgroundColor: '#FFC928',
-  },
-  barNormal: {
-    backgroundColor: '#4E5259',
-  },
-  dayLabel: {
-    color: '#8E9398',
-    fontSize: 10.5,
-    fontWeight: '600',
-    marginTop: 8,
-    textAlign: 'center',
-  },
-});
 
 export default EarningsChart;

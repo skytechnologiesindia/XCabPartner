@@ -7,32 +7,130 @@ import {
 } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import BottomTabNavigator from './src/navigation/BottomTabNavigator';
-import EditProfileScreen from './src/screens/EditProfile/EditProfileScreen';
 import EnterPinScreen from './src/screens/EnterPin/EnterPinScreen';
-import SettingsScreen from './src/screens/Settings/SettingsScreen';
-import VehicleDocumentsScreen from './src/screens/VehicleDocuments/VehicleDocumentsScreen';
+import {
+  EmergencyContactScreen,
+  HelpSafetyScreen,
+  PersonalDetailsScreen,
+  SettingsScreen,
+  VehicleDocumentsScreen,
+} from './src/screens/Profile';
+import SplashScreen from './src/screens/Splash/SplashScreen';
+import OnboardingScreen from './src/screens/Onboarding/OnboardingScreen';
+import MobileVerificationScreen from './src/screens/MobileVerification/MobileVerificationScreen';
+import PersonalDetailsOnboardingScreen from './src/screens/PersonalDetailsOnboarding/PersonalDetailsOnboardingScreen';
+import VehicleDetailsScreen from './src/screens/VehicleDetails/VehicleDetailsScreen';
+import VehicleDocumentsOnboardingScreen from './src/screens/VehicleDocumentsOnboarding/VehicleDocumentsOnboardingScreen';
+import VehicleDocumentsReviewScreen from './src/screens/VehicleDocumentsReview/VehicleDocumentsReviewScreen';
+import VehicleDocumentsSubmittedScreen from './src/screens/VehicleDocumentsSubmitted/VehicleDocumentsSubmittedScreen';
+import { getOnboardingCompleted } from './src/component/onboarding';
 import { colors } from './src/assets/colors/colors';
 
 const paper = colors.ivory50 || '#F7F5EE';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
+  const [showSplash, setShowSplash] = useState(true);
+  const [showOnboarding, setShowOnboarding] = useState(!getOnboardingCompleted());
+  const [registrationStage, setRegistrationStage] = useState('phone'); // 'phone' | 'personalDetails' | 'vehicleDetails' | 'vehicleDocuments' | 'vehicleDocumentsReview' | 'vehicleDocumentsSubmitted' | 'emergencyContact' | 'complete'
+  const [uploadedDocs, setUploadedDocs] = useState(null);
+
+  const handleSplashFinish = () => {
+    setShowSplash(false);
+  };
+
+  const handleOnboardingFinish = () => {
+    setShowOnboarding(false);
+  };
+
+  const handleAuthSuccess = () => {
+    setRegistrationStage('personalDetails');
+  };
+
+  const handlePersonalDetailsSuccess = () => {
+    setRegistrationStage('vehicleDetails');
+  };
+
+  const handleVehicleDetailsSuccess = () => {
+    setRegistrationStage('vehicleDocuments');
+  };
+
+  const handleVehicleDocumentsSuccess = docs => {
+    setUploadedDocs(docs);
+    setRegistrationStage('vehicleDocumentsReview');
+  };
+
+  const handleReviewSuccess = docs => {
+    setUploadedDocs(docs);
+    setRegistrationStage('vehicleDocumentsSubmitted');
+  };
+
+  const handleSubmittedSuccess = () => {
+    setRegistrationStage('emergencyContact');
+  };
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
       <NavigationContainer>
-        <DriverDesk />
+        {showSplash ? (
+          <SplashScreen onFinish={handleSplashFinish} />
+        ) : showOnboarding ? (
+          <OnboardingScreen onComplete={handleOnboardingFinish} />
+        ) : registrationStage === 'phone' ? (
+          <MobileVerificationScreen
+            onBack={() => setShowOnboarding(true)}
+            onSuccess={handleAuthSuccess}
+          />
+        ) : registrationStage === 'personalDetails' ? (
+          <PersonalDetailsOnboardingScreen
+            onBack={() => setRegistrationStage('phone')}
+            onContinue={handlePersonalDetailsSuccess}
+          />
+        ) : registrationStage === 'vehicleDetails' ? (
+          <VehicleDetailsScreen
+            onBack={() => setRegistrationStage('personalDetails')}
+            onContinue={handleVehicleDetailsSuccess}
+          />
+        ) : registrationStage === 'vehicleDocuments' ? (
+          <VehicleDocumentsOnboardingScreen
+            onBack={() => setRegistrationStage('vehicleDetails')}
+            onContinue={handleVehicleDocumentsSuccess}
+          />
+        ) : registrationStage === 'vehicleDocumentsReview' ? (
+          <VehicleDocumentsReviewScreen
+            documents={uploadedDocs}
+            onBack={() => setRegistrationStage('vehicleDocuments')}
+            onContinue={handleReviewSuccess}
+          />
+        ) : registrationStage === 'vehicleDocumentsSubmitted' ? (
+          <VehicleDocumentsSubmittedScreen
+            onBack={() => setRegistrationStage('vehicleDocumentsReview')}
+            onContinue={handleSubmittedSuccess}
+          />
+        ) : registrationStage === 'emergencyContact' ? (
+          <EmergencyContactScreen
+            showSkip={true}
+            onBack={() => setRegistrationStage('vehicleDocumentsSubmitted')}
+            onSave={() => setRegistrationStage('complete')}
+            onContinue={() => setRegistrationStage('complete')}
+            onSkip={() => setRegistrationStage('complete')}
+          />
+        ) : (
+          <DriverDesk />
+        )}
       </NavigationContainer>
     </SafeAreaProvider>
   );
 }
 
 function DriverDesk() {
-  const [tripStage, setTripStage] = useState('onTrip');
+  const [tripStage, setTripStage] = useState('scanning');
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [editProfileOpen, setEditProfileOpen] = useState(false);
   const [vehicleDocumentsOpen, setVehicleDocumentsOpen] = useState(false);
+  const [personalDetailsOpen, setPersonalDetailsOpen] = useState(false);
+  const [emergencyContactOpen, setEmergencyContactOpen] = useState(false);
+  const [helpSafetyOpen, setHelpSafetyOpen] = useState(false);
 
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
@@ -40,29 +138,50 @@ function DriverDesk() {
         <BottomTabNavigator
           tripStage={tripStage}
           onTripChange={setTripStage}
-          onEditProfile={() => setEditProfileOpen(true)}
           onOpenSettings={() => setSettingsOpen(true)}
           onOpenVehicleDocuments={() => setVehicleDocumentsOpen(true)}
+          onOpenPersonalDetails={() => setPersonalDetailsOpen(true)}
+          onOpenEmergencyContact={() => setEmergencyContactOpen(true)}
+          onOpenHelpSafety={() => setHelpSafetyOpen(true)}
         />
-        {editProfileOpen ? (
+        {personalDetailsOpen ? (
           <View style={StyleSheet.absoluteFill}>
-            <EditProfileScreen
-              onBack={() => setEditProfileOpen(false)}
-              onCancel={() => setEditProfileOpen(false)}
-              onSave={() => setEditProfileOpen(false)}
+            <PersonalDetailsScreen
+              onBack={() => setPersonalDetailsOpen(false)}
+            />
+          </View>
+        ) : null}
+        {emergencyContactOpen ? (
+          <View style={StyleSheet.absoluteFill}>
+            <EmergencyContactScreen
+              onBack={() => setEmergencyContactOpen(false)}
+            />
+          </View>
+        ) : null}
+        {helpSafetyOpen ? (
+          <View style={StyleSheet.absoluteFill}>
+            <HelpSafetyScreen
+              onBack={() => setHelpSafetyOpen(false)}
+              onOpenEmergencyContact={() => {
+                setHelpSafetyOpen(false);
+                setEmergencyContactOpen(true);
+              }}
             />
           </View>
         ) : null}
         {settingsOpen ? (
           <View style={StyleSheet.absoluteFill}>
-            <SettingsScreen onLogout={() => setSettingsOpen(false)} />
+            <SettingsScreen
+              onBack={() => setSettingsOpen(false)}
+              onLogout={() => setSettingsOpen(false)}
+              onDeleteAccount={() => setSettingsOpen(false)}
+            />
           </View>
         ) : null}
         {vehicleDocumentsOpen ? (
           <View style={StyleSheet.absoluteFill}>
             <VehicleDocumentsScreen
               onBack={() => setVehicleDocumentsOpen(false)}
-              onUpdateVehicle={() => setEditProfileOpen(true)}
             />
           </View>
         ) : null}

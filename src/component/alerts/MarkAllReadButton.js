@@ -1,5 +1,6 @@
 import React from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
+import globalStyles from '../../assets/styles/styles';
 
 /**
  * MarkAllReadButton
@@ -10,6 +11,8 @@ function MarkAllReadButton({ onPress }) {
     <Pressable
       style={({ pressed }) => [
         styles.button,
+        globalStyles.mt8,
+        globalStyles.pdh16,
         pressed && styles.buttonPressed,
       ]}
       onPress={onPress}
@@ -20,7 +23,9 @@ function MarkAllReadButton({ onPress }) {
       <MegaphoneIcon />
 
       {/* Button Text */}
-      <Text style={styles.buttonText}>Mark all as read</Text>
+      <Text style={[styles.buttonText, globalStyles.ts15, globalStyles.ml8]}>
+        Mark all as read
+      </Text>
     </Pressable>
   );
 }
@@ -51,8 +56,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     justifyContent: 'center',
-    marginTop: 6,
-    paddingHorizontal: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.04,
@@ -66,10 +69,8 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: '#17191C',
-    fontSize: 14.5,
     fontWeight: '700',
     letterSpacing: -0.1,
-    marginLeft: 8,
   },
   iconContainer: {
     height: 18,

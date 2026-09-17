@@ -1,7 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import {
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -59,21 +58,68 @@ function AlertsScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
-        showsVerticalScrollIndicator={false}
+    <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
+      {/* Fixed Top Header (Non-scrollable) */}
+      <View
+        style={{
+          backgroundColor: '#F7F5EF',
+          borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+          borderBottomWidth: 1,
+          elevation: 2,
+          paddingBottom: 10,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+          zIndex: 10,
+        }}
       >
         {/* 1. Page Title & Unread Count Badge */}
-        <View style={styles.titleSection}>
-          <View style={styles.titleRow}>
-            <Text style={styles.titleText}>Alerts</Text>
-            <View style={styles.badgePill}>
-              <Text style={styles.badgeText}>{unreadCount}</Text>
+        <View style={{ marginBottom: 12 }}>
+          <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 30,
+                fontWeight: '800',
+                letterSpacing: -0.6,
+              }}
+            >
+              Alerts
+            </Text>
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#FFC928',
+                borderRadius: 8,
+                justifyContent: 'center',
+                marginLeft: 10,
+                paddingHorizontal: 8,
+                paddingVertical: 3,
+              }}
+            >
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 13,
+                  fontWeight: '800',
+                  letterSpacing: 0.2,
+                }}
+              >
+                {unreadCount}
+              </Text>
             </View>
           </View>
-          <Text style={styles.subtitleText}>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 14,
+              fontWeight: '400',
+              marginTop: 4,
+            }}
+          >
             Stay updated with important notifications
           </Text>
         </View>
@@ -83,10 +129,21 @@ function AlertsScreen({ navigation }) {
           activeFilter={activeFilter}
           onSelectFilter={setActiveFilter}
         />
+      </View>
 
+      {/* Scrollable Alerts Content */}
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 110,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
         {/* 3. Alert Cards List */}
         {visibleAlerts.length > 0 ? (
-          <View style={styles.listContainer}>
+          <View style={{ marginBottom: 8 }}>
             {visibleAlerts.map(alert => (
               <AlertCard
                 key={alert.id}
@@ -96,12 +153,49 @@ function AlertsScreen({ navigation }) {
             ))}
           </View>
         ) : (
-          <View style={styles.emptyContainer}>
-            <View style={styles.emptyIconCircle}>
-              <Text style={styles.emptyIcon}>🔔</Text>
+          <View
+            style={{
+              alignItems: 'center',
+              backgroundColor: '#FFFFFF',
+              borderColor: '#E6E2D8',
+              borderRadius: 20,
+              borderWidth: 1,
+              justifyContent: 'center',
+              marginVertical: 12,
+              paddingHorizontal: 24,
+              paddingVertical: 40,
+            }}
+          >
+            <View
+              style={{
+                alignItems: 'center',
+                backgroundColor: '#F4F2EB',
+                borderRadius: 28,
+                height: 56,
+                justifyContent: 'center',
+                marginBottom: 12,
+                width: 56,
+              }}
+            >
+              <Text style={{ fontSize: 24 }}>🔔</Text>
             </View>
-            <Text style={styles.emptyTitle}>No alerts yet</Text>
-            <Text style={styles.emptySubtitle}>
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 16,
+                fontWeight: '700',
+                marginBottom: 4,
+              }}
+            >
+              No alerts yet
+            </Text>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 13,
+                textAlign: 'center',
+              }}
+            >
               You&apos;re all caught up.
             </Text>
           </View>
@@ -115,91 +209,5 @@ function AlertsScreen({ navigation }) {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 110,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  titleSection: {
-    marginBottom: 16,
-  },
-  titleRow: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  badgePill: {
-    alignItems: 'center',
-    backgroundColor: '#FFC928',
-    borderRadius: 8,
-    justifyContent: 'center',
-    marginLeft: 10,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-  },
-  badgeText: {
-    color: '#17191C',
-    fontSize: 13,
-    fontWeight: '800',
-    letterSpacing: 0.2,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-  },
-  listContainer: {
-    marginBottom: 8,
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 20,
-    borderWidth: 1,
-    justifyContent: 'center',
-    marginVertical: 12,
-    paddingHorizontal: 24,
-    paddingVertical: 40,
-  },
-  emptyIconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#F4F2EB',
-    borderRadius: 28,
-    height: 56,
-    justifyContent: 'center',
-    marginBottom: 12,
-    width: 56,
-  },
-  emptyIcon: {
-    fontSize: 24,
-  },
-  emptyTitle: {
-    color: '#17191C',
-    fontSize: 16,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  emptySubtitle: {
-    color: '#687078',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-});
 
 export default AlertsScreen;

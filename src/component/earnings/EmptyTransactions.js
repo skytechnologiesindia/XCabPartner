@@ -1,5 +1,6 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Text, View } from 'react-native';
+import styles from '../../assets/styles/styles';
 
 /**
  * EmptyTransactions
@@ -10,51 +11,61 @@ function EmptyTransactions({
   subtitle = 'Your completed ride earnings will appear here.',
 }) {
   return (
-    <View style={styles.container}>
-      <View style={styles.iconCircle}>
-        <Text style={styles.icon}>💳</Text>
+    <View
+      style={[
+        styles.mt4,
+        styles.pdh20,
+        styles.pdv32,
+        {
+          alignItems: 'center',
+          backgroundColor: '#FFFFFF',
+          borderColor: '#E6E2D8',
+          borderRadius: 16,
+          borderWidth: 1,
+          justifyContent: 'center',
+        },
+      ]}
+    >
+      <View
+        style={[
+          styles.mb12,
+          {
+            alignItems: 'center',
+            backgroundColor: '#F4F2EB',
+            borderRadius: 28,
+            height: 56,
+            justifyContent: 'center',
+            width: 56,
+          },
+        ]}
+      >
+        <Text style={styles.ts24}>💳</Text>
       </View>
-      <Text style={styles.titleText}>{title}</Text>
-      <Text style={styles.subtitleText}>{subtitle}</Text>
+      <Text
+        style={[
+          styles.ts15,
+          styles.mb4,
+          {
+            color: '#17191C',
+            fontWeight: '700',
+          },
+        ]}
+      >
+        {title}
+      </Text>
+      <Text
+        style={[
+          styles.ts12,
+          {
+            color: '#687078',
+            textAlign: 'center',
+          },
+        ]}
+      >
+        {subtitle}
+      </Text>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E6E2D8',
-    borderRadius: 16,
-    borderWidth: 1,
-    justifyContent: 'center',
-    marginTop: 4,
-    paddingHorizontal: 20,
-    paddingVertical: 32,
-  },
-  iconCircle: {
-    alignItems: 'center',
-    backgroundColor: '#F4F2EB',
-    borderRadius: 28,
-    height: 56,
-    justifyContent: 'center',
-    marginBottom: 12,
-    width: 56,
-  },
-  icon: {
-    fontSize: 24,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 15,
-    fontWeight: '700',
-    marginBottom: 4,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 12,
-    textAlign: 'center',
-  },
-});
 
 export default EmptyTransactions;

@@ -114,10 +114,10 @@ const styles = StyleSheet.create({
     borderColor: '#FCA5A5',
     borderRadius: 14,
     borderWidth: 1.5,
-    flex: 1,
     flexDirection: 'row',
     height: 50,
     justifyContent: 'center',
+    width: '100%',
   },
   buttonPressed: {
     backgroundColor: '#FEF2F2',

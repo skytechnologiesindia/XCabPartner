@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import {
+  Platform,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
   ProfileActions,
   ProfileCard,
@@ -21,18 +22,37 @@ import {
  */
 function ProfileScreen({
   navigation,
-  onEditProfile,
   onOpenSettings,
   onOpenVehicleDocuments,
+  onOpenPersonalDetails,
+  onOpenEmergencyContact,
+  onOpenHelpSafety,
   onLogout,
 }) {
+  const insets = useSafeAreaInsets();
   const [profile] = useState(initialProfileData);
 
-  const handleEditProfile = () => {
-    if (onEditProfile) {
-      onEditProfile();
+  const handleOpenPersonalDetails = () => {
+    if (onOpenPersonalDetails) {
+      onOpenPersonalDetails();
     } else if (navigation && navigation.navigate) {
-      navigation.navigate('EditProfile');
+      navigation.navigate('PersonalDetails');
+    }
+  };
+
+  const handleOpenEmergencyContact = () => {
+    if (onOpenEmergencyContact) {
+      onOpenEmergencyContact();
+    } else if (navigation && navigation.navigate) {
+      navigation.navigate('EmergencyContact');
+    }
+  };
+
+  const handleOpenHelpSafety = () => {
+    if (onOpenHelpSafety) {
+      onOpenHelpSafety();
+    } else if (navigation && navigation.navigate) {
+      navigation.navigate('HelpSafety');
     }
   };
 
@@ -46,8 +66,18 @@ function ProfileScreen({
 
   const handleMenuItemPress = item => {
     switch (item.targetScreen) {
-      case 'EditProfile':
-        handleEditProfile();
+      case 'PersonalDetails':
+        handleOpenPersonalDetails();
+        break;
+
+      case 'Emergency':
+      case 'EmergencyContact':
+        handleOpenEmergencyContact();
+        break;
+
+      case 'Help':
+      case 'HelpSafety':
+        handleOpenHelpSafety();
         break;
 
       case 'Vehicle':
@@ -70,10 +100,6 @@ function ProfileScreen({
         break;
 
       default:
-        // Default to EditProfile if applicable
-        if (onEditProfile) {
-          onEditProfile();
-        }
         break;
     }
   };
@@ -86,26 +112,63 @@ function ProfileScreen({
     }
   };
 
+  const topPadding = Platform.OS === 'ios' ? Math.max(insets.top, 12) : 12;
+
   return (
-    <View style={styles.container}>
+    <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
+      {/* Fixed Top Header (Non-scrollable) */}
+      <View
+        style={{
+          backgroundColor: '#F7F5EF',
+          borderBottomColor: 'rgba(0, 0, 0, 0.06)',
+          borderBottomWidth: 1,
+          elevation: 2,
+          paddingBottom: 10,
+          paddingHorizontal: 16,
+          paddingTop: topPadding,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.04,
+          shadowRadius: 3,
+          zIndex: 10,
+        }}
+      >
+        <Text
+          style={{
+            color: '#17191C',
+            fontSize: 30,
+            fontWeight: '800',
+            letterSpacing: -0.6,
+          }}
+        >
+          Profile
+        </Text>
+        <Text
+          style={{
+            color: '#687078',
+            fontSize: 14,
+            fontWeight: '400',
+            marginTop: 4,
+          }}
+        >
+          Manage your account and settings
+        </Text>
+      </View>
+
+      {/* Scrollable Profile Content */}
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 110,
+          paddingHorizontal: 16,
+          paddingTop: 12,
+        }}
         showsVerticalScrollIndicator={false}
       >
-        {/* 1. Page Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Profile</Text>
-          <Text style={styles.subtitleText}>
-            Manage your account and settings
-          </Text>
-        </View>
-
         {/* 2. Driver Identity Hero Card */}
         <ProfileCard
           profile={profile}
-          onEditAvatar={handleEditProfile}
-          onPressCard={handleEditProfile}
+          onPressCard={handleOpenPersonalDetails}
           onViewVehicle={handleViewVehicle}
         />
 
@@ -118,44 +181,13 @@ function ProfileScreen({
           onItemPress={handleMenuItemPress}
         />
 
-        {/* 5. Bottom Actions: Edit Profile & Logout */}
+        {/* 5. Bottom Actions: Logout */}
         <ProfileActions
-          onEditProfile={handleEditProfile}
           onLogout={handleLogout}
         />
       </ScrollView>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 110,
-    paddingHorizontal: 16,
-    paddingTop: 10,
-  },
-  titleSection: {
-    marginBottom: 16,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-  },
-});
 
 export default ProfileScreen;

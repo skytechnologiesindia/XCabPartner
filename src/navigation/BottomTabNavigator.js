@@ -2,7 +2,6 @@ import React, { createContext, useContext } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { colors } from '../assets/colors/colors';
-import Header from '../component/Header/Header';
 import Footer from '../component/Footer/Footer';
 import HomeScreen from '../screens/Home/HomeScreen';
 import RidesScreen from '../screens/Rides/RidesScreen';
@@ -12,10 +11,12 @@ import ProfileScreen from '../screens/Profile/ProfileScreen';
 
 const NavigationContext = createContext({
   tripStage: 'scanning',
-  onTripChange: () => {},
-  onEditProfile: () => {},
-  onOpenSettings: () => {},
-  onOpenVehicleDocuments: () => {},
+  onTripChange: () => { },
+  onOpenSettings: () => { },
+  onOpenVehicleDocuments: () => { },
+  onOpenPersonalDetails: () => { },
+  onOpenEmergencyContact: () => { },
+  onOpenHelpSafety: () => { },
 });
 
 const renderCustomTabBar = props => <Footer {...props} hidePinBar={true} />;
@@ -35,9 +36,9 @@ function DeskScreenWrapper() {
         onAcceptRequest={() => onTripChange && onTripChange('pickup')}
         onDeclineRequest={() => onTripChange && onTripChange('scanning')}
         onEnterPin={() => onTripChange && onTripChange('enterPin')}
-        onCantFind={() => {}}
+        onCantFind={() => { }}
         onCompleteTrip={() => onTripChange && onTripChange('scanning')}
-        onReportIssue={() => {}}
+        onReportIssue={() => { }}
       />
     </TabScreenContainer>
   );
@@ -46,7 +47,6 @@ function DeskScreenWrapper() {
 function RidesScreenWrapper() {
   return (
     <TabScreenContainer>
-      <Header subtitle="DRIVER CONSOLE" />
       <RidesScreen />
     </TabScreenContainer>
   );
@@ -55,7 +55,6 @@ function RidesScreenWrapper() {
 function EarningsScreenWrapper() {
   return (
     <TabScreenContainer>
-      <Header subtitle="DRIVER CONSOLE" />
       <EarningsScreen />
     </TabScreenContainer>
   );
@@ -64,24 +63,29 @@ function EarningsScreenWrapper() {
 function AlertsScreenWrapper({ navigation }) {
   return (
     <TabScreenContainer>
-      <Header subtitle="DRIVER CONSOLE" />
       <AlertsScreen navigation={navigation} />
     </TabScreenContainer>
   );
 }
 
 function ProfileScreenWrapper({ navigation }) {
-  const { onEditProfile, onOpenSettings, onOpenVehicleDocuments } =
-    useContext(NavigationContext);
+  const {
+    onOpenSettings,
+    onOpenVehicleDocuments,
+    onOpenPersonalDetails,
+    onOpenEmergencyContact,
+    onOpenHelpSafety,
+  } = useContext(NavigationContext);
 
   return (
     <TabScreenContainer>
-      <Header subtitle="DRIVER CONSOLE" />
       <ProfileScreen
         navigation={navigation}
-        onEditProfile={onEditProfile}
         onOpenSettings={onOpenSettings}
         onOpenVehicleDocuments={onOpenVehicleDocuments}
+        onOpenPersonalDetails={onOpenPersonalDetails}
+        onOpenEmergencyContact={onOpenEmergencyContact}
+        onOpenHelpSafety={onOpenHelpSafety}
         onLogout={() => navigation && navigation.navigate('Desk')}
       />
     </TabScreenContainer>
@@ -91,17 +95,21 @@ function ProfileScreenWrapper({ navigation }) {
 export function BottomTabNavigator({
   tripStage = 'scanning',
   onTripChange,
-  onEditProfile,
   onOpenSettings,
   onOpenVehicleDocuments,
+  onOpenPersonalDetails,
+  onOpenEmergencyContact,
+  onOpenHelpSafety,
   initialRouteName = 'Desk',
 }) {
   const contextValue = {
     tripStage,
     onTripChange,
-    onEditProfile,
     onOpenSettings,
     onOpenVehicleDocuments,
+    onOpenPersonalDetails,
+    onOpenEmergencyContact,
+    onOpenHelpSafety,
   };
 
   return (

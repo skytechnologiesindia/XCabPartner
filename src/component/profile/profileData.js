@@ -30,7 +30,7 @@ export const menuItemsData = [
     title: 'Personal details',
     subtitle: 'View and update your profile information',
     iconType: 'user',
-    targetScreen: 'EditProfile',
+    targetScreen: 'PersonalDetails',
   },
   {
     id: 'vehicle_documents',
@@ -51,14 +51,14 @@ export const menuItemsData = [
     title: 'Emergency contact',
     subtitle: 'Add or update emergency contact',
     iconType: 'shield',
-    targetScreen: 'Emergency',
+    targetScreen: 'EmergencyContact',
   },
   {
     id: 'help_safety',
     title: 'Help & safety',
     subtitle: 'Get help and learn about safety',
     iconType: 'help',
-    targetScreen: 'Help',
+    targetScreen: 'HelpSafety',
   },
   {
     id: 'settings',
