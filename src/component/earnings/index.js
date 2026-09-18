@@ -6,6 +6,7 @@ import PayoutCard from './PayoutCard';
 import TransactionsHeader from './TransactionsHeader';
 import TransactionCard from './TransactionCard';
 import EmptyTransactions from './EmptyTransactions';
+import EarningsSkeleton from './EarningsSkeleton';
 import { earningsData, transactionsData } from './earningsData';
 
 export {
@@ -17,6 +18,7 @@ export {
   TransactionsHeader,
   TransactionCard,
   EmptyTransactions,
+  EarningsSkeleton,
   earningsData,
   transactionsData,
 };
@@ -30,6 +32,7 @@ export default {
   TransactionsHeader,
   TransactionCard,
   EmptyTransactions,
+  EarningsSkeleton,
   earningsData,
   transactionsData,
 };

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -7,6 +7,7 @@ import {
 import {
   MOCK_RIDES,
   RideCard,
+  RideCardSkeleton,
   RideDetailsModal,
   RideFilterTabs,
   getFilterCounts,
@@ -22,6 +23,16 @@ import {
 function RidesScreen() {
   const [activeFilter, setActiveFilter] = useState('all');
   const [selectedRide, setSelectedRide] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 2-second simulation delay for skeleton loading presentation
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [activeFilter]);
 
   // Filter counts
   const counts = useMemo(() => getFilterCounts(MOCK_RIDES), []);
@@ -93,8 +104,42 @@ function RidesScreen() {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3. Grouped Ride List */}
-        {groupedRides.length === 0 ? (
+        {isLoading ? (
+          <View>
+            {/* Date Group Header Skeleton */}
+            <View
+              style={{
+                alignItems: 'center',
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                marginBottom: 12,
+                marginTop: 4,
+              }}
+            >
+              <View
+                style={{
+                  backgroundColor: '#DCD7CB',
+                  borderRadius: 4,
+                  height: 16,
+                  width: 80,
+                }}
+              />
+              <View
+                style={{
+                  backgroundColor: '#EBE7DC',
+                  borderRadius: 4,
+                  height: 13,
+                  width: 90,
+                }}
+              />
+            </View>
+
+            {/* 3 Ride Card Skeletons */}
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+            <RideCardSkeleton />
+          </View>
+        ) : groupedRides.length === 0 ? (
           <View
             style={{
               alignItems: 'center',

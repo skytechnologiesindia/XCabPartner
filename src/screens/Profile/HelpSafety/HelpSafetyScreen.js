@@ -7,7 +7,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import styles from '../../../assets/styles/styles';
 import {
   EmergencyActions,
   GuidelinesSection,
@@ -20,7 +19,7 @@ import {
 
 /**
  * HelpSafetyScreen
- * Main page container for XCAB Driver Help & Safety with utility styles.
+ * Main page container for XCAB Driver Help & Safety with inline styles.
  * Composes emergency police/support actions, assistance categories,
  * safety tools, community guidelines, and support escalation.
  */
@@ -150,24 +149,22 @@ function HelpSafetyScreen({
     <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
       {/* 1. Existing Secondary Back Header: [‹  XCAB] */}
       <View
-        style={[
-          styles.pdb8,
-          styles.pdh16,
-          styles.pdt8,
-          {
-            alignItems: 'center',
-            backgroundColor: '#F7F5EF',
-            flexDirection: 'row',
-          },
-        ]}
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F7F5EF',
+          flexDirection: 'row',
+          paddingBottom: 8,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}
       >
         <Pressable
           style={({ pressed }) => [
-            styles.mr8,
             {
               alignItems: 'center',
               height: 38,
               justifyContent: 'center',
+              marginRight: 8,
               width: 32,
               opacity: pressed ? 0.6 : 1,
             },
@@ -192,26 +189,22 @@ function HelpSafetyScreen({
 
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
           <Text
-            style={[
-              styles.ts26,
-              {
-                color: '#FFC928',
-                fontWeight: '900',
-                letterSpacing: -0.5,
-              },
-            ]}
+            style={{
+              color: '#FFC928',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
           >
             X
           </Text>
           <Text
-            style={[
-              styles.ts26,
-              {
-                color: '#17191C',
-                fontWeight: '900',
-                letterSpacing: -0.5,
-              },
-            ]}
+            style={{
+              color: '#17191C',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
           >
             CAB
           </Text>
@@ -229,28 +222,24 @@ function HelpSafetyScreen({
         showsVerticalScrollIndicator={false}
       >
         {/* Page Title & Subtitle */}
-        <View style={styles.mb16}>
+        <View style={{ marginBottom: 16 }}>
           <Text
-            style={[
-              styles.ts30,
-              {
-                color: '#17191C',
-                fontWeight: '800',
-                letterSpacing: -0.6,
-              },
-            ]}
+            style={{
+              color: '#17191C',
+              fontSize: 30,
+              fontWeight: '800',
+              letterSpacing: -0.6,
+            }}
           >
             Help & Safety
           </Text>
           <Text
-            style={[
-              styles.ts14,
-              styles.mt4,
-              {
-                color: '#687078',
-                fontWeight: '400',
-              },
-            ]}
+            style={{
+              color: '#687078',
+              fontSize: 14,
+              fontWeight: '400',
+              marginTop: 4,
+            }}
           >
             Get help and learn about safety
           </Text>

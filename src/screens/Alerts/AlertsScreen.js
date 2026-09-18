@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   ScrollView,
   Text,
@@ -6,6 +6,7 @@ import {
 } from 'react-native';
 import {
   AlertCard,
+  AlertCardSkeleton,
   AlertsFilterTabs,
   MarkAllReadButton,
   alertsData as initialAlertsData,
@@ -21,6 +22,16 @@ import {
 function AlertsScreen({ navigation }) {
   const [alerts, setAlerts] = useState(initialAlertsData);
   const [activeFilter, setActiveFilter] = useState('all');
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 2-second simulation delay for skeleton loading presentation
+  useEffect(() => {
+    setIsLoading(true);
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, [activeFilter]);
 
   // Filtered alerts based on selected category tab
   const visibleAlerts = useMemo(() => {
@@ -141,8 +152,14 @@ function AlertsScreen({ navigation }) {
         }}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3. Alert Cards List */}
-        {visibleAlerts.length > 0 ? (
+        {isLoading ? (
+          <View style={{ marginBottom: 8 }}>
+            <AlertCardSkeleton />
+            <AlertCardSkeleton />
+            <AlertCardSkeleton />
+            <AlertCardSkeleton />
+          </View>
+        ) : visibleAlerts.length > 0 ? (
           <View style={{ marginBottom: 8 }}>
             {visibleAlerts.map(alert => (
               <AlertCard
@@ -202,7 +219,7 @@ function AlertsScreen({ navigation }) {
         )}
 
         {/* 4. Mark All As Read Button */}
-        {visibleAlerts.length > 0 ? (
+        {!isLoading && visibleAlerts.length > 0 ? (
           <MarkAllReadButton onPress={handleMarkAllRead} />
         ) : null}
       </ScrollView>

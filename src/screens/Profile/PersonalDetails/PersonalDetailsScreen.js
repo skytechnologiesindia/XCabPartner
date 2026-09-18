@@ -3,7 +3,6 @@ import {
   Alert,
   Pressable,
   ScrollView,
-  StyleSheet,
   Text,
   View,
 } from 'react-native';
@@ -21,7 +20,7 @@ import {
  * PersonalDetailsScreen
  * Main page and composition layer for XCAB Driver App "Personal Details".
  * Coordinates secondary header, verified identity records, inline editability,
- * and support actions.
+ * and support actions with inline styles.
  */
 function PersonalDetailsScreen({
   navigation,
@@ -70,55 +69,159 @@ function PersonalDetailsScreen({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
       {/* 1. Existing Secondary Back Header pattern: [‹  XCAB] */}
-      <View style={styles.header}>
+      <View
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F7F5EF',
+          flexDirection: 'row',
+          paddingBottom: 6,
+          paddingHorizontal: 16,
+          paddingTop: 8,
+        }}
+      >
         <Pressable
           style={({ pressed }) => [
-            styles.backButton,
-            pressed && styles.backButtonPressed,
+            {
+              alignItems: 'center',
+              height: 38,
+              justifyContent: 'center',
+              marginRight: 6,
+              width: 32,
+              opacity: pressed ? 0.6 : 1,
+            },
           ]}
           onPress={handleBack}
           accessibilityRole="button"
           accessibilityLabel="Go back"
           hitSlop={12}
         >
-          <Text style={styles.backArrow}>‹</Text>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 34,
+              fontWeight: '300',
+              lineHeight: 36,
+              marginTop: -2,
+            }}
+          >
+            ‹
+          </Text>
         </Pressable>
 
-        <View style={styles.brandLockup}>
-          <Text style={styles.logoX}>X</Text>
-          <Text style={styles.logoCab}>CAB</Text>
+        <View style={{ alignItems: 'center', flexDirection: 'row' }}>
+          <Text
+            style={{
+              color: '#FFC928',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
+          >
+            X
+          </Text>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 26,
+              fontWeight: '900',
+              letterSpacing: -0.5,
+            }}
+          >
+            CAB
+          </Text>
         </View>
       </View>
 
       {/* 2. Main Scroll Content */}
       <ScrollView
-        style={styles.scroll}
-        contentContainerStyle={styles.scrollContent}
+        style={{ flex: 1 }}
+        contentContainerStyle={{
+          paddingBottom: 40,
+          paddingHorizontal: 16,
+          paddingTop: 6,
+        }}
         showsVerticalScrollIndicator={false}
       >
         {/* Page Title & Subtitle */}
-        <View style={styles.titleSection}>
-          <Text style={styles.titleText}>Personal Details</Text>
-          <Text style={styles.subtitleText}>Your registered information</Text>
+        <View style={{ marginBottom: 14 }}>
+          <Text
+            style={{
+              color: '#17191C',
+              fontSize: 30,
+              fontWeight: '800',
+              letterSpacing: -0.6,
+            }}
+          >
+            Personal Details
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 14,
+              fontWeight: '400',
+              marginTop: 4,
+            }}
+          >
+            Your registered information
+          </Text>
         </View>
 
         {/* Yellow Information Notice Banner */}
-        <View style={styles.infoBanner}>
-          <View style={styles.infoIconCircle}>
-            <Text style={styles.infoIconSymbol}>ⓘ</Text>
+        <View
+          style={{
+            alignItems: 'flex-start',
+            backgroundColor: '#FFF4C7',
+            borderColor: '#FDE68A',
+            borderRadius: 14,
+            borderWidth: 1,
+            flexDirection: 'row',
+            marginBottom: 14,
+            paddingHorizontal: 12,
+            paddingVertical: 12,
+          }}
+        >
+          <View
+            style={{
+              alignItems: 'center',
+              borderColor: '#17191C',
+              borderRadius: 12,
+              borderWidth: 1.5,
+              height: 24,
+              justifyContent: 'center',
+              marginRight: 10,
+              marginTop: 1,
+              width: 24,
+            }}
+          >
+            <Text
+              style={{
+                color: '#17191C',
+                fontSize: 14,
+                fontWeight: '800',
+                marginTop: -1,
+              }}
+            >
+              ⓘ
+            </Text>
           </View>
-          <Text style={styles.infoBannerText}>
+          <Text
+            style={{
+              color: '#17191C',
+              flex: 1,
+              fontSize: 12.5,
+              fontWeight: '500',
+              lineHeight: 17.5,
+            }}
+          >
             Some personal details are verified and cannot be changed from the
             app. Editable details can be updated here.
           </Text>
         </View>
 
         {/* 1. Driver Profile Hero Card */}
-        <PersonalDetailsCard
-          data={details}
-        />
+        <PersonalDetailsCard data={details} />
 
         {/* 2. Basic Information (with editable Email & Address) */}
         <BasicInformation
@@ -147,111 +250,5 @@ function PersonalDetailsScreen({
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#F7F5EF',
-    flex: 1,
-  },
-  header: {
-    alignItems: 'center',
-    backgroundColor: '#F7F5EF',
-    flexDirection: 'row',
-    paddingBottom: 6,
-    paddingHorizontal: 16,
-    paddingTop: 8,
-  },
-  backButton: {
-    alignItems: 'center',
-    height: 38,
-    justifyContent: 'center',
-    marginRight: 6,
-    width: 32,
-  },
-  backButtonPressed: {
-    opacity: 0.6,
-  },
-  backArrow: {
-    color: '#17191C',
-    fontSize: 34,
-    fontWeight: '300',
-    lineHeight: 36,
-    marginTop: -2,
-  },
-  brandLockup: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  logoX: {
-    color: '#FFC928',
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  logoCab: {
-    color: '#17191C',
-    fontSize: 26,
-    fontWeight: '900',
-    letterSpacing: -0.5,
-  },
-  scroll: {
-    flex: 1,
-  },
-  scrollContent: {
-    paddingBottom: 40,
-    paddingHorizontal: 16,
-    paddingTop: 6,
-  },
-  titleSection: {
-    marginBottom: 14,
-  },
-  titleText: {
-    color: '#17191C',
-    fontSize: 30,
-    fontWeight: '800',
-    letterSpacing: -0.6,
-  },
-  subtitleText: {
-    color: '#687078',
-    fontSize: 14,
-    fontWeight: '400',
-    marginTop: 4,
-  },
-  infoBanner: {
-    alignItems: 'flex-start',
-    backgroundColor: '#FFF4C7',
-    borderColor: '#FDE68A',
-    borderRadius: 14,
-    borderWidth: 1,
-    flexDirection: 'row',
-    marginBottom: 14,
-    paddingHorizontal: 12,
-    paddingVertical: 12,
-  },
-  infoIconCircle: {
-    alignItems: 'center',
-    borderColor: '#17191C',
-    borderRadius: 12,
-    borderWidth: 1.5,
-    height: 24,
-    justifyContent: 'center',
-    marginRight: 10,
-    marginTop: 1,
-    width: 24,
-  },
-  infoIconSymbol: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '800',
-    marginTop: -1,
-  },
-  infoBannerText: {
-    color: '#17191C',
-    flex: 1,
-    fontSize: 12.5,
-    fontWeight: '500',
-    lineHeight: 17.5,
-  },
-});
 
 export default PersonalDetailsScreen;

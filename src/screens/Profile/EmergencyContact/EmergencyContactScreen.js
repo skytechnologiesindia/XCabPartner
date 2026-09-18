@@ -6,7 +6,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import styles from '../../../assets/styles/styles';
 import {
   AlternateContactCard,
   ContactSupport,
@@ -24,7 +23,7 @@ import { PersonalDetailsHelper } from '../../../component/personalDetailsOnboard
  * Main screen for XCAB Driver Emergency Contact management during onboarding & profile.
  * - Displays brand header with back action and logo
  * - Prominent "Save Changes →" CTA
- * with utility styles.
+ * with inline styles.
  */
 function EmergencyContactScreen({
   navigation,
@@ -139,28 +138,26 @@ function EmergencyContactScreen({
     <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
       {/* 1. Header: Back button + brand logo */}
       <View
-        style={[
-          styles.pdb8,
-          styles.pdh20,
-          styles.pdt4,
-          {
-            alignItems: 'center',
-            backgroundColor: '#F7F5EF',
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            width: '100%',
-          },
-        ]}
+        style={{
+          alignItems: 'center',
+          backgroundColor: '#F7F5EF',
+          flexDirection: 'row',
+          justifyContent: 'space-between',
+          paddingBottom: 8,
+          paddingHorizontal: 20,
+          paddingTop: 4,
+          width: '100%',
+        }}
       >
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
           {showBack ? (
             <Pressable
               style={({ pressed }) => [
-                styles.mr8,
                 {
                   alignItems: 'center',
                   height: 38,
                   justifyContent: 'center',
+                  marginRight: 8,
                   width: 32,
                   opacity: pressed ? 0.6 : 1,
                 },
@@ -187,26 +184,22 @@ function EmergencyContactScreen({
           <View style={{ justifyContent: 'center' }}>
             <View style={{ alignItems: 'center', flexDirection: 'row' }}>
               <Text
-                style={[
-                  styles.ts25,
-                  {
-                    color: '#FFC928',
-                    fontWeight: '900',
-                    letterSpacing: -0.6,
-                  },
-                ]}
+                style={{
+                  color: '#FFC928',
+                  fontSize: 25,
+                  fontWeight: '900',
+                  letterSpacing: -0.6,
+                }}
               >
                 X
               </Text>
               <Text
-                style={[
-                  styles.ts25,
-                  {
-                    color: '#17191C',
-                    fontWeight: '900',
-                    letterSpacing: -0.6,
-                  },
-                ]}
+                style={{
+                  color: '#17191C',
+                  fontSize: 25,
+                  fontWeight: '900',
+                  letterSpacing: -0.6,
+                }}
               >
                 CAB
               </Text>
@@ -229,13 +222,13 @@ function EmergencyContactScreen({
         {showSkip ? (
           <Pressable
             style={({ pressed }) => [
-              styles.pdh16,
-              styles.pdv8,
               {
                 alignItems: 'center',
                 backgroundColor: pressed ? '#E5E1D5' : '#F1EEE5',
                 borderRadius: 12,
                 justifyContent: 'center',
+                paddingHorizontal: 16,
+                paddingVertical: 8,
               },
             ]}
             onPress={handleSkip}
@@ -244,13 +237,11 @@ function EmergencyContactScreen({
             hitSlop={{ top: 10, bottom: 10, left: 14, right: 14 }}
           >
             <Text
-              style={[
-                styles.ts13,
-                {
-                  color: '#17191C',
-                  fontWeight: '700',
-                },
-              ]}
+              style={{
+                color: '#17191C',
+                fontSize: 13,
+                fontWeight: '700',
+              }}
             >
               Skip
             </Text>
@@ -271,28 +262,24 @@ function EmergencyContactScreen({
         showsVerticalScrollIndicator={false}
       >
         {/* Page Title & Subtitle */}
-        <View style={[styles.mb16, styles.pdh4]}>
+        <View style={{ marginBottom: 16, paddingHorizontal: 4 }}>
           <Text
-            style={[
-              styles.ts25,
-              {
-                color: '#17191C',
-                fontWeight: '900',
-                letterSpacing: -0.6,
-              },
-            ]}
+            style={{
+              color: '#17191C',
+              fontSize: 25,
+              fontWeight: '900',
+              letterSpacing: -0.6,
+            }}
           >
             Emergency Contact
           </Text>
           <Text
-            style={[
-              styles.ts13,
-              styles.mt4,
-              {
-                color: '#687078',
-                fontWeight: '400',
-              },
-            ]}
+            style={{
+              color: '#687078',
+              fontSize: 13,
+              fontWeight: '400',
+              marginTop: 4,
+            }}
           >
             Add or update your emergency contact
           </Text>
@@ -322,10 +309,9 @@ function EmergencyContactScreen({
         <ContactSupport onContactSupport={handleContactSupport} />
 
         {/* 3. Primary Continue Action Section */}
-        <View style={[styles.mt20, { alignItems: 'center', width: '100%' }]}>
+        <View style={{ alignItems: 'center', marginTop: 20, width: '100%' }}>
           <Pressable
             style={({ pressed }) => [
-              styles.pdh16,
               {
                 alignItems: 'center',
                 backgroundColor: pressed ? '#F5BE18' : '#FFC928',
@@ -333,6 +319,7 @@ function EmergencyContactScreen({
                 elevation: 2,
                 height: 52,
                 justifyContent: 'center',
+                paddingHorizontal: 16,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
                 shadowOpacity: 0.08,
@@ -346,14 +333,12 @@ function EmergencyContactScreen({
             accessibilityLabel={showSkip ? 'Continue' : 'Save Changes'}
           >
             <Text
-              style={[
-                styles.ts16,
-                {
-                  color: '#17191C',
-                  fontWeight: '800',
-                  letterSpacing: -0.2,
-                },
-              ]}
+              style={{
+                color: '#17191C',
+                fontSize: 16,
+                fontWeight: '800',
+                letterSpacing: -0.2,
+              }}
             >
               {showSkip ? 'Continue →' : 'Save Changes →'}
             </Text>
@@ -362,12 +347,12 @@ function EmergencyContactScreen({
           {showSkip ? (
             <Pressable
               style={({ pressed }) => [
-                styles.mt12,
-                styles.pdv8,
                 {
                   alignItems: 'center',
                   justifyContent: 'center',
+                  marginTop: 12,
                   opacity: pressed ? 0.6 : 1,
+                  paddingVertical: 8,
                 },
               ]}
               onPress={handleSkip}
@@ -375,14 +360,12 @@ function EmergencyContactScreen({
               accessibilityLabel="Skip to Home page"
             >
               <Text
-                style={[
-                  styles.ts14,
-                  {
-                    color: '#687078',
-                    fontWeight: '600',
-                    textDecorationLine: 'underline',
-                  },
-                ]}
+                style={{
+                  color: '#687078',
+                  fontSize: 14,
+                  fontWeight: '600',
+                  textDecorationLine: 'underline',
+                }}
               >
                 Skip for now
               </Text>

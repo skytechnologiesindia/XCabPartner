@@ -1,4 +1,5 @@
 import RideCard from './RideCard';
+import RideCardSkeleton from './RideCardSkeleton';
 import RideFilterTabs from './RideFilterTabs';
 import RideRoute from './RideRoute';
 import RideMeta from './RideMeta';
@@ -13,6 +14,7 @@ import {
 
 export {
   RideCard,
+  RideCardSkeleton,
   RideFilterTabs,
   RideRoute,
   RideMeta,
@@ -26,6 +28,7 @@ export {
 
 export default {
   RideCard,
+  RideCardSkeleton,
   RideFilterTabs,
   RideRoute,
   RideMeta,
