@@ -15,14 +15,23 @@ import {
   SettingsScreen,
   VehicleDocumentsScreen,
 } from './src/screens/Profile';
+
+// Onboarding & Registration Screens
 import SplashScreen from './src/screens/Splash/SplashScreen';
 import OnboardingScreen from './src/screens/Onboarding/OnboardingScreen';
+import LanguageScreen from './src/screens/Language/LanguageScreen';
 import MobileVerificationScreen from './src/screens/MobileVerification/MobileVerificationScreen';
 import PersonalDetailsOnboardingScreen from './src/screens/PersonalDetailsOnboarding/PersonalDetailsOnboardingScreen';
-import VehicleDetailsScreen from './src/screens/VehicleDetails/VehicleDetailsScreen';
+import DrivingLicenceOnboardingScreen from './src/screens/DrivingLicenceOnboarding/DrivingLicenceOnboardingScreen';
+import VehicleDetailsOnboardingScreen from './src/screens/VehicleDetailsOnboarding/VehicleDetailsOnboardingScreen';
 import VehicleDocumentsOnboardingScreen from './src/screens/VehicleDocumentsOnboarding/VehicleDocumentsOnboardingScreen';
-import VehicleDocumentsReviewScreen from './src/screens/VehicleDocumentsReview/VehicleDocumentsReviewScreen';
-import VehicleDocumentsSubmittedScreen from './src/screens/VehicleDocumentsSubmitted/VehicleDocumentsSubmittedScreen';
+import EmergencyContactOnboardingScreen from './src/screens/EmergencyContactOnboarding/EmergencyContactOnboardingScreen';
+import LocationPermissionScreen from './src/screens/LocationPermission/LocationPermissionScreen';
+import ReviewSubmissionScreen from './src/screens/ReviewSubmission/ReviewSubmissionScreen';
+import VerificationPendingScreen from './src/screens/VerificationPending/VerificationPendingScreen';
+import VerificationApprovedScreen from './src/screens/VerificationApproved/VerificationApprovedScreen';
+
+import { RegistrationProvider, useRegistration } from './src/context/RegistrationContext';
 import { getOnboardingCompleted } from './src/component/onboarding';
 import { colors } from './src/assets/colors/colors';
 
@@ -30,98 +39,198 @@ const paper = colors.ivory50 || '#F7F5EE';
 
 function App() {
   const isDarkMode = useColorScheme() === 'dark';
-  const [showSplash, setShowSplash] = useState(true);
-  const [showOnboarding, setShowOnboarding] = useState(!getOnboardingCompleted());
-  const [registrationStage, setRegistrationStage] = useState('phone'); // 'phone' | 'personalDetails' | 'vehicleDetails' | 'vehicleDocuments' | 'vehicleDocumentsReview' | 'vehicleDocumentsSubmitted' | 'emergencyContact' | 'complete'
-  const [uploadedDocs, setUploadedDocs] = useState(null);
-
-  const handleSplashFinish = () => {
-    setShowSplash(false);
-  };
-
-  const handleOnboardingFinish = () => {
-    setShowOnboarding(false);
-  };
-
-  const handleAuthSuccess = () => {
-    setRegistrationStage('personalDetails');
-  };
-
-  const handlePersonalDetailsSuccess = () => {
-    setRegistrationStage('vehicleDetails');
-  };
-
-  const handleVehicleDetailsSuccess = () => {
-    setRegistrationStage('vehicleDocuments');
-  };
-
-  const handleVehicleDocumentsSuccess = docs => {
-    setUploadedDocs(docs);
-    setRegistrationStage('vehicleDocumentsReview');
-  };
-
-  const handleReviewSuccess = docs => {
-    setUploadedDocs(docs);
-    setRegistrationStage('vehicleDocumentsSubmitted');
-  };
-
-  const handleSubmittedSuccess = () => {
-    setRegistrationStage('emergencyContact');
-  };
 
   return (
     <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <StatusBar barStyle={isDarkMode ? 'light-content' : 'dark-content'} />
-      <NavigationContainer>
-        {showSplash ? (
-          <SplashScreen onFinish={handleSplashFinish} />
-        ) : showOnboarding ? (
-          <OnboardingScreen onComplete={handleOnboardingFinish} />
-        ) : registrationStage === 'phone' ? (
-          <MobileVerificationScreen
-            onBack={() => setShowOnboarding(true)}
-            onSuccess={handleAuthSuccess}
-          />
-        ) : registrationStage === 'personalDetails' ? (
-          <PersonalDetailsOnboardingScreen
-            onBack={() => setRegistrationStage('phone')}
-            onContinue={handlePersonalDetailsSuccess}
-          />
-        ) : registrationStage === 'vehicleDetails' ? (
-          <VehicleDetailsScreen
-            onBack={() => setRegistrationStage('personalDetails')}
-            onContinue={handleVehicleDetailsSuccess}
-          />
-        ) : registrationStage === 'vehicleDocuments' ? (
-          <VehicleDocumentsOnboardingScreen
-            onBack={() => setRegistrationStage('vehicleDetails')}
-            onContinue={handleVehicleDocumentsSuccess}
-          />
-        ) : registrationStage === 'vehicleDocumentsReview' ? (
-          <VehicleDocumentsReviewScreen
-            documents={uploadedDocs}
-            onBack={() => setRegistrationStage('vehicleDocuments')}
-            onContinue={handleReviewSuccess}
-          />
-        ) : registrationStage === 'vehicleDocumentsSubmitted' ? (
-          <VehicleDocumentsSubmittedScreen
-            onBack={() => setRegistrationStage('vehicleDocumentsReview')}
-            onContinue={handleSubmittedSuccess}
-          />
-        ) : registrationStage === 'emergencyContact' ? (
-          <EmergencyContactScreen
-            showSkip={true}
-            onBack={() => setRegistrationStage('vehicleDocumentsSubmitted')}
-            onSave={() => setRegistrationStage('complete')}
-            onContinue={() => setRegistrationStage('complete')}
-            onSkip={() => setRegistrationStage('complete')}
-          />
-        ) : (
-          <DriverDesk />
-        )}
-      </NavigationContainer>
+      <RegistrationProvider>
+        <NavigationContainer>
+          <AppFlowController />
+        </NavigationContainer>
+      </RegistrationProvider>
     </SafeAreaProvider>
   );
+}
+
+function AppFlowController() {
+  const {
+    appStage,
+    setAppStage,
+    registrationStep,
+    setRegistrationStep,
+    nextRegistrationStep,
+    prevRegistrationStep,
+    jumpToStep,
+    submitForVerification,
+    approveDriver,
+    enterDriverDesk,
+    registrationData,
+  } = useRegistration();
+
+  // Splash Screen routing logic
+  const handleSplashFinish = () => {
+    // 1. If already verified driver -> go directly to Driver Desk
+    if (registrationData.verificationStatus === 'approved') {
+      setAppStage('driver_desk');
+      return;
+    }
+
+    // 2. If under verification review -> go to Verification Pending
+    if (registrationData.verificationStatus === 'pending') {
+      setAppStage('verification_pending');
+      return;
+    }
+
+    // 3. If onboarding previously finished -> resume at last registration step or language
+    if (getOnboardingCompleted()) {
+      if (registrationData.phone && registrationData.otpVerified) {
+        setAppStage('registration');
+      } else {
+        setAppStage('language');
+      }
+      return;
+    }
+
+    // 4. Default for new users: 3-slide onboarding
+    setAppStage('onboarding');
+  };
+
+  // 1. Splash Screen
+  if (appStage === 'splash') {
+    return <SplashScreen onFinish={handleSplashFinish} />;
+  }
+
+  // 2. Onboarding Carousel (3 Slides)
+  if (appStage === 'onboarding') {
+    return (
+      <OnboardingScreen
+        onComplete={() => setAppStage('language')}
+        onNavigateToLanguage={() => setAppStage('language')}
+      />
+    );
+  }
+
+  // 3. Language Selection
+  if (appStage === 'language') {
+    return (
+      <LanguageScreen
+        onBack={() => setAppStage('onboarding')}
+        onContinue={() => {
+          setRegistrationStep(1);
+          setAppStage('registration');
+        }}
+      />
+    );
+  }
+
+  // 4. Registration 8-Step Flow
+  if (appStage === 'registration') {
+    switch (registrationStep) {
+      case 1:
+        // Step 1: Mobile + OTP (Single Screen)
+        return (
+          <MobileVerificationScreen
+            onBack={prevRegistrationStep}
+            onSuccess={() => nextRegistrationStep()}
+          />
+        );
+
+      case 2:
+        // Step 2: Personal Details + Aadhaar
+        return (
+          <PersonalDetailsOnboardingScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 3:
+        // Step 3: Driving Licence
+        return (
+          <DrivingLicenceOnboardingScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 4:
+        // Step 4: Vehicle Details
+        return (
+          <VehicleDetailsOnboardingScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 5:
+        // Step 5: Vehicle Documents
+        return (
+          <VehicleDocumentsOnboardingScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 6:
+        // Step 6: Emergency Contact
+        return (
+          <EmergencyContactOnboardingScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 7:
+        // Step 7: Location Permission
+        return (
+          <LocationPermissionScreen
+            onBack={prevRegistrationStep}
+            onContinue={() => nextRegistrationStep()}
+          />
+        );
+
+      case 8:
+        // Step 8: Review & Submit
+        return (
+          <ReviewSubmissionScreen
+            onBack={prevRegistrationStep}
+            onEditSection={stepNum => jumpToStep(stepNum)}
+            onSubmit={submitForVerification}
+          />
+        );
+
+      default:
+        return (
+          <MobileVerificationScreen
+            onBack={prevRegistrationStep}
+            onSuccess={() => nextRegistrationStep()}
+          />
+        );
+    }
+  }
+
+  // 5. Status: Verification Pending
+  if (appStage === 'verification_pending') {
+    return (
+      <VerificationPendingScreen
+        onBack={() => jumpToStep(8)}
+        onViewDetails={() => jumpToStep(8)}
+        onApproved={approveDriver}
+      />
+    );
+  }
+
+  // 6. Status: Verification Approved
+  if (appStage === 'verification_approved') {
+    return (
+      <VerificationApprovedScreen
+        onContinueToDesk={enterDriverDesk}
+      />
+    );
+  }
+
+  // 7. Driver Desk (Existing Dashboard)
+  return <DriverDesk />;
 }
 
 function DriverDesk() {

@@ -74,8 +74,8 @@ function VehicleDocumentsSubmittedScreen({
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Progress Indicator (All 4 segments complete) */}
-      <VehicleDocumentsProgress step={4} totalSteps={4} />
+      {/* 2. Progress Indicator (Step 7 of 7) */}
+      <VehicleDocumentsProgress step={7} totalSteps={7} />
 
       <ScrollView
         style={{ backgroundColor: '#F7F5EF', flex: 1 }}

@@ -1,16 +1,36 @@
-export { default as PersonalDetailsForm } from './PersonalDetailsForm';
-export { default as FullNameField } from './FullNameField';
-export { default as DateOfBirthField } from './DateOfBirthField';
-export { default as GenderSelector } from './GenderSelector';
-export { default as EmailField } from './EmailField';
-export { default as OnboardingProgress } from './OnboardingProgress';
-export { default as OnboardingContinueButton } from './OnboardingContinueButton';
-export { default as OnboardingHeader } from './OnboardingHeader';
-export { default as PersonalDetailsHelper } from './PersonalDetailsHelper';
-
-export {
-  personalDetailsConfig,
+import AadhaarSection from './AadhaarSection';
+import DateOfBirthField from './DateOfBirthField';
+import EmailField from './EmailField';
+import FullNameField from './FullNameField';
+import GenderSelector from './GenderSelector';
+import OnboardingContinueButton from './OnboardingContinueButton';
+import OnboardingHeader from './OnboardingHeader';
+import OnboardingProgress from './OnboardingProgress';
+import PersonalDetailsForm from './PersonalDetailsForm';
+import PersonalDetailsHelper from './PersonalDetailsHelper';
+import ProfilePhotoPicker from './ProfilePhotoPicker';
+import {
+  benefitItems,
   genderOptions,
   initialFormValues,
-  benefitItems,
+  personalDetailsConfig,
 } from './personalDetailsOnboardingData';
+
+export {
+  AadhaarSection,
+  DateOfBirthField,
+  EmailField,
+  FullNameField,
+  GenderSelector,
+  OnboardingContinueButton,
+  OnboardingHeader,
+  OnboardingProgress,
+  PersonalDetailsForm,
+  PersonalDetailsHelper,
+  ProfilePhotoPicker,
+  benefitItems,
+  genderOptions,
+  initialFormValues,
+  personalDetailsConfig,
+};
+export default PersonalDetailsForm;

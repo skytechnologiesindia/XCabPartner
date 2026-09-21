@@ -192,8 +192,8 @@ function VehicleDocumentsReviewScreen({
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Progress Indicator (Step 3 active) */}
-      <VehicleDocumentsProgress step={3} totalSteps={4} />
+      {/* 2. Progress Indicator (Step 6 of 7) */}
+      <VehicleDocumentsProgress step={6} totalSteps={7} />
 
       <ScrollView
         style={{ backgroundColor: '#F7F5EF', flex: 1 }}

@@ -63,7 +63,7 @@ function SplashScreen({ onFinish }) {
           style={{ flex: 1 }}
           onPress={handleSkipOrFinish}
           accessibilityRole="button"
-          accessibilityLabel="XCAB Driver App Starting Screen"
+          accessibilityLabel="XCAB Partner App Starting Screen"
         >
           <ScrollView
             style={{ flex: 1 }}

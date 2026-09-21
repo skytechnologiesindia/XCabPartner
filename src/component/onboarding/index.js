@@ -1,11 +1,27 @@
-export { default as OnboardingSlide } from './OnboardingSlide';
-export { default as OnboardingIllustration } from './OnboardingIllustration';
-export { default as OnboardingProgress } from './OnboardingProgress';
-export { default as OnboardingButton } from './OnboardingButton';
-export { default as OnboardingSkip } from './OnboardingSkip';
-
-export { onboardingSlides } from './onboardingData';
-export {
-  setOnboardingCompleted,
+import OnboardingButton from './OnboardingButton';
+import OnboardingIllustration from './OnboardingIllustration';
+import OnboardingProgress from './OnboardingProgress';
+import OnboardingSkip from './OnboardingSkip';
+import OnboardingSlide from './OnboardingSlide';
+import RegistrationProgress from './RegistrationProgress';
+import OnboardingHeader from './OnboardingHeader';
+import RegistrationButton from './RegistrationButton';
+import { onboardingSlides } from './onboardingData';
+import {
   getOnboardingCompleted,
+  setOnboardingCompleted,
 } from './onboardingStorage';
+
+export {
+  OnboardingButton,
+  OnboardingIllustration,
+  OnboardingProgress,
+  OnboardingSkip,
+  OnboardingSlide,
+  RegistrationProgress,
+  OnboardingHeader,
+  RegistrationButton,
+  onboardingSlides,
+  getOnboardingCompleted,
+  setOnboardingCompleted,
+};

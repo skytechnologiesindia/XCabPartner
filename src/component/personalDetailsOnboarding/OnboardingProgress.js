@@ -1,45 +1,97 @@
 import React from 'react';
-import { View } from 'react-native';
+import { Text, View } from 'react-native';
 
 /**
  * OnboardingProgress
- * Segmented progress bar matching the Mobile + OTP screen:
- * - Step 2 of 3 filled (Bar 1: Yellow, Bar 2: Yellow, Bar 3: Gray)
+ * Clean, single-line onboarding step indicator:
+ * - Top text: "Step {step} of {totalSteps}"
+ * - Single thin horizontal progress bar with current position marker
  */
 function OnboardingProgress({
-  step = 2,
-  totalSteps = 3,
+  step = 3,
+  totalSteps = 7,
 }) {
+  const percentage = Math.min(100, Math.max(0, (step / totalSteps) * 100));
+
   return (
     <View
       style={{
         alignItems: 'center',
-        flexDirection: 'row',
-        gap: 8,
         justifyContent: 'center',
-        marginTop: 6,
-        marginBottom: 16,
+        marginTop: 4,
+        marginBottom: 14,
+        paddingHorizontal: 32,
         width: '100%',
       }}
       accessibilityRole="progressbar"
       accessibilityLabel={`Step ${step} of ${totalSteps}`}
     >
-      {Array.from({ length: totalSteps }).map((_, index) => {
-        const isFilled = index < step;
-        return (
-          <View
-            key={`onboarding-seg-${index}`}
-            style={{
-              backgroundColor: isFilled ? '#FFC928' : '#DDD9CF',
-              borderRadius: 2,
-              height: 3.5,
-              width: 54,
-            }}
-          />
-        );
-      })}
+      {/* 1. Step Indicator Text */}
+      <Text
+        style={{
+          color: '#525960',
+          fontSize: 12,
+          fontWeight: '700',
+          letterSpacing: 0.2,
+          marginBottom: 6,
+        }}
+      >
+        Step {step} of {totalSteps}
+      </Text>
+
+      {/* 2. Single Continuous Progress Line with Marker */}
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          height: 12,
+          justifyContent: 'flex-start',
+          position: 'relative',
+          width: '100%',
+        }}
+      >
+        {/* Background Track (Remaining portion) */}
+        <View
+          style={{
+            backgroundColor: '#DDD9CF',
+            borderRadius: 2,
+            height: 3.5,
+            width: '100%',
+          }}
+        />
+
+        {/* Completed portion (XCAB Yellow) */}
+        <View
+          style={{
+            backgroundColor: '#FFC928',
+            borderRadius: 2,
+            height: 3.5,
+            left: 0,
+            position: 'absolute',
+            top: 4.25,
+            width: `${percentage}%`,
+          }}
+        />
+
+        {/* Small Current-Position Marker */}
+        <View
+          style={{
+            backgroundColor: '#FFC928',
+            borderColor: '#F7F5EF',
+            borderRadius: 5,
+            borderWidth: 1.5,
+            height: 10,
+            left: `${percentage}%`,
+            marginLeft: -5,
+            position: 'absolute',
+            top: 1,
+            width: 10,
+          }}
+        />
+      </View>
     </View>
   );
 }
 
 export default OnboardingProgress;
+

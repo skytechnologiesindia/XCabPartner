@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Keyboard,
   Platform,
   ScrollView,
   StatusBar,
@@ -9,39 +10,55 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  OnboardingContinueButton,
   OnboardingHeader,
-  OnboardingProgress,
-  PersonalDetailsHelper,
-} from '../../component/personalDetailsOnboarding';
+  RegistrationButton,
+  RegistrationProgress,
+} from '../../component/onboarding';
 import {
   VehicleDetailsForm,
-  initialVehicleDetails,
-} from '../../component/vehicleDetails';
+  initialVehicleValues,
+} from '../../component/vehicleDetailsOnboarding';
+import { useRegistration } from '../../context/RegistrationContext';
 
 /**
- * VehicleDetailsScreen
- * Onboarding screen capturing the driver's vehicle information:
- * - Vehicle Type (Sedan, Hatchback, SUV, etc.)
- * - Make (Toyota, Maruti Suzuki, etc.)
- * - Model (Etios, Dzire, etc.)
- * - Year (2020, etc.)
- * - Color (White, etc.)
- * - Registration Number (JH01AB1234)
- *
- * Visually matches the reference design with consistent header, progress,
- * rounded input cards, yellow CTA, and lower automotive visual.
+ * VehicleDetailsOnboardingScreen (Step 4 of 8)
+ * Configures driver's vehicle:
+ * - Vehicle Type
+ * - Brand / Make
+ * - Model
+ * - Year
+ * - Color
+ * - Registration Number
  */
-function VehicleDetailsScreen({
-  navigation,
+function VehicleDetailsOnboardingScreen({
   onBack,
   onContinue,
 }) {
   const insets = useSafeAreaInsets();
+  const { registrationData, updateRegistrationData } = useRegistration();
+  const scrollViewRef = useRef(null);
 
-  const [formData, setFormData] = useState(initialVehicleDetails);
+  const [formData, setFormData] = useState({
+    ...initialVehicleValues,
+    ...registrationData.vehicle,
+  });
+
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegFocused, setIsRegFocused] = useState(false);
+
+  useEffect(() => {
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setIsRegFocused(false);
+      },
+    );
+
+    return () => {
+      hideSub.remove();
+    };
+  }, []);
 
   const handleFieldChange = (field, value) => {
     setFormData(prev => ({
@@ -56,30 +73,34 @@ function VehicleDetailsScreen({
     }
   };
 
+  // When focusing specifically on Registration Number, expand bottom space & scroll into view
+  const handleFocusRegistration = () => {
+    setIsRegFocused(true);
+    // Trigger scroll after keyboard begins animating up
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 280);
+  };
+
+  const handleBlurRegistration = () => {
+    setIsRegFocused(false);
+  };
+
   const handleNeedHelp = () => {
     Alert.alert(
       'XCAB Partner Support',
-      'Need help adding your vehicle details?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
+      'Need help selecting or entering your vehicle details?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
-  };
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else if (navigation && navigation.goBack) {
-      navigation.goBack();
-    }
   };
 
   const validateForm = () => {
     const newErrors = {};
 
-    // Validate Registration Number
-    const regNum = (formData.registrationNumber || '').trim();
-    if (!regNum) {
-      newErrors.registrationNumber = 'Please enter vehicle registration number.';
-    } else if (regNum.length < 6) {
+    if (!formData.registrationNumber || formData.registrationNumber.trim().length < 6) {
       newErrors.registrationNumber = 'Please enter a valid registration number (e.g. JH01AB1234).';
     }
 
@@ -96,54 +117,61 @@ function VehicleDetailsScreen({
 
     setTimeout(() => {
       setIsLoading(false);
+      updateRegistrationData('vehicle', formData);
 
       if (onContinue) {
         onContinue(formData);
-      } else if (navigation && navigation.navigate) {
-        try {
-          navigation.navigate('VehicleDocuments');
-        } catch (err) {
-          navigation.navigate('Desk');
-        }
       }
-    }, 400);
+    }, 300);
   };
 
   const isFormValid =
-    !!formData.vehicleType &&
+    !!formData.type &&
     !!formData.make &&
     !!formData.model &&
     !!formData.year &&
     !!formData.color &&
-    (formData.registrationNumber || '').trim().length >= 6;
+    !!formData.registrationNumber &&
+    formData.registrationNumber.trim().length >= 6;
 
   const statusBarHeight =
     Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
+  const safeBottomPadding = Math.max(insets.bottom, 16);
 
   return (
-    <View style={{ backgroundColor: '#F7F5EF', flex: 1, paddingTop: safeTopPadding }}>
+    <View
+      style={{
+        backgroundColor: '#F7F5EF',
+        flex: 1,
+        paddingTop: safeTopPadding,
+      }}>
       <StatusBar
         barStyle="dark-content"
         backgroundColor="#F7F5EF"
         translucent={true}
       />
 
-      {/* 1. Header with Back Arrow & Need Help? */}
+      {/* 1. Header */}
       <OnboardingHeader
-        onBack={handleBack}
+        onBack={onBack}
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Progress Indicator (Step 4 of 7) */}
-      <OnboardingProgress step={4} totalSteps={7} />
+      {/* 2. Step 4 of 8 Progress */}
+      <RegistrationProgress currentStep={4} totalSteps={8} />
 
       <ScrollView
-        style={{ backgroundColor: '#F7F5EF', flex: 1 }}
+        ref={scrollViewRef}
+        style={{
+          backgroundColor: '#F7F5EF',
+          flex: 1,
+        }}
         contentContainerStyle={{
           backgroundColor: '#F7F5EF',
           flexGrow: 1,
           justifyContent: 'space-between',
+          paddingBottom: isRegFocused ? 360 : safeBottomPadding + 20,
           paddingTop: 10,
         }}
         keyboardShouldPersistTaps="handled"
@@ -151,7 +179,11 @@ function VehicleDetailsScreen({
         showsVerticalScrollIndicator={false}
       >
         {/* 3. Title & Subtitle */}
-        <View style={{ paddingHorizontal: 20, marginBottom: 16 }}>
+        <View
+          style={{
+            paddingHorizontal: 20,
+            marginBottom: 16,
+          }}>
           <Text
             style={{
               color: '#17191C',
@@ -159,9 +191,8 @@ function VehicleDetailsScreen({
               fontWeight: '900',
               letterSpacing: -0.6,
               lineHeight: 33,
-            }}
-          >
-            Vehicle Details
+            }}>
+            Your Vehicle{'\n'}Details
           </Text>
           <Text
             style={{
@@ -170,8 +201,7 @@ function VehicleDetailsScreen({
               fontWeight: '400',
               lineHeight: 19,
               marginTop: 6,
-            }}
-          >
+            }}>
             Tell us about your vehicle.
           </Text>
         </View>
@@ -180,22 +210,21 @@ function VehicleDetailsScreen({
         <VehicleDetailsForm
           formData={formData}
           onChangeField={handleFieldChange}
+          onFocusRegistration={handleFocusRegistration}
+          onBlurRegistration={handleBlurRegistration}
           errors={errors}
         />
 
         {/* 5. Primary CTA */}
-        <OnboardingContinueButton
+        <RegistrationButton
           label="Continue"
           onPress={handleContinuePress}
           isDisabled={!isFormValid}
           isLoading={isLoading}
         />
-
-        {/* 6. Helper Message & Lower Automotive Hero */}
-        <PersonalDetailsHelper />
       </ScrollView>
     </View>
   );
 }
 
-export default VehicleDetailsScreen;
+export default VehicleDetailsOnboardingScreen;

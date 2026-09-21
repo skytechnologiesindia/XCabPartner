@@ -7,33 +7,33 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { OnboardingHeader, RegistrationProgress } from '../../component/onboarding';
 import {
   MobileNumberForm,
   OtpForm,
   VerificationActions,
-  VerificationHeader,
   VerificationHelper,
-  VerificationProgress,
   verificationConfig,
 } from '../../component/mobileVerification';
+import { useRegistration } from '../../context/RegistrationContext';
 
 /**
- * MobileVerificationScreen
- * Unified single-screen authentication supporting:
+ * MobileVerificationScreen (Step 1 of 8)
+ * Single unified screen supporting:
  * - State 1: Enter Mobile Number (Phone Mode)
  * - State 2: Enter OTP (OTP Mode)
  *
- * Smoothly toggles modes on the same screen without pushing a separate route.
+ * Toggles modes on the same screen without pushing a separate route.
  */
 function MobileVerificationScreen({
-  navigation,
   onBack,
   onSuccess,
 }) {
   const insets = useSafeAreaInsets();
+  const { registrationData, updateRegistrationData } = useRegistration();
 
   const [mode, setMode] = useState('phone'); // 'phone' | 'otp'
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(registrationData.phone || '');
   const [otpValue, setOtpValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -46,8 +46,6 @@ function MobileVerificationScreen({
       setErrorMessage('');
     } else if (onBack) {
       onBack();
-    } else if (navigation && navigation.goBack) {
-      navigation.goBack();
     }
   };
 
@@ -69,6 +67,7 @@ function MobileVerificationScreen({
     }
 
     setErrorMessage('');
+    updateRegistrationData('phone', phoneNumber);
     // Switch SAME SCREEN into OTP mode
     setMode('otp');
     setOtpValue('');
@@ -82,13 +81,12 @@ function MobileVerificationScreen({
       return;
     }
 
-    // Mock validation check
     setErrorMessage('');
+    updateRegistrationData('phone', phoneNumber);
+    updateRegistrationData('otpVerified', true);
 
     if (onSuccess) {
       onSuccess(phoneNumber);
-    } else if (navigation && navigation.navigate) {
-      navigation.navigate('PersonalDetails');
     }
   };
 
@@ -129,16 +127,16 @@ function MobileVerificationScreen({
         translucent={true}
       />
 
-      {/* 1. Authentication Header */}
-      <VerificationHeader
+      {/* 1. Standard Header */}
+      <OnboardingHeader
         onBack={handleBack}
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Progress Indicator (Step 1 for Phone, Step 2 for OTP) */}
-      <VerificationProgress
-        step={mode === 'phone' ? 1 : 2}
-        totalSteps={3}
+      {/* 2. Step 1 of 8 Single Progress Bar */}
+      <RegistrationProgress
+        currentStep={1}
+        totalSteps={8}
       />
 
       <ScrollView
@@ -191,7 +189,7 @@ function MobileVerificationScreen({
           onChangeNumber={handleChangeNumber}
         />
 
-        {/* 5. Consistent Lower Automotive Visual */}
+        {/* 5. Lower Visual */}
         <VerificationHelper />
       </ScrollView>
     </View>

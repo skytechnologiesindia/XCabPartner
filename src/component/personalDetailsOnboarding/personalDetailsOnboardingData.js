@@ -19,6 +19,7 @@ export const initialFormValues = {
   dateOfBirth: '12 Jan 1998',
   gender: 'male',
   email: '',
+  profilePhoto: null,
 };
 
 export const benefitItems = [

@@ -55,6 +55,7 @@ function RideDetailsModal({ visible, ride, onClose }) {
     } else if (isRendered && !isClosingRef.current) {
       closeModal();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [visible]);
 
   const closeModal = () => {

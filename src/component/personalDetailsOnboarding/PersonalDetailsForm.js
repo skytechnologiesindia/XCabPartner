@@ -1,21 +1,27 @@
 import React from 'react';
 import { View } from 'react-native';
-import DateOfBirthField from './DateOfBirthField';
-import EmailField from './EmailField';
+import ProfilePhotoPicker from './ProfilePhotoPicker';
 import FullNameField from './FullNameField';
+import DateOfBirthField from './DateOfBirthField';
 import GenderSelector from './GenderSelector';
+import EmailField from './EmailField';
+import AadhaarSection from './AadhaarSection';
 
 /**
  * PersonalDetailsForm
  * Composes the driver registration personal details inputs:
+ * 0. Profile Photo (Avatar with yellow camera badge)
  * 1. Full Name (Required)
  * 2. Date of Birth (Required, 18+)
  * 3. Gender (Required)
  * 4. Email (Optional)
+ * 5. Aadhaar Number & Front/Back Uploads (Required)
  */
 function PersonalDetailsForm({
   formData,
   onChangeField,
+  aadhaarData = {},
+  onChangeAadhaar,
   errors = {},
 }) {
   return (
@@ -24,6 +30,13 @@ function PersonalDetailsForm({
         paddingHorizontal: 20,
         width: '100%',
       }}>
+      {/* 0. Profile Photo */}
+      <ProfilePhotoPicker
+        photo={formData.profilePhoto}
+        onChangePhoto={val => onChangeField('profilePhoto', val)}
+        errorMessage={errors.profilePhoto}
+      />
+
       {/* 1. Full Name */}
       <FullNameField
         value={formData.fullName}
@@ -50,6 +63,13 @@ function PersonalDetailsForm({
         value={formData.email}
         onChangeEmail={val => onChangeField('email', val)}
         errorMessage={errors.email}
+      />
+
+      {/* 5. Aadhaar Section */}
+      <AadhaarSection
+        aadhaarData={aadhaarData}
+        onChangeAadhaar={onChangeAadhaar}
+        errorMessage={errors.aadhaarNumber}
       />
     </View>
   );

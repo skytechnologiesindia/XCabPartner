@@ -69,54 +69,6 @@ function Header({
             style={({ pressed }) => [
               {
                 alignItems: 'center',
-                backgroundColor: '#FFFFFF',
-                borderColor: '#ECE8DE',
-                borderRadius: 21,
-                borderWidth: 1,
-                height: 42,
-                justifyContent: 'center',
-                position: 'relative',
-                width: 42,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.05,
-                shadowRadius: 2,
-                elevation: 1,
-                opacity: pressed ? 0.85 : 1,
-              },
-            ]}
-            onPress={onNotificationPress}
-            accessibilityRole="button"
-            accessibilityLabel="Notifications"
-          >
-            <Image
-              source={icons.bellOutline}
-              style={{
-                height: 20,
-                width: 20,
-              }}
-              resizeMode="contain"
-              tintColor="#111315"
-            />
-            <View
-              style={{
-                backgroundColor: colors.yellow500 || '#FFD21A',
-                borderColor: '#FFFFFF',
-                borderRadius: 5,
-                borderWidth: 2,
-                height: 10,
-                position: 'absolute',
-                right: 7,
-                top: 6,
-                width: 10,
-              }}
-            />
-          </Pressable>
-
-          <Pressable
-            style={({ pressed }) => [
-              {
-                alignItems: 'center',
                 borderColor: '#ECE8DE',
                 borderRadius: 22,
                 borderWidth: 1.5,
@@ -129,7 +81,7 @@ function Header({
             ]}
             onPress={onProfilePress}
             accessibilityRole="button"
-            accessibilityLabel="Driver Profile"
+            accessibilityLabel="partner Profile"
           >
             <Image
               source={images.driverAvatar}

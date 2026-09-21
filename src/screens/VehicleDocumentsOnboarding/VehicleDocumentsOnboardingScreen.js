@@ -10,36 +10,38 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { PersonalDetailsHelper } from '../../component/personalDetailsOnboarding';
+import {
+  OnboardingHeader,
+  RegistrationButton,
+  RegistrationProgress,
+} from '../../component/onboarding';
 import {
   DocumentUploadHelper,
   DocumentUploadList,
-  VehicleDocumentsContinueButton,
-  VehicleDocumentsHeader,
-  VehicleDocumentsProgress,
   documentTypes,
   initialDocumentsState,
 } from '../../component/vehicleDocumentsOnboarding';
+import { useRegistration } from '../../context/RegistrationContext';
 
 /**
- * VehicleDocumentsOnboardingScreen
- * Initial driver registration screen for uploading vehicle documents:
+ * VehicleDocumentsOnboardingScreen (Step 5 of 8)
+ * Vehicle document upload screen:
  * 1. Registration Certificate (RC) - Required
  * 2. Insurance - Required
  * 3. PUC Certificate - Required
  * 4. Fitness Certificate - If applicable
  * 5. Commercial Permit - If applicable
- *
- * Visually matches the previous onboarding screens and navigates to Emergency Contact.
  */
 function VehicleDocumentsOnboardingScreen({
-  navigation,
   onBack,
   onContinue,
 }) {
   const insets = useSafeAreaInsets();
+  const { registrationData, updateRegistrationData } = useRegistration();
 
-  const [documentsState, setDocumentsState] = useState(initialDocumentsState);
+  const [documentsState, setDocumentsState] = useState(
+    registrationData.vehicleDocuments?.rc ? registrationData.vehicleDocuments : initialDocumentsState
+  );
   const [selectedDocForUpload, setSelectedDocForUpload] = useState(null);
   const [isPickerVisible, setIsPickerVisible] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,14 +52,6 @@ function VehicleDocumentsOnboardingScreen({
       'Need help with your document uploads?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
-  };
-
-  const handleBack = () => {
-    if (onBack) {
-      onBack();
-    } else if (navigation && navigation.goBack) {
-      navigation.goBack();
-    }
   };
 
   const handleOpenUploadPicker = doc => {
@@ -79,7 +73,7 @@ function VehicleDocumentsOnboardingScreen({
       },
     }));
 
-    // 2. Simulate upload process with realistic outcome
+    // 2. Simulate upload process
     setTimeout(() => {
       const mockFileName = `${docId}_doc_${source}_${Date.now().toString().slice(-4)}.jpg`;
       const mockUri = `https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&auto=format&fit=crop&q=80`;
@@ -93,7 +87,7 @@ function VehicleDocumentsOnboardingScreen({
           uploadedAt: new Date().toISOString(),
         },
       }));
-    }, 600);
+    }, 400);
   };
 
   const handleRemoveDocument = doc => {
@@ -141,22 +135,18 @@ function VehicleDocumentsOnboardingScreen({
 
     setTimeout(() => {
       setIsSubmitting(false);
+      updateRegistrationData('vehicleDocuments', documentsState);
 
       if (onContinue) {
         onContinue(documentsState);
-      } else if (navigation && navigation.navigate) {
-        try {
-          navigation.navigate('VehicleDocumentsReview', { documents: documentsState });
-        } catch (err) {
-          navigation.navigate('EmergencyContact');
-        }
       }
-    }, 400);
+    }, 300);
   };
 
   const statusBarHeight =
     Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
   const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
+  const safeBottomPadding = Math.max(insets.bottom, 16);
 
   return (
     <View style={{ backgroundColor: '#F7F5EF', flex: 1, paddingTop: safeTopPadding }}>
@@ -167,13 +157,13 @@ function VehicleDocumentsOnboardingScreen({
       />
 
       {/* 1. Header with Back Arrow & Need Help? */}
-      <VehicleDocumentsHeader
-        onBack={handleBack}
+      <OnboardingHeader
+        onBack={onBack}
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Segmented Progress Bar (Step 3) */}
-      <VehicleDocumentsProgress step={3} totalSteps={4} />
+      {/* 2. Step 5 of 8 Progress */}
+      <RegistrationProgress currentStep={5} totalSteps={8} />
 
       <ScrollView
         style={{ backgroundColor: '#F7F5EF', flex: 1 }}
@@ -181,6 +171,7 @@ function VehicleDocumentsOnboardingScreen({
           backgroundColor: '#F7F5EF',
           flexGrow: 1,
           justifyContent: 'space-between',
+          paddingBottom: safeBottomPadding,
           paddingTop: 10,
         }}
         keyboardShouldPersistTaps="handled"
@@ -198,7 +189,7 @@ function VehicleDocumentsOnboardingScreen({
               lineHeight: 33,
             }}
           >
-            Vehicle Documents
+            Upload Vehicle{'\n'}Documents
           </Text>
           <Text
             style={{
@@ -209,7 +200,7 @@ function VehicleDocumentsOnboardingScreen({
               marginTop: 6,
             }}
           >
-            Upload clear photos of the following documents.
+            Keep your documents ready and upload clear photos.
           </Text>
         </View>
 
@@ -225,15 +216,12 @@ function VehicleDocumentsOnboardingScreen({
         <DocumentUploadHelper />
 
         {/* 6. Primary CTA */}
-        <VehicleDocumentsContinueButton
+        <RegistrationButton
           label="Continue"
           onPress={handleContinue}
           isDisabled={!areRequiredUploaded}
           isLoading={isSubmitting}
         />
-
-        {/* 7. Lower Automotive Hero & 3 Benefit Badges */}
-        <PersonalDetailsHelper />
       </ScrollView>
 
       {/* Upload Source Selection Modal */}

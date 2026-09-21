@@ -14,23 +14,21 @@ import {
   RegistrationProgress,
 } from '../../component/onboarding';
 import {
-  PersonalDetailsForm,
-  PersonalDetailsHelper,
-  initialFormValues,
-  personalDetailsConfig,
-} from '../../component/personalDetailsOnboarding';
+  DrivingLicenceForm,
+  initialLicenceValues,
+  licenceConfig,
+} from '../../component/drivingLicenceOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
 
 /**
- * PersonalDetailsOnboardingScreen (Step 2 of 8)
- * Collects driver's personal details and Aadhaar identity verification:
- * - Full Name
- * - Date of Birth (18+ validation)
- * - Gender
- * - Email (Optional)
- * - Aadhaar Number & Front/Back uploads
+ * DrivingLicenceOnboardingScreen (Step 3 of 8)
+ * Eligibility document verification step:
+ * - Licence Number
+ * - Date of Birth
+ * - Licence Valid Until
+ * - Front & Back Uploads
  */
-function PersonalDetailsOnboardingScreen({
+function DrivingLicenceOnboardingScreen({
   onBack,
   onContinue,
 }) {
@@ -38,14 +36,8 @@ function PersonalDetailsOnboardingScreen({
   const { registrationData, updateRegistrationData } = useRegistration();
 
   const [formData, setFormData] = useState({
-    ...initialFormValues,
-    ...registrationData.personalDetails,
-  });
-
-  const [aadhaarData, setAadhaarData] = useState({
-    aadhaarNumber: registrationData.aadhaar?.aadhaarNumber || '',
-    frontDocument: registrationData.aadhaar?.frontDocument || null,
-    backDocument: registrationData.aadhaar?.backDocument || null,
+    ...initialLicenceValues,
+    ...registrationData.drivingLicence,
   });
 
   const [errors, setErrors] = useState({});
@@ -64,23 +56,10 @@ function PersonalDetailsOnboardingScreen({
     }
   };
 
-  const handleAadhaarChange = (field, value) => {
-    setAadhaarData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: null,
-      }));
-    }
-  };
-
   const handleNeedHelp = () => {
     Alert.alert(
       'XCAB Partner Support',
-      'Need help with your personal details or Aadhaar verification?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
+      'Need help with your Driving Licence details or upload?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
@@ -88,33 +67,16 @@ function PersonalDetailsOnboardingScreen({
   const validateForm = () => {
     const newErrors = {};
 
-    // 1. Full Name Validation
-    if (!formData.fullName || formData.fullName.trim().length < personalDetailsConfig.minNameLength) {
-      newErrors.fullName = `Please enter full legal name (minimum ${personalDetailsConfig.minNameLength} characters).`;
+    if (!formData.licenceNumber || formData.licenceNumber.trim().length < licenceConfig.minLicenceLength) {
+      newErrors.licenceNumber = 'Please enter a valid Driving Licence number.';
     }
 
-    // 2. Date of Birth Validation
     if (!formData.dateOfBirth) {
       newErrors.dateOfBirth = 'Date of birth is required.';
     }
 
-    // 3. Gender Validation
-    if (!formData.gender) {
-      newErrors.gender = 'Please select a gender.';
-    }
-
-    // 4. Email Validation (Optional)
-    if (formData.email && formData.email.trim()) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email.trim())) {
-        newErrors.email = 'Please enter a valid email address.';
-      }
-    }
-
-    // 5. Aadhaar Validation
-    const cleanedAadhaar = (aadhaarData.aadhaarNumber || '').replace(/[^0-9]/g, '');
-    if (!cleanedAadhaar || cleanedAadhaar.length !== 12) {
-      newErrors.aadhaarNumber = 'Please enter a valid 12-digit Aadhaar number.';
+    if (!formData.validUntil) {
+      newErrors.validUntil = 'Licence validity date is required.';
     }
 
     setErrors(newErrors);
@@ -130,21 +92,19 @@ function PersonalDetailsOnboardingScreen({
 
     setTimeout(() => {
       setIsLoading(false);
-      updateRegistrationData('personalDetails', formData);
-      updateRegistrationData('aadhaar', aadhaarData);
+      updateRegistrationData('drivingLicence', formData);
 
       if (onContinue) {
-        onContinue({ formData, aadhaarData });
+        onContinue(formData);
       }
     }, 300);
   };
 
-  const cleanedAadhaar = (aadhaarData.aadhaarNumber || '').replace(/[^0-9]/g, '');
   const isFormValid =
-    formData.fullName.trim().length >= personalDetailsConfig.minNameLength &&
+    !!formData.licenceNumber &&
+    formData.licenceNumber.trim().length >= licenceConfig.minLicenceLength &&
     !!formData.dateOfBirth &&
-    !!formData.gender &&
-    cleanedAadhaar.length === 12;
+    !!formData.validUntil;
 
   const statusBarHeight =
     Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
@@ -170,8 +130,8 @@ function PersonalDetailsOnboardingScreen({
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Step 2 of 8 Progress */}
-      <RegistrationProgress currentStep={2} totalSteps={8} />
+      {/* 2. Step 3 of 8 Progress */}
+      <RegistrationProgress currentStep={3} totalSteps={8} />
 
       <ScrollView
         style={{
@@ -193,36 +153,34 @@ function PersonalDetailsOnboardingScreen({
         <View
           style={{
             paddingHorizontal: 20,
-            marginBottom: 14,
+            marginBottom: 16,
           }}>
           <Text
             style={{
               color: '#17191C',
-              fontSize: 28,
+              fontSize: 27,
               fontWeight: '900',
               letterSpacing: -0.6,
-              lineHeight: 34,
+              lineHeight: 33,
             }}>
-            Your Personal Details
+            Your Driving{'\n'}Licence
           </Text>
           <Text
             style={{
               color: '#687078',
-              fontSize: 14,
+              fontSize: 13.5,
               fontWeight: '400',
-              lineHeight: 20,
-              marginTop: 4,
+              lineHeight: 19,
+              marginTop: 6,
             }}>
-            Tell us a bit about yourself.
+            Add your driving licence to continue.
           </Text>
         </View>
 
         {/* 4. Form Inputs */}
-        <PersonalDetailsForm
+        <DrivingLicenceForm
           formData={formData}
           onChangeField={handleFieldChange}
-          aadhaarData={aadhaarData}
-          onChangeAadhaar={handleAadhaarChange}
           errors={errors}
         />
 
@@ -233,12 +191,9 @@ function PersonalDetailsOnboardingScreen({
           isDisabled={!isFormValid}
           isLoading={isLoading}
         />
-
-        {/* 6. Lower Automotive Hero */}
-        <PersonalDetailsHelper />
       </ScrollView>
     </View>
   );
 }
 
-export default PersonalDetailsOnboardingScreen;
+export default DrivingLicenceOnboardingScreen;

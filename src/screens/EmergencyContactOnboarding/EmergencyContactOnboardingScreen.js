@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Alert,
+  Keyboard,
   Platform,
   ScrollView,
   StatusBar,
@@ -14,42 +15,47 @@ import {
   RegistrationProgress,
 } from '../../component/onboarding';
 import {
-  PersonalDetailsForm,
-  PersonalDetailsHelper,
-  initialFormValues,
-  personalDetailsConfig,
-} from '../../component/personalDetailsOnboarding';
+  EmergencyContactForm,
+  initialEmergencyContactValues,
+} from '../../component/emergencyContactOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
 
 /**
- * PersonalDetailsOnboardingScreen (Step 2 of 8)
- * Collects driver's personal details and Aadhaar identity verification:
- * - Full Name
- * - Date of Birth (18+ validation)
- * - Gender
- * - Email (Optional)
- * - Aadhaar Number & Front/Back uploads
+ * EmergencyContactOnboardingScreen (Step 6 of 8)
+ * Safety contact registration:
+ * - Contact Name
+ * - Relationship
+ * - Mobile Number
  */
-function PersonalDetailsOnboardingScreen({
+function EmergencyContactOnboardingScreen({
   onBack,
   onContinue,
 }) {
   const insets = useSafeAreaInsets();
   const { registrationData, updateRegistrationData } = useRegistration();
+  const scrollViewRef = useRef(null);
 
   const [formData, setFormData] = useState({
-    ...initialFormValues,
-    ...registrationData.personalDetails,
-  });
-
-  const [aadhaarData, setAadhaarData] = useState({
-    aadhaarNumber: registrationData.aadhaar?.aadhaarNumber || '',
-    frontDocument: registrationData.aadhaar?.frontDocument || null,
-    backDocument: registrationData.aadhaar?.backDocument || null,
+    ...initialEmergencyContactValues,
+    ...registrationData.emergencyContact,
   });
 
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isPhoneFocused, setIsPhoneFocused] = useState(false);
+
+  useEffect(() => {
+    const hideSub = Keyboard.addListener(
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
+      () => {
+        setIsPhoneFocused(false);
+      },
+    );
+
+    return () => {
+      hideSub.remove();
+    };
+  }, []);
 
   const handleFieldChange = (field, value) => {
     setFormData(prev => ({
@@ -64,23 +70,25 @@ function PersonalDetailsOnboardingScreen({
     }
   };
 
-  const handleAadhaarChange = (field, value) => {
-    setAadhaarData(prev => ({
-      ...prev,
-      [field]: value,
-    }));
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: null,
-      }));
-    }
+  // When focusing specifically on the bottom Mobile Number field, expand space & scroll into view
+  const handleFocusPhone = () => {
+    setIsPhoneFocused(true);
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 100);
+    setTimeout(() => {
+      scrollViewRef.current?.scrollToEnd({ animated: true });
+    }, 280);
+  };
+
+  const handleBlurPhone = () => {
+    setIsPhoneFocused(false);
   };
 
   const handleNeedHelp = () => {
     Alert.alert(
       'XCAB Partner Support',
-      'Need help with your personal details or Aadhaar verification?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
+      'Need help adding your emergency contact?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
@@ -88,33 +96,17 @@ function PersonalDetailsOnboardingScreen({
   const validateForm = () => {
     const newErrors = {};
 
-    // 1. Full Name Validation
-    if (!formData.fullName || formData.fullName.trim().length < personalDetailsConfig.minNameLength) {
-      newErrors.fullName = `Please enter full legal name (minimum ${personalDetailsConfig.minNameLength} characters).`;
+    if (!formData.name || formData.name.trim().length < 2) {
+      newErrors.name = 'Please enter contact full name.';
     }
 
-    // 2. Date of Birth Validation
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = 'Date of birth is required.';
+    if (!formData.relationship) {
+      newErrors.relationship = 'Please select a relationship.';
     }
 
-    // 3. Gender Validation
-    if (!formData.gender) {
-      newErrors.gender = 'Please select a gender.';
-    }
-
-    // 4. Email Validation (Optional)
-    if (formData.email && formData.email.trim()) {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email.trim())) {
-        newErrors.email = 'Please enter a valid email address.';
-      }
-    }
-
-    // 5. Aadhaar Validation
-    const cleanedAadhaar = (aadhaarData.aadhaarNumber || '').replace(/[^0-9]/g, '');
-    if (!cleanedAadhaar || cleanedAadhaar.length !== 12) {
-      newErrors.aadhaarNumber = 'Please enter a valid 12-digit Aadhaar number.';
+    const cleanedPhone = (formData.phone || '').replace(/[^0-9]/g, '');
+    if (!cleanedPhone || cleanedPhone.length !== 10) {
+      newErrors.phone = 'Please enter a valid 10-digit mobile number.';
     }
 
     setErrors(newErrors);
@@ -130,21 +122,20 @@ function PersonalDetailsOnboardingScreen({
 
     setTimeout(() => {
       setIsLoading(false);
-      updateRegistrationData('personalDetails', formData);
-      updateRegistrationData('aadhaar', aadhaarData);
+      updateRegistrationData('emergencyContact', formData);
 
       if (onContinue) {
-        onContinue({ formData, aadhaarData });
+        onContinue(formData);
       }
     }, 300);
   };
 
-  const cleanedAadhaar = (aadhaarData.aadhaarNumber || '').replace(/[^0-9]/g, '');
+  const cleanedPhone = (formData.phone || '').replace(/[^0-9]/g, '');
   const isFormValid =
-    formData.fullName.trim().length >= personalDetailsConfig.minNameLength &&
-    !!formData.dateOfBirth &&
-    !!formData.gender &&
-    cleanedAadhaar.length === 12;
+    !!formData.name &&
+    formData.name.trim().length >= 2 &&
+    !!formData.relationship &&
+    cleanedPhone.length === 10;
 
   const statusBarHeight =
     Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
@@ -170,10 +161,11 @@ function PersonalDetailsOnboardingScreen({
         onNeedHelp={handleNeedHelp}
       />
 
-      {/* 2. Step 2 of 8 Progress */}
-      <RegistrationProgress currentStep={2} totalSteps={8} />
+      {/* 2. Step 6 of 8 Progress */}
+      <RegistrationProgress currentStep={6} totalSteps={8} />
 
       <ScrollView
+        ref={scrollViewRef}
         style={{
           backgroundColor: '#F7F5EF',
           flex: 1,
@@ -182,7 +174,7 @@ function PersonalDetailsOnboardingScreen({
           backgroundColor: '#F7F5EF',
           flexGrow: 1,
           justifyContent: 'space-between',
-          paddingBottom: safeBottomPadding,
+          paddingBottom: isPhoneFocused ? 360 : safeBottomPadding + 20,
           paddingTop: 10,
         }}
         keyboardShouldPersistTaps="handled"
@@ -193,36 +185,36 @@ function PersonalDetailsOnboardingScreen({
         <View
           style={{
             paddingHorizontal: 20,
-            marginBottom: 14,
+            marginBottom: 16,
           }}>
           <Text
             style={{
               color: '#17191C',
-              fontSize: 28,
+              fontSize: 27,
               fontWeight: '900',
               letterSpacing: -0.6,
-              lineHeight: 34,
+              lineHeight: 33,
             }}>
-            Your Personal Details
+            Emergency Contact
           </Text>
           <Text
             style={{
               color: '#687078',
-              fontSize: 14,
+              fontSize: 13.5,
               fontWeight: '400',
-              lineHeight: 20,
-              marginTop: 4,
+              lineHeight: 19,
+              marginTop: 6,
             }}>
-            Tell us a bit about yourself.
+            Add a trusted person we can contact in case of an emergency.
           </Text>
         </View>
 
         {/* 4. Form Inputs */}
-        <PersonalDetailsForm
+        <EmergencyContactForm
           formData={formData}
           onChangeField={handleFieldChange}
-          aadhaarData={aadhaarData}
-          onChangeAadhaar={handleAadhaarChange}
+          onFocusPhone={handleFocusPhone}
+          onBlurPhone={handleBlurPhone}
           errors={errors}
         />
 
@@ -233,12 +225,9 @@ function PersonalDetailsOnboardingScreen({
           isDisabled={!isFormValid}
           isLoading={isLoading}
         />
-
-        {/* 6. Lower Automotive Hero */}
-        <PersonalDetailsHelper />
       </ScrollView>
     </View>
   );
 }
 
-export default PersonalDetailsOnboardingScreen;
+export default EmergencyContactOnboardingScreen;
