@@ -1,0 +1,464 @@
+import React from 'react';
+import {
+  Pressable,
+  Text,
+  View,
+} from 'react-native';
+
+/**
+ * SettingsItem
+ * Reusable row component for all Settings sections.
+ * Supports standard navigation rows, right-side display values, and destructive actions.
+ */
+function SettingsItem({
+  iconType,
+  title,
+  subtitle,
+  value,
+  isDestructive = false,
+  isLast = false,
+  onPress,
+}) {
+  return (
+    <Pressable
+      style={({ pressed }) => [
+        {
+          alignItems: 'center',
+          flexDirection: 'row',
+          paddingHorizontal: 16,
+          paddingVertical: 13,
+        },
+        !isLast && {
+          borderBottomColor: '#F1EEE5',
+          borderBottomWidth: 1,
+        },
+        pressed && {
+          backgroundColor: '#FAF9F5',
+        },
+      ]}
+      onPress={onPress}
+      accessibilityRole="button"
+      accessibilityLabel={`${title}, ${subtitle || ''}${value ? ', ' + value : ''}`}
+    >
+      {/* 1. Category Icon in Circular Container */}
+      <View
+        style={[
+          {
+            alignItems: 'center',
+            backgroundColor: '#F4F2EB',
+            borderRadius: 22,
+            height: 44,
+            justifyContent: 'center',
+            marginRight: 14,
+            width: 44,
+          },
+          isDestructive && {
+            backgroundColor: '#FDECEB',
+          },
+        ]}
+      >
+        <SettingIcon type={iconType} isDestructive={isDestructive} />
+      </View>
+
+      {/* 2. Text Column */}
+      <View style={{ flex: 1 }}>
+        <Text
+          style={[
+            {
+              color: '#17191C',
+              fontSize: 14.5,
+              fontWeight: '800',
+              letterSpacing: -0.2,
+            },
+            isDestructive && {
+              color: '#E11D48',
+            },
+          ]}
+          numberOfLines={1}
+        >
+          {title}
+        </Text>
+        {subtitle ? (
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 12,
+              fontWeight: '400',
+              marginTop: 2.5,
+            }}
+            numberOfLines={1}
+          >
+            {subtitle}
+          </Text>
+        ) : null}
+      </View>
+
+      {/* 3. Right Value & Chevron */}
+      <View
+        style={{
+          alignItems: 'center',
+          flexDirection: 'row',
+          gap: 8,
+          marginLeft: 10,
+        }}
+      >
+        {value ? (
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 13.5,
+              fontWeight: '500',
+            }}
+          >
+            {value}
+          </Text>
+        ) : null}
+        <Text
+          style={{
+            color: '#17191C',
+            fontSize: 20,
+            fontWeight: '600',
+            marginTop: -1,
+          }}
+        >
+          ›
+        </Text>
+      </View>
+    </Pressable>
+  );
+}
+
+/**
+ * Vector icons matching the reference visual style
+ */
+function SettingIcon({ type, isDestructive }) {
+  const iconColor = isDestructive ? '#E11D48' : '#17191C';
+
+  switch (type) {
+    case 'bell':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            height: 18,
+            justifyContent: 'center',
+            width: 18,
+          }}
+        >
+          <View
+            style={{
+              borderBottomLeftRadius: 3,
+              borderBottomRightRadius: 3,
+              borderTopLeftRadius: 8,
+              borderTopRightRadius: 8,
+              borderWidth: 1.6,
+              borderColor: iconColor,
+              height: 14,
+              position: 'relative',
+              width: 14,
+            }}
+          >
+            <View
+              style={{
+                borderRadius: 1,
+                height: 2,
+                left: 4.5,
+                position: 'absolute',
+                top: -3,
+                width: 2,
+                backgroundColor: iconColor,
+              }}
+            />
+          </View>
+          <View
+            style={{
+              borderRadius: 1,
+              height: 2,
+              marginTop: 1,
+              width: 4,
+              backgroundColor: iconColor,
+            }}
+          />
+        </View>
+      );
+
+    case 'location':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 18,
+              transform: [{ rotate: '-45deg' }],
+              color: iconColor,
+            }}
+          >
+            ✈
+          </Text>
+        </View>
+      );
+
+    case 'moon':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 20,
+              lineHeight: 22,
+              transform: [{ rotate: '-20deg' }],
+              color: iconColor,
+            }}
+          >
+            ☽
+          </Text>
+        </View>
+      );
+
+    case 'globe':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            borderRadius: 9,
+            borderWidth: 1.6,
+            borderColor: iconColor,
+            height: 18,
+            justifyContent: 'center',
+            overflow: 'hidden',
+            position: 'relative',
+            width: 18,
+          }}
+        >
+          <View
+            style={{
+              borderTopWidth: 1.2,
+              borderColor: iconColor,
+              height: 0,
+              position: 'absolute',
+              width: '100%',
+            }}
+          />
+          <View
+            style={{
+              borderRadius: 5,
+              borderWidth: 1.2,
+              borderColor: iconColor,
+              height: '100%',
+              width: 9,
+            }}
+          />
+        </View>
+      );
+
+    case 'download':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            height: 18,
+            justifyContent: 'center',
+            width: 18,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 14,
+              fontWeight: '900',
+              lineHeight: 14,
+              marginTop: -2,
+              color: iconColor,
+            }}
+          >
+            ↓
+          </Text>
+          <View
+            style={{
+              borderBottomWidth: 1.6,
+              borderLeftWidth: 1.6,
+              borderRightWidth: 1.6,
+              borderColor: iconColor,
+              height: 5,
+              marginTop: 1,
+              width: 14,
+            }}
+          />
+        </View>
+      );
+
+    case 'database':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            height: 18,
+            justifyContent: 'center',
+            width: 18,
+          }}
+        >
+          <View
+            style={{
+              borderRadius: 3.5,
+              borderWidth: 1.6,
+              borderColor: iconColor,
+              height: 6,
+              width: 15,
+            }}
+          />
+          <View
+            style={{
+              borderRadius: 3.5,
+              borderWidth: 1.6,
+              borderColor: iconColor,
+              height: 6,
+              marginTop: 2,
+              width: 15,
+            }}
+          />
+        </View>
+      );
+
+    case 'document':
+      return (
+        <View
+          style={{
+            borderRadius: 2,
+            borderWidth: 1.6,
+            borderColor: iconColor,
+            height: 18,
+            justifyContent: 'center',
+            paddingHorizontal: 2.5,
+            width: 15,
+          }}
+        >
+          <View
+            style={{
+              borderRadius: 0.5,
+              height: 1.5,
+              marginBottom: 2,
+              width: '100%',
+              backgroundColor: iconColor,
+            }}
+          />
+          <View
+            style={{
+              borderRadius: 0.5,
+              height: 1.5,
+              marginBottom: 2,
+              width: '75%',
+              backgroundColor: iconColor,
+            }}
+          />
+          <View
+            style={{
+              borderRadius: 0.5,
+              height: 1.5,
+              marginBottom: 2,
+              width: '50%',
+              backgroundColor: iconColor,
+            }}
+          />
+        </View>
+      );
+
+    case 'info':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            borderRadius: 9,
+            borderWidth: 1.6,
+            borderColor: iconColor,
+            height: 18,
+            justifyContent: 'center',
+            width: 18,
+          }}
+        >
+          <Text
+            style={{
+              fontSize: 12,
+              fontWeight: '800',
+              marginTop: -1,
+              color: iconColor,
+            }}
+          >
+            i
+          </Text>
+        </View>
+      );
+
+    case 'trash':
+      return (
+        <View
+          style={{
+            alignItems: 'center',
+            height: 18,
+            justifyContent: 'center',
+            width: 16,
+          }}
+        >
+          <View
+            style={{
+              borderRadius: 1,
+              height: 2,
+              marginBottom: 1.5,
+              width: 14,
+              backgroundColor: iconColor,
+            }}
+          />
+          <View
+            style={{
+              borderBottomLeftRadius: 3,
+              borderBottomRightRadius: 3,
+              borderWidth: 1.6,
+              borderColor: iconColor,
+              borderTopWidth: 0,
+              flexDirection: 'row',
+              gap: 2.5,
+              height: 12,
+              justifyContent: 'center',
+              paddingTop: 1.5,
+              width: 12,
+            }}
+          >
+            <View
+              style={{
+                height: 6,
+                width: 1.2,
+                backgroundColor: iconColor,
+              }}
+            />
+            <View
+              style={{
+                height: 6,
+                width: 1.2,
+                backgroundColor: iconColor,
+              }}
+            />
+          </View>
+        </View>
+      );
+
+    default:
+      return (
+        <Text
+          style={{
+            color: '#17191C',
+            fontSize: 16,
+          }}
+        >
+          •
+        </Text>
+      );
+  }
+}
+
+export default SettingsItem;
