@@ -73,15 +73,15 @@ function VehicleDocumentsScreen({
 
   const handleContactSupport = () => {
     Alert.alert(
-      'XCab Partner Support',
-      'Contact our driver operations team at support@xcab.in or call toll-free 1800-123-XCAB.',
+      'TREEPS Support (24/7)',
+      'Contact our driver operations team at support@treeps.in or call toll-free 1800-123-TREEPS.',
       [{ text: 'Call Support' }, { text: 'Cancel', style: 'cancel' }],
     );
   };
 
   return (
     <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
-      {/* 1. Secondary Back Header: [<  XCAB] */}
+      {/* 1. Secondary Back Header: [‹  TREEPS] */}
       <View
         style={{
           alignItems: 'center',

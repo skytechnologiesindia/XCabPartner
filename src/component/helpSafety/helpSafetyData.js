@@ -1,5 +1,5 @@
 /**
- * XCAB Driver Help & Safety Mock Data
+ * TREEPS Driver Help & Safety Mock Data
  * Structured, API-friendly configuration for the Help & Safety screen.
  */
 
@@ -10,9 +10,9 @@ export const emergencyContactsConfig = {
     number: '112',
   },
   support: {
-    title: 'XCAB Support',
+    title: 'TREEPS Support',
     subtitle: '24/7 Assistance',
-    number: '1800-123-XCAB',
+    number: '1800-123-TREEPS',
   },
 };
 

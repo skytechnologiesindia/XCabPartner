@@ -186,7 +186,7 @@ function PersonalDetailRow({
 }
 
 /**
- * Outline vector icons matching the XCAB design language
+ * Outline vector icons matching the TREEPS design language
  */
 function FieldIcon({ type }) {
   const iconColor = '#687078';

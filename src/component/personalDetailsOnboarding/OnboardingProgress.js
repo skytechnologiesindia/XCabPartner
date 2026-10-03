@@ -60,7 +60,7 @@ function OnboardingProgress({
           }}
         />
 
-        {/* Completed portion (XCAB Yellow) */}
+        {/* Completed portion (TREEPS Yellow) */}
         <View
           style={{
             backgroundColor: '#FFC928',

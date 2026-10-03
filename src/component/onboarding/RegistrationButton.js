@@ -9,7 +9,7 @@ import {
 
 /**
  * RegistrationButton
- * Canonical Continue CTA button for the XCAB Driver App registration flow.
+ * Canonical Continue CTA button for the TREEPS App registration flow.
  * Supports disabled, loading, custom label, and right arrow indicator.
  */
 function RegistrationButton({

@@ -20,7 +20,7 @@ function VerificationSuccess() {
 
       <Text style={styles.title}>You’re Approved!</Text>
       <Text style={styles.subtitle}>
-        Your account has been verified. You’re all set to start driving with XCAB.
+        Your account has been verified. You’re all set to start driving with TREEPS.
       </Text>
 
       {/* Benefits Card */}

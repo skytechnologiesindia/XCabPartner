@@ -11,7 +11,7 @@ import {
  * - Circular headphone icon container
  * - "Need to update your details?" headline
  * - "Contact our support team for assistance." subtitle
- * - "Contact Support" XCAB yellow CTA button
+ * - "Contact Support" TREEPS yellow CTA button
  */
 function SupportCard({ onContactSupport }) {
   return (

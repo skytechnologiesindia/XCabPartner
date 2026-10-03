@@ -11,7 +11,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 /**
  * SplashHeroScene
  * Showcases the hero visual:
- * - Premium white XCAB-branded sedan
+ * - Premium white TREEPS-branded sedan
  * - Clean curved modern road with signature yellow lane line
  * - Soft city skyline under a warm golden sunrise circle
  * - Subtle script accent: "A Smoother Brighter Tomorrow"
@@ -37,7 +37,7 @@ function SplashHeroScene() {
         }}
         resizeMode="cover"
         accessibilityRole="image"
-        accessibilityLabel="White XCAB sedan driving on a modern highway toward sunrise skyline"
+        accessibilityLabel="White TREEPS sedan driving on a modern highway toward sunrise skyline"
       />
     </View>
   );

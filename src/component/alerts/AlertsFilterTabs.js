@@ -62,7 +62,7 @@ const styles = StyleSheet.create({
     paddingVertical: 9,
   },
   tabItemActive: {
-    backgroundColor: '#FFC928', // XCAB Yellow
+    backgroundColor: '#FFC928', // TREEPS Yellow
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
     shadowOpacity: 0.08,

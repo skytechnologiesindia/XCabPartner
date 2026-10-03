@@ -10,7 +10,7 @@ import {
 /**
  * OnboardingHeader
  * Common header across all onboarding and registration screens.
- * ←    XCAB DRIVER APP    Need Help?
+ * ←    TREEPS DRIVER APP    Need Help?
  */
 function OnboardingHeader({
   onBack,
@@ -20,8 +20,8 @@ function OnboardingHeader({
 }) {
   const defaultNeedHelp = () => {
     Alert.alert(
-      'XCAB Partner Support',
-      'Need assistance with your registration or document verification?\n\nCall our 24/7 Driver Helpline at 1800-247-XCAB (9222).',
+      'TREEPS Support (24/7)',
+      'Need assistance with your registration or document verification?\n\nCall our 24/7 Driver Helpline at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
@@ -46,8 +46,7 @@ function OnboardingHeader({
       {/* 2. Center Brand Logo */}
       <View style={styles.brandContainer}>
         <View style={styles.logoRow}>
-          <Text style={styles.logoYellow}>X</Text>
-          <Text style={styles.logoDark}>CAB</Text>
+          <Text style={styles.logoDark}>TREEPS</Text>
         </View>
         <Text style={styles.driverAppText}>
           D R I V E R   A P P

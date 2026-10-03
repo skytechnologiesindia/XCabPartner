@@ -1,5 +1,5 @@
 /**
- * XCAB Mock Alerts Data
+ * TREEPS Mock Alerts Data
  * Structured mock notification data for Driver App Alerts screen.
  * Structured to be easily replaced with live push/REST notification data.
  */

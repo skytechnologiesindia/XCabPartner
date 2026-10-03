@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
  * Clean, single-line onboarding step indicator:
  * - Top text: "Step {step} of {totalSteps}"
  * - Single thin horizontal progress bar:
- *   - Completed portion: XCAB yellow #FFC928
+ *   - Completed portion: TREEPS yellow #FFC928
  *   - Remaining portion: Soft light gray #DDD9CF
  *   - Current position circular marker
  */
@@ -60,7 +60,7 @@ function VerificationProgress({ step = 1, totalSteps = 7 }) {
           }}
         />
 
-        {/* Completed portion (XCAB Yellow) */}
+        {/* Completed portion (TREEPS Yellow) */}
         <View
           style={{
             backgroundColor: '#FFC928',

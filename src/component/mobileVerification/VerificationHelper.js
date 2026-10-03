@@ -14,7 +14,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 /**
  * VerificationHelper
  * Consistent lower visual section displaying:
- * - Approved white XCAB sedan on curved highway toward sunrise skyline
+ * - Approved white TREEPS sedan on curved highway toward sunrise skyline
  * - Curved white card showcasing 3 driver benefits: Safe Journeys, Better Earnings, Stronger Communities
  */
 function VerificationHelper() {
@@ -43,7 +43,7 @@ function VerificationHelper() {
           }}
           resizeMode="cover"
           accessibilityRole="image"
-          accessibilityLabel="White XCAB sedan on highway"
+          accessibilityLabel="White TREEPS sedan on highway"
         />
       </View>
 

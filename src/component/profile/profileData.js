@@ -1,7 +1,7 @@
 import { images } from '../../assets/images';
 
 /**
- * XCAB Mock Profile Data
+ * TREEPS Mock Profile Data
  * Structured profile and stats information for the Driver App Profile screen.
  * Can be easily swapped with live API / user context data.
  */

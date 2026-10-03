@@ -16,10 +16,10 @@ import {
 
 /**
  * SplashScreen
- * Clean, premium, automotive-inspired starting screen for the XCAB Driver App.
+ * Clean, premium, automotive-inspired starting screen for the TREEPS App.
  * Matches the reference image layout:
- * - Top XCAB Driver App identity with golden arc and taglines
- * - Central white XCAB sedan driving toward sunrise city skyline
+ * - Top TREEPS App identity with golden arc and taglines
+ * - Central white TREEPS sedan driving toward sunrise city skyline
  * - Curved bottom card with animated progress, key benefits, and patriotic mobility slogan
  */
 function SplashScreen({ onFinish }) {
@@ -63,7 +63,7 @@ function SplashScreen({ onFinish }) {
           style={{ flex: 1 }}
           onPress={handleSkipOrFinish}
           accessibilityRole="button"
-          accessibilityLabel="XCAB Partner App Starting Screen"
+          accessibilityLabel="TREEPS App Starting Screen"
         >
           <ScrollView
             style={{ flex: 1 }}

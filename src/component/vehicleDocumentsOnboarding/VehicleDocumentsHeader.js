@@ -5,7 +5,7 @@ import OnboardingHeader from '../personalDetailsOnboarding/OnboardingHeader';
  * VehicleDocumentsHeader
  * Consistent authentication/onboarding navigation header:
  * - Left: Back arrow (←)
- * - Center: Master XCAB brand logo + DRIVER APP
+ * - Center: Master TREEPS brand logo + DRIVER APP
  * - Right: Need Help? action
  */
 function VehicleDocumentsHeader({

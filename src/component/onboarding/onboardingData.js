@@ -2,7 +2,7 @@ import { images } from '../../assets/images';
 
 /**
  * Onboarding Slides Data
- * Structured slide content for the 3-step XCAB Driver App onboarding flow.
+ * Structured slide content for the 3-step TREEPS App onboarding flow.
  */
 export const onboardingSlides = [
   {

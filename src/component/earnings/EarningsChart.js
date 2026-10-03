@@ -8,7 +8,7 @@ const MIN_BAR_HEIGHT = 16;
 /**
  * EarningsChart
  * Data-driven bar chart receiving dynamic data array with utility styles.
- * Highlights the highest day in bright XCAB Yellow.
+ * Highlights the highest day in bright TREEPS Yellow.
  */
 function EarningsChart({ data = [] }) {
   if (!data || data.length === 0) return null;

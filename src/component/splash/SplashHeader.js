@@ -6,7 +6,7 @@ import { Text, View } from 'react-native';
  * Prominent branding header displaying:
  * - Top-left golden decorative arc
  * - Top-right "Miles Create Opportunities" tagline
- * - XCAB logo with yellow 'X' and dark charcoal 'CAB'
+ * - TREEPS logo with yellow 'X' and dark charcoal 'CAB'
  * - 'DRIVER APP' spaced subtitle
  * - 'Drive Today' and 'A Better Tomorrow' headlines
  * - 'More Rides • Fair Earnings • Safer Roads' supporting line
@@ -67,7 +67,7 @@ function SplashHeader() {
         />
       </View>
 
-      {/* 3. XCAB Master Logo */}
+      {/* 3. TREEPS Master Logo */}
       <View
         style={{
           alignItems: 'center',
@@ -83,23 +83,13 @@ function SplashHeader() {
         >
           <Text
             style={{
-              color: '#FFC928',
-              fontSize: 42,
-              fontWeight: '900',
-              letterSpacing: -1,
-            }}
-          >
-            X
-          </Text>
-          <Text
-            style={{
               color: '#17191C',
-              fontSize: 42,
+              fontSize: 38,
               fontWeight: '900',
-              letterSpacing: -1,
+              letterSpacing: 0.5,
             }}
           >
-            CAB
+            TREEPS
           </Text>
         </View>
         <Text
@@ -108,7 +98,7 @@ function SplashHeader() {
             fontSize: 11,
             fontWeight: '700',
             letterSpacing: 4.5,
-            marginTop: 2,
+            marginTop: 4,
           }}
         >
           D R I V E R   A P P

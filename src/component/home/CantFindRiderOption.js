@@ -5,7 +5,7 @@ import { icons } from '../../assets/icons';
 /**
  * CantFindRiderOption
  * Single reusable row option component for the "Can't find the rider?" sheet.
- * Matches XCAB design with pure inline CSS styles.
+ * Matches TREEPS design with pure inline CSS styles.
  */
 function CantFindRiderOption({
   id,

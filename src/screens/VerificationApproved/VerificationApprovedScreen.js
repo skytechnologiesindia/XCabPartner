@@ -27,8 +27,8 @@ function VerificationApprovedScreen({
 
   const handleNeedHelp = () => {
     Alert.alert(
-      'XCAB Partner Support',
-      'Welcome to XCAB! Need help getting started or understanding the driver app?\n\nDriver Helpline: 1800-247-XCAB (9222)',
+      'TREEPS Support (24/7)',
+      'Welcome to TREEPS! Need help getting started or understanding the driver app?\n\nDriver Helpline: 1800-247-TREEPS (9222)',
       [{ text: 'Close', style: 'cancel' }],
     );
   };

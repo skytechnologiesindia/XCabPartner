@@ -87,8 +87,8 @@ function EmergencyContactOnboardingScreen({
 
   const handleNeedHelp = () => {
     Alert.alert(
-      'XCAB Partner Support',
-      'Need help adding your emergency contact?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
+      'TREEPS Support (24/7)',
+      'Need help adding your emergency contact?\n\nContact our 24/7 Driver Support at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };

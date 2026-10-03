@@ -5,7 +5,7 @@ import { otherItems as defaultOtherItems } from './settingsData';
 
 /**
  * OthersSection
- * Others category covering Legal & Policies and About XCab information.
+ * Others category covering Legal & Policies and About TREEPS information.
  */
 function OthersSection({
   items = defaultOtherItems,

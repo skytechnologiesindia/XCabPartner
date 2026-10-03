@@ -45,14 +45,14 @@ function PersonalDetailsCard({
           elevation: 1.5,
         },
         (onEditAvatar || onPressCard) &&
-          pressed && {
-            backgroundColor: '#FAF9F5',
-            transform: [{ scale: 0.995 }],
-          },
+        pressed && {
+          backgroundColor: '#FAF9F5',
+          transform: [{ scale: 0.995 }],
+        },
       ]}
       onPress={onEditAvatar || onPressCard}
       accessibilityRole="button"
-      accessibilityLabel={`Driver ${fullName}, ID: ${driverId}, Verified Driver`}
+      accessibilityLabel={`Partner ${fullName}, ID: ${driverId}, Verified Partner`}
     >
       {/* 1. Left: Circular Avatar with Verified Badge */}
       <View

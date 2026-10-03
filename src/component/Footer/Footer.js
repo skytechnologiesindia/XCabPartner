@@ -39,7 +39,7 @@ const TABS = [
 ];
 
 /**
- * Integrated bottom navigation footer matching XCAB design system.
+ * Integrated bottom navigation footer matching TREEPS design system.
  * Uses inline styling for direct presentation control.
  */
 function Footer(props) {

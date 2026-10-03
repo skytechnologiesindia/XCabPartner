@@ -91,8 +91,8 @@ function VehicleDetailsOnboardingScreen({
 
   const handleNeedHelp = () => {
     Alert.alert(
-      'XCAB Partner Support',
-      'Need help selecting or entering your vehicle details?\n\nContact our 24/7 Driver Support at 1800-247-XCAB (9222).',
+      'TREEPS Support (24/7)',
+      'Need help selecting or entering your vehicle details?\n\nContact our 24/7 Driver Support at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };

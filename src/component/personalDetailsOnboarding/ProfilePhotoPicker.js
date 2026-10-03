@@ -11,7 +11,7 @@ import { images } from '../../assets/images';
 
 /**
  * ProfilePhotoPicker
- * Circular avatar photo upload component matching XCAB design:
+ * Circular avatar photo upload component matching TREEPS design:
  * - Circular placeholder with silhouette icon
  * - Yellow camera badge in bottom-right corner
  * - "Add Profile Photo" label

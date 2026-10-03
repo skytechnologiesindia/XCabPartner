@@ -9,7 +9,7 @@ import {
 
 /**
  * AadhaarSection
- * Identity verification inputs matching the exact XCAB reference UI:
+ * Identity verification inputs matching the exact TREEPS reference UI:
  * - Title: "Aadhaar Details"
  * - Aadhaar Number input with Aadhaar emblem on the right
  * - Upload Aadhaar Card (Front Side & Back Side upload cards with tray upload icons)

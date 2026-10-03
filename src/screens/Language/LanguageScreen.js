@@ -57,7 +57,7 @@ function LanguageScreen({ onBack, onContinue }) {
         <View style={styles.headerTitleContainer}>
           <Text style={styles.title}>Choose Your{'\n'}Language</Text>
           <Text style={styles.subtitle}>
-            Select your preferred language for the XCAB Driver App. You can change this later in settings.
+            Select your preferred language for the TREEPS App. You can change this later in settings.
           </Text>
         </View>
 

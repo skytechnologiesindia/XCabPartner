@@ -62,10 +62,10 @@ function KycDetails({ data }) {
         verified={true}
       />
 
-      {/* 3. Driver ID (Read-only / Verified) */}
+      {/* 3. Partner ID (Read-only / Verified) */}
       <PersonalDetailRow
         icon="idCard"
-        label="Driver ID"
+        label="Partner ID"
         value={driverId}
         editable={false}
         verified={true}
