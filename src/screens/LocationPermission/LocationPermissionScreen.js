@@ -41,7 +41,7 @@ function LocationPermissionScreen({
   const handleNeedHelp = () => {
     Alert.alert(
       'Location Access Support',
-      'Location is required for dispatching rides near you, navigating accurately, and calculating distance fares.\n\nContact support at 1800-247-XCAB.',
+      'Location is required for dispatching rides near you, navigating accurately, and calculating distance fares.\n\nContact support at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
@@ -52,9 +52,9 @@ function LocationPermissionScreen({
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
           {
-            title: 'XCAB Partner Location Permission',
+            title: 'TREEPS Location Permission',
             message:
-              'XCAB Driver App requires your precise location to receive ride requests and provide route navigation.',
+              'TREEPS App requires your precise location to receive ride requests and provide route navigation.',
             buttonNeutral: 'Ask Me Later',
             buttonNegative: 'Cancel',
             buttonPositive: 'OK',

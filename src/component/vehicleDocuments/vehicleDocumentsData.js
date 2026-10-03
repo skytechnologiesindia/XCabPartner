@@ -1,7 +1,7 @@
 import { images } from '../../assets/images';
 
 /**
- * XCAB Mock Vehicle & Documents Data
+ * TREEPS Mock Vehicle & Documents Data
  * Model data for attached vehicle, specifications, and regulatory documents.
  * Structured to be easily swapped with live API/backend data.
  */
@@ -9,7 +9,7 @@ export const vehicleData = {
   name: 'White Sedan',
   registration: 'JH 01 AB 4821',
   status: 'active',
-  statusText: 'Active on XCab',
+  statusText: 'Active on TREEPS',
   type: 'Sedan',
   makeModel: 'Maruti Dzire',
   year: '2022',

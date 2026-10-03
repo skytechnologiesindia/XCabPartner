@@ -145,7 +145,7 @@ function DeleteAccountModal({
                   textAlign: 'center',
                 }}
               >
-                This action will permanently delete your XCAB account and
+                This action will permanently delete your TREEPS account and
                 associated data. You may not be able to recover your account
                 after deletion.
               </Text>

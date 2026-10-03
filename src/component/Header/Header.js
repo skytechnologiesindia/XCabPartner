@@ -29,31 +29,19 @@ function Header({
           justifyContent: 'space-between',
         }}
       >
-        {/* Left: XCAB Logo */}
+        {/* Left: TREEPS Logo */}
         <View style={{ alignItems: 'center', flexDirection: 'row' }}>
-          <Text
-            style={[
-              styles.ts28,
-              {
-                color: colors.yellow500 || '#FFD21A',
-                fontWeight: '900',
-                letterSpacing: -0.5,
-              },
-            ]}
-          >
-            X
-          </Text>
           <Text
             style={[
               styles.ts28,
               {
                 color: '#111315',
                 fontWeight: '900',
-                letterSpacing: -0.5,
+                letterSpacing: 0.5,
               },
             ]}
           >
-            CAB
+            TREEPS
           </Text>
         </View>
 

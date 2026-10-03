@@ -1,7 +1,7 @@
 import { images } from '../../assets/images';
 
 /**
- * XCAB Driver Personal Details Mock Data
+ * TREEPS Driver Personal Details Mock Data
  * API-friendly data model for the Personal Details screen.
  * Values can be replaced directly with remote driver profile API payload.
  */

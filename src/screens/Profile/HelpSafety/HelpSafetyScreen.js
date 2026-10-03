@@ -19,7 +19,7 @@ import {
 
 /**
  * HelpSafetyScreen
- * Main page container for XCAB Driver Help & Safety with inline styles.
+ * Main page container for TREEPS Driver Help & Safety with inline styles.
  * Composes emergency police/support actions, assistance categories,
  * safety tools, community guidelines, and support escalation.
  */
@@ -57,8 +57,8 @@ function HelpSafetyScreen({
 
   const handleSupportCall = () => {
     Alert.alert(
-      'XCAB Partner Support (24/7)',
-      'Connect with dedicated driver operations for real-time assistance.\n\n• Toll-Free: 1800-123-XCAB\n• Email: support@xcab.in',
+      'TREEPS Support (24/7)',
+      'Connect with dedicated driver operations for real-time assistance.\n\n• Toll-Free: 1800-123-TREEPS\n• Email: support@treeps.in',
       [
         { text: 'Cancel', style: 'cancel' },
         {
@@ -127,7 +127,7 @@ function HelpSafetyScreen({
       case 'community-guidelines':
         Alert.alert(
           'Community Guidelines',
-          'XCAB maintains zero tolerance for harassment, discrimination, or reckless driving. Mutual respect ensures safety for both partners and passengers.',
+          'TREEPS maintains zero tolerance for harassment, discrimination, or reckless driving. Mutual respect ensures safety for both partners and passengers.',
           [{ text: 'Read Full Policy' }, { text: 'Close', style: 'cancel' }],
         );
         break;
@@ -147,7 +147,7 @@ function HelpSafetyScreen({
 
   return (
     <View style={{ flex: 1, backgroundColor: '#F7F5EF' }}>
-      {/* 1. Existing Secondary Back Header: [‹  XCAB] */}
+      {/* 1. Existing Secondary Back Header: [‹  TREEPS] */}
       <View
         style={{
           alignItems: 'center',

@@ -59,7 +59,7 @@ function HomeScreen({
         flex: 1,
         position: 'relative',
       }}>
-      {/* iOS Style XCAB Header */}
+      {/* iOS Style TREEPS Header */}
       <Header
         onNotificationPress={onNotificationPress}
         onProfilePress={onProfilePress}

@@ -6,7 +6,7 @@ import RideStatus from './RideStatus';
 
 /**
  * RideCard
- * Clean white card matching XCAB visual standards.
+ * Clean white card matching TREEPS visual standards.
  * Composes RideRoute, RideMeta, RideStatus, Trip ID and View Details CTA.
  */
 function RideCard({ ride, onPressDetails }) {

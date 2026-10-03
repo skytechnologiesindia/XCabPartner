@@ -16,7 +16,7 @@ import {
 
 /**
  * SettingsScreen
- * Page composition layer for XCAB Driver App Settings.
+ * Page composition layer for TREEPS App Settings.
  * Manages Preferences, App Settings, Others, and the two-step Delete Account flow.
  */
 function SettingsScreen({
@@ -94,7 +94,7 @@ function SettingsScreen({
       case 'app-version':
         Alert.alert(
           'Check for Updates',
-          'You are using the latest version of XCab Partner (v1.2.0 Build 45).',
+          'You are using the latest version of TREEPS Partner (v1.2.0 Build 45).',
           [{ text: 'OK' }],
         );
         break;
@@ -131,10 +131,11 @@ function SettingsScreen({
         );
         break;
 
+      case 'about-treeps':
       case 'about-xcab':
         Alert.alert(
-          'About XCab',
-          'XCab Partner App v1.2.0 (Build 45)\n\nDesigned for driver partners to deliver safe, reliable, and premium city mobility.',
+          'About TREEPS',
+          'TREEPS App v1.2.0 (Build 45)\n\nDesigned for driver partners to deliver safe, reliable, and premium city mobility.',
           [{ text: 'Close', style: 'cancel' }],
         );
         break;
@@ -158,15 +159,15 @@ function SettingsScreen({
 
   const handleContactSupport = () => {
     Alert.alert(
-      'XCab Partner Support',
-      'For assistance regarding account deletion or disputes:\n• Helpline: 1800-123-XCAB\n• Email: support@xcab.in',
+      'TREEPS Support (24/7)',
+      'For assistance regarding account deletion or disputes:\n• Helpline: 1800-123-TREEPS\n• Email: support@treeps.in',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
 
   return (
     <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
-      {/* 1. Existing Secondary Back Header: [‹  XCAB] */}
+      {/* 1. Existing Secondary Back Header: [‹  TREEPS] */}
       <View
         style={{
           alignItems: 'center',

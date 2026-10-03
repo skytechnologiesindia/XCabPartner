@@ -20,7 +20,7 @@ import { PersonalDetailsHelper } from '../../../component/personalDetailsOnboard
 
 /**
  * EmergencyContactScreen
- * Main screen for XCAB Driver Emergency Contact management during onboarding & profile.
+ * Main screen for TREEPS Driver Emergency Contact management during onboarding & profile.
  * - Displays brand header with back action and logo
  * - Prominent "Save Changes →" CTA
  * with inline styles.
@@ -122,8 +122,8 @@ function EmergencyContactScreen({
 
   const handleContactSupport = () => {
     Alert.alert(
-      'XCab Driver Support',
-      'Need assistance with emergency contact information or safety protocols?\n\nContact driver operations:\n• Toll-Free: 1800-123-XCAB\n• Email: support@xcab.in',
+      'TREEPS Support',
+      'Need assistance with emergency contact information or safety protocols?\n\nContact driver operations:\n• Toll-Free: 1800-123-TREEPS\n• Email: support@treeps.in',
       [
         { text: 'Call Support', onPress: () => {} },
         { text: 'Close', style: 'cancel' },

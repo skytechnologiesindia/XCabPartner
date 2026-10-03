@@ -36,7 +36,7 @@ function VerificationPendingScreen({
   const handleNeedHelp = () => {
     Alert.alert(
       'Verification Status Helpline',
-      'Our team is reviewing your documents. Background checks usually complete within 24 hours.\n\nHelpline: 1800-247-XCAB (9222)',
+      'Our team is reviewing your documents. Background checks usually complete within 24 hours.\n\nHelpline: 1800-247-TREEPS (9222)',
       [{ text: 'Close', style: 'cancel' }],
     );
   };

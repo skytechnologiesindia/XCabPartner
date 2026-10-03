@@ -58,7 +58,7 @@ function OnboardingSlide({
         </View>
       ) : null}
 
-      {/* 2. Optional XCAB Master Logo (Shown on Slide 1) */}
+      {/* 2. Optional TREEPS Master Logo (Shown on Slide 1) */}
       {slide.showBrandLogo ? (
         <View
           style={{

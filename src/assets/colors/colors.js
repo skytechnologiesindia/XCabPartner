@@ -1,4 +1,4 @@
-// XCAB UI Design System — color tokens (see xcab_ui_design_system.md)
+// TREEPS UI Design System — color tokens (see treeps_ui_design_system.md)
 
 export const colors = {
   ivory50: '#F7F5EE',

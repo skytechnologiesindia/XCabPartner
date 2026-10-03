@@ -1,5 +1,5 @@
 /**
- * XCAB Earnings Mock Data
+ * TREEPS Earnings Mock Data
  * Structured mock data for weekly, monthly, and yearly driver earnings,
  * statistics, payout projections, and transaction histories.
  */

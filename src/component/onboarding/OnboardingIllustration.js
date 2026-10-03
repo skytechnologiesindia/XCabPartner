@@ -12,9 +12,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
 /**
  * OnboardingIllustration
  * Visual illustration section for each onboarding step:
- * - Slide 1: XCAB white sedan + 3 benefit badges (Safe Journeys, Better Earnings, Stronger Communities)
+ * - Slide 1: TREEPS white sedan + 3 benefit badges (Safe Journeys, Better Earnings, Stronger Communities)
  * - Slide 2: Location/navigation route device + "You're in Control" checklist card
- * - Slide 3: Front-three-quarter XCAB sedan + 3 feature badges (Safer Roads, Happier Communities, Cleaner Cities)
+ * - Slide 3: Front-three-quarter TREEPS sedan + 3 feature badges (Safer Roads, Happier Communities, Cleaner Cities)
  */
 function OnboardingIllustration({ slide }) {
   if (!slide) return null;

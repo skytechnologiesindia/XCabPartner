@@ -143,7 +143,7 @@ function LogoutButton({ onConfirmLogout }) {
                 marginBottom: 22,
               }}
             >
-              Are you sure you want to log out of your XCAB Driver account?
+              Are you sure you want to log out of your TREEPS Driver account?
             </Text>
 
             {/* Modal Action Buttons */}

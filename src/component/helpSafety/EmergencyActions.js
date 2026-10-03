@@ -8,7 +8,7 @@ import styles from '../../assets/styles/styles';
 
 /**
  * EmergencyActions
- * Side-by-side action cards for instant Police (112) escalation and 24/7 XCAB Support with utility styles.
+ * Side-by-side action cards for instant Police (112) escalation and 24/7 TREEPS Support with utility styles.
  */
 function EmergencyActions({ onEmergencyCall, onSupportCall }) {
   return (
@@ -98,7 +98,7 @@ function EmergencyActions({ onEmergencyCall, onSupportCall }) {
         </View>
       </Pressable>
 
-      {/* 2. XCAB Support 24/7 Card */}
+      {/* 2. TREEPS Support 24/7 Card */}
       <Pressable
         style={({ pressed }) => [
           styles.pdh12,
@@ -122,7 +122,7 @@ function EmergencyActions({ onEmergencyCall, onSupportCall }) {
         ]}
         onPress={onSupportCall}
         accessibilityRole="button"
-        accessibilityLabel="XCAB Support, 24/7 Assistance"
+        accessibilityLabel="TREEPS Support, 24/7 Assistance"
       >
         <View
           style={[
@@ -183,7 +183,7 @@ function EmergencyActions({ onEmergencyCall, onSupportCall }) {
               },
             ]}
           >
-            XCAB Support
+            TREEPS Support
           </Text>
           <Text
             style={[

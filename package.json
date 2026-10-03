@@ -4,6 +4,7 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "apk": "cd android && gradlew.bat assembleRelease && cd .. && if not exist dist mkdir dist && copy /Y android\\app\\build\\outputs\\apk\\release\\app-release.apk dist\\XCab-Partner.apk",
     "ios": "react-native run-ios",
     "lint": "eslint .",
     "start": "react-native start",

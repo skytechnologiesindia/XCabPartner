@@ -52,8 +52,8 @@ function MobileVerificationScreen({
   // Handle "Need Help?"
   const handleNeedHelp = () => {
     Alert.alert(
-      'XCAB Partner Support',
-      'Need assistance with your phone verification or account login?\n\nCall our 24/7 Driver Helpline at 1800-247-XCAB (9222).',
+      'TREEPS Support (24/7)',
+      'Need assistance with your phone verification or account login?\n\nCall our 24/7 Driver Helpline at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };

@@ -9,7 +9,7 @@ import {
  * VerificationHeader
  * Authentication navigation bar:
  * - Left: Back arrow (←)
- * - Center: XCAB Master Logo & DRIVER APP
+ * - Center: TREEPS Master Logo & DRIVER APP
  * - Right: Need Help? action
  */
 function VerificationHeader({
@@ -65,21 +65,12 @@ function VerificationHeader({
           }}>
           <Text
             style={{
-              color: '#FFC928',
-              fontSize: 30,
-              fontWeight: '900',
-              letterSpacing: -0.8,
-            }}>
-            X
-          </Text>
-          <Text
-            style={{
               color: '#17191C',
-              fontSize: 30,
+              fontSize: 26,
               fontWeight: '900',
-              letterSpacing: -0.8,
+              letterSpacing: 0.5,
             }}>
-            CAB
+            TREEPS
           </Text>
         </View>
         <Text
@@ -88,7 +79,7 @@ function VerificationHeader({
             fontSize: 8.5,
             fontWeight: '700',
             letterSpacing: 3,
-            marginTop: -1,
+            marginTop: 1,
           }}>
           D R I V E R   A P P
         </Text>

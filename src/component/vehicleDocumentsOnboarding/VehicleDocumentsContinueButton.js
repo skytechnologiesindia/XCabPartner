@@ -3,7 +3,7 @@ import OnboardingContinueButton from '../personalDetailsOnboarding/OnboardingCon
 
 /**
  * VehicleDocumentsContinueButton
- * Primary CTA ("Continue →") in XCAB yellow (#FFC928):
+ * Primary CTA ("Continue →") in TREEPS yellow (#FFC928):
  * - Disabled until all required documents (RC, Insurance, PUC) are uploaded
  * - Shows loading state during submission
  */

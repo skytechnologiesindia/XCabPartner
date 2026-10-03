@@ -92,7 +92,7 @@ function VehicleCard({ vehicle, onUpdatePress }) {
             {vehicle.registration}
           </Text>
 
-          {/* Active on XCab Badge */}
+          {/* Active on TREEPS Badge */}
           <View
             style={{
               alignItems: 'center',
@@ -135,7 +135,7 @@ function VehicleCard({ vehicle, onUpdatePress }) {
                 letterSpacing: 0.1,
               }}
             >
-              {vehicle.statusText || 'Active on XCab'}
+              {vehicle.statusText || 'Active on TREEPS'}
             </Text>
           </View>
         </View>

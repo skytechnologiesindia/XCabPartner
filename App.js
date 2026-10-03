@@ -18,9 +18,9 @@ import {
 
 // Onboarding & Registration Screens
 import SplashScreen from './src/screens/Splash/SplashScreen';
-import OnboardingScreen from './src/screens/Onboarding/OnboardingScreen';
 import LanguageScreen from './src/screens/Language/LanguageScreen';
 import MobileVerificationScreen from './src/screens/MobileVerification/MobileVerificationScreen';
+import OnboardingScreen from './src/screens/Onboarding/OnboardingScreen';
 import PersonalDetailsOnboardingScreen from './src/screens/PersonalDetailsOnboarding/PersonalDetailsOnboardingScreen';
 import DrivingLicenceOnboardingScreen from './src/screens/DrivingLicenceOnboarding/DrivingLicenceOnboardingScreen';
 import VehicleDetailsOnboardingScreen from './src/screens/VehicleDetailsOnboarding/VehicleDetailsOnboardingScreen';
@@ -101,17 +101,17 @@ function AppFlowController() {
   }
 
   // 2. Onboarding Carousel (3 Slides)
-  if (appStage === 'onboarding') {
-    return (
-      <OnboardingScreen
-        onComplete={() => setAppStage('language')}
-        onNavigateToLanguage={() => setAppStage('language')}
-      />
-    );
-  }
+  // if (appStage === 'onboarding') {
+  //   return (
+  //     <OnboardingScreen
+  //       onComplete={() => setAppStage('language')}
+  //       onNavigateToLanguage={() => setAppStage('language')}
+  //     />
+  //   );
+  // }
 
   // 3. Language Selection
-  if (appStage === 'language') {
+  if (appStage === 'onboarding') {
     return (
       <LanguageScreen
         onBack={() => setAppStage('onboarding')}
@@ -299,7 +299,7 @@ function DriverDesk() {
             <EnterPinScreen
               onBack={() => setTripStage('pickup')}
               onStartTrip={() => setTripStage('onTrip')}
-              onResendHelp={() => {}}
+              onResendHelp={() => { }}
             />
           </View>
         ) : null}

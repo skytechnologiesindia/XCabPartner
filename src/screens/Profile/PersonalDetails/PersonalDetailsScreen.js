@@ -18,7 +18,7 @@ import {
 
 /**
  * PersonalDetailsScreen
- * Main page and composition layer for XCAB Driver App "Personal Details".
+ * Main page and composition layer for TREEPS App "Personal Details".
  * Coordinates secondary header, verified identity records, inline editability,
  * and support actions with inline styles.
  */
@@ -59,8 +59,8 @@ function PersonalDetailsScreen({
 
   const handleContactSupport = () => {
     Alert.alert(
-      'XCab Driver Support',
-      'Need to update your verified documents or identity information?\n\nReach our driver operations team at:\n• Helpline: 1800-123-XCAB\n• Email: support@xcab.in',
+      'TREEPS Support',
+      'Need to update your verified documents or identity information?\n\nReach our driver operations team at:\n• Helpline: 1800-123-TREEPS\n• Email: support@treeps.in',
       [
         { text: 'Call Support', onPress: () => {} },
         { text: 'Dismiss', style: 'cancel' },
@@ -70,7 +70,7 @@ function PersonalDetailsScreen({
 
   return (
     <View style={{ backgroundColor: '#F7F5EF', flex: 1 }}>
-      {/* 1. Existing Secondary Back Header pattern: [‹  XCAB] */}
+      {/* 1. Existing Secondary Back Header pattern: [‹  TREEPS] */}
       <View
         style={{
           alignItems: 'center',

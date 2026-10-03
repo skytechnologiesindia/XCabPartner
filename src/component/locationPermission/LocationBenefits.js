@@ -8,7 +8,7 @@ import { locationBenefits } from './locationPermissionData';
 
 /**
  * LocationBenefits
- * Displays the 3 key reasons why XCAB Driver App needs location access.
+ * Displays the 3 key reasons why TREEPS App needs location access.
  */
 function LocationBenefits() {
   return (

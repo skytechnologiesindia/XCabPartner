@@ -15,7 +15,7 @@ const { width: SCREEN_WIDTH } = Dimensions.get('window');
  * PersonalDetailsHelper
  * Secondary assurance helper note + lower automotive visual matching the Mobile + OTP screen:
  * - "Your information helps us keep your driver profile accurate."
- * - Approved white XCAB sedan on curved highway
+ * - Approved white TREEPS sedan on curved highway
  * - 3 circular badges: Safe Journeys, Better Earnings, Stronger Communities
  */
 function PersonalDetailsHelper() {
@@ -57,7 +57,7 @@ function PersonalDetailsHelper() {
           }}
           resizeMode="cover"
           accessibilityRole="image"
-          accessibilityLabel="White XCAB sedan on highway"
+          accessibilityLabel="White TREEPS sedan on highway"
         />
       </View>
 

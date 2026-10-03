@@ -1,5 +1,5 @@
 /**
- * XCAB Mock Ride Data
+ * TREEPS Mock Ride Data
  * Structured mock ride records for Driver App Rides screen.
  * Easy to replace with real REST/GraphQL API data without altering UI components.
  */

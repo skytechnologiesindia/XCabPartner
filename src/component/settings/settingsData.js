@@ -1,5 +1,5 @@
 /**
- * XCAB Driver Settings Mock Data & Configuration
+ * TREEPS Driver Settings Mock Data & Configuration
  * Structured configuration for Preferences, App Settings, Others, and Account Actions.
  */
 
@@ -56,8 +56,8 @@ export const otherItems = [
     iconType: 'document',
   },
   {
-    id: 'about-xcab',
-    title: 'About XCab',
+    id: 'about-treeps',
+    title: 'About TREEPS',
     subtitle: 'App information and credits',
     iconType: 'info',
   },
