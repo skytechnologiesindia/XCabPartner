@@ -76,7 +76,7 @@ function ReportIssueDetails({
   const handleCallEmergency = () => {
     Alert.alert(
       'Emergency Assistance',
-      'If you are in immediate danger, connect directly with Emergency Services or TREEPS 24/7 Safety Helpline.',
+      'If you are in immediate danger, connect directly with Emergency Services or XCAB 24/7 Safety Helpline.',
       [
         {
           text: 'Call Emergency (112)',
@@ -88,10 +88,10 @@ function ReportIssueDetails({
           },
         },
         {
-          text: 'TREEPS Safety Support',
+          text: 'XCAB Safety Support',
           onPress: () => {
             Linking.openURL('tel:18002479222').catch(() => {
-              Alert.alert('Support Helpline', 'TREEPS Driver Safety: 1800-247-9222');
+              Alert.alert('Support Helpline', 'XCAB Partner Safety: 1800-247-9222');
             });
           },
         },

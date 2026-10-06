@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  ActivityIndicator,
   Pressable,
   Text,
   View,
@@ -14,11 +15,13 @@ import {
 function VerificationActions({
   mode = 'phone',
   isDisabled = false,
+  isLoading = false,
   onPrimaryPress,
   onChangeNumber,
 }) {
   const isPhoneMode = mode === 'phone';
   const buttonLabel = isPhoneMode ? 'Send OTP' : 'Verify & Continue';
+  const isButtonDisabled = isDisabled || isLoading;
 
   return (
     <View
@@ -44,55 +47,59 @@ function VerificationActions({
             elevation: 2,
             width: '100%',
           },
-          isDisabled && {
+          isButtonDisabled && {
             backgroundColor: '#EBE7DC',
             elevation: 0,
             shadowOpacity: 0,
           },
-          !isDisabled &&
-            pressed && {
-              backgroundColor: '#F5BE18',
-              transform: [{ scale: 0.99 }],
-            },
+          !isButtonDisabled &&
+          pressed && {
+            backgroundColor: '#F5BE18',
+            transform: [{ scale: 0.99 }],
+          },
         ]}
         onPress={onPrimaryPress}
-        disabled={isDisabled}
+        disabled={isButtonDisabled}
         accessibilityRole="button"
         accessibilityLabel={buttonLabel}
       >
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={[
-              {
-                color: '#17191C',
-                fontSize: 16,
-                fontWeight: '800',
-                letterSpacing: -0.2,
-              },
-              isDisabled && { color: '#9CA3AF' },
-            ]}
-          >
-            {buttonLabel}
-          </Text>
-          <Text
-            style={[
-              {
-                color: '#17191C',
-                fontSize: 16,
-                fontWeight: '800',
-                marginLeft: 8,
-              },
-              isDisabled && { color: '#9CA3AF' },
-            ]}
-          >
-            →
-          </Text>
-        </View>
+        {isLoading ? (
+          <ActivityIndicator size="small" color="#17191C" />
+        ) : (
+          <View
+            style={{
+              alignItems: 'center',
+              flexDirection: 'row',
+              justifyContent: 'center',
+            }}>
+            <Text
+              style={[
+                {
+                  color: '#17191C',
+                  fontSize: 16,
+                  fontWeight: '800',
+                  letterSpacing: -0.2,
+                },
+                isButtonDisabled && { color: '#9CA3AF' },
+              ]}
+            >
+              {buttonLabel}
+            </Text>
+            <Text
+              style={[
+                {
+                  color: '#17191C',
+                  fontSize: 16,
+                  fontWeight: '800',
+                  marginLeft: 8,
+                },
+                isButtonDisabled && { color: '#9CA3AF' },
+              ]}
+            >
+              →
+            </Text>
+          </View>
+        )}
       </Pressable>
 
       {/* 2. Secondary Sub-Action */}

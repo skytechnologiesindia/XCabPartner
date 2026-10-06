@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+﻿import React, { useState } from 'react';
 import {
   Alert,
   Platform,
@@ -16,6 +16,7 @@ import {
   verificationConfig,
 } from '../../component/mobileVerification';
 import { useRegistration } from '../../context/RegistrationContext';
+import { post } from '../../utils/requestBuilder';
 
 /**
  * MobileVerificationScreen (Step 1 of 8)
@@ -36,6 +37,7 @@ function MobileVerificationScreen({
   const [phoneNumber, setPhoneNumber] = useState(registrationData.phone || '');
   const [otpValue, setOtpValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   // Handle Back Navigation
   const handleBack = () => {
@@ -59,34 +61,90 @@ function MobileVerificationScreen({
   };
 
   // State 1 Action: Send OTP
-  const handleSendOtp = () => {
+  const handleSendOtp = async () => {
     const cleaned = phoneNumber.replace(/[^0-9]/g, '');
     if (cleaned.length !== verificationConfig.phoneLength) {
       setErrorMessage('Please enter a valid 10-digit mobile number.');
       return;
     }
 
-    setErrorMessage('');
-    updateRegistrationData('phone', phoneNumber);
-    // Switch SAME SCREEN into OTP mode
-    setMode('otp');
-    setOtpValue('');
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+
+      // API Call: Send OTP
+      const response = await post('auth/send-otp', { phone: cleaned });
+      console.log('Send OTP Response:', response);
+
+      // Check for API-level failure in response payload
+      if (response && (response.success === false || response.status === false || response.error)) {
+        const errorText = response.message || response.error || 'Failed to send OTP. Please try again.';
+        setErrorMessage(errorText);
+        return;
+      }
+
+      updateRegistrationData('phone', phoneNumber);
+      // Switch SAME SCREEN into OTP mode
+      setMode('otp');
+      setOtpValue('');
+    } catch (error) {
+      console.error('Send OTP Error:', error);
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.response ||
+        error?.message ||
+        'Failed to send OTP. Please check your network and try again.';
+      setErrorMessage(serverMsg);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   // State 2 Action: Verify OTP & Continue
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const cleanedOtp = otpValue.replace(/[^0-9]/g, '');
     if (cleanedOtp.length !== verificationConfig.otpLength) {
       setErrorMessage('Please enter the complete 6-digit verification code.');
       return;
     }
 
-    setErrorMessage('');
-    updateRegistrationData('phone', phoneNumber);
-    updateRegistrationData('otpVerified', true);
+    try {
+      setIsLoading(true);
+      setErrorMessage('');
+      const cleanedPhone = phoneNumber.replace(/[^0-9]/g, '');
 
-    if (onSuccess) {
-      onSuccess(phoneNumber);
+      // API Call: Verify OTP
+      const response = await post('auth/verify-otp', {
+        phone: cleanedPhone,
+        otp: cleanedOtp,
+      });
+      console.log('Verify OTP Response:', response);
+
+      // Check for API-level failure in response payload
+      if (response && (response.success === false || response.status === false || response.error)) {
+        const errorText = response.message || response.error || 'Invalid OTP. Please try again.';
+        setErrorMessage(errorText);
+        return;
+      }
+
+      updateRegistrationData('phone', phoneNumber);
+      updateRegistrationData('otpVerified', true);
+
+      if (onSuccess) {
+        onSuccess(phoneNumber);
+      }
+    } catch (error) {
+      console.error('Verify OTP Error:', error);
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.response ||
+        error?.message ||
+        'Invalid or expired verification code. Please try again.';
+      setErrorMessage(serverMsg);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -98,13 +156,30 @@ function MobileVerificationScreen({
   };
 
   // State 2 Action: Resend OTP
-  const handleResendOtp = () => {
-    setErrorMessage('');
-    Alert.alert(
-      'Code Sent',
-      `A new 6-digit verification code has been sent to +91 ${phoneNumber}.`,
-      [{ text: 'OK' }],
-    );
+  const handleResendOtp = async () => {
+    const cleaned = phoneNumber.replace(/[^0-9]/g, '');
+    try {
+      setErrorMessage('');
+      const response = await post('auth/send-otp', { phone: cleaned });
+      if (response && (response.success === false || response.status === false || response.error)) {
+        setErrorMessage(response.message || response.error || 'Failed to resend code.');
+        return;
+      }
+      Alert.alert(
+        'Code Sent',
+        `A new 6-digit verification code has been sent to +91 ${phoneNumber}.`,
+        [{ text: 'OK' }],
+      );
+    } catch (error) {
+      console.error('Resend OTP Error:', error);
+      const serverMsg =
+        error?.response?.data?.message ||
+        error?.response?.data?.error ||
+        error?.response?.data?.response ||
+        error?.message ||
+        'Failed to resend code. Please try again.';
+      setErrorMessage(serverMsg);
+    }
   };
 
   const isPhoneValid = phoneNumber.replace(/[^0-9]/g, '').length === verificationConfig.phoneLength;
@@ -185,6 +260,7 @@ function MobileVerificationScreen({
         <VerificationActions
           mode={mode}
           isDisabled={mode === 'phone' ? !isPhoneValid : !isOtpValid}
+          isLoading={isLoading}
           onPrimaryPress={mode === 'phone' ? handleSendOtp : handleVerifyOtp}
           onChangeNumber={handleChangeNumber}
         />
