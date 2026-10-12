@@ -39,21 +39,21 @@ function MobileNumberForm({
       <Text
         style={{
           color: '#17191C',
-          fontSize: 27,
-          fontWeight: '900',
-          letterSpacing: -0.6,
-          lineHeight: 33,
+          fontSize: 32,
+          fontWeight: '800',
+          letterSpacing: -0.8,
+          lineHeight: 40,
         }}>
         Enter Your{'\n'}Mobile Number
       </Text>
       <Text
         style={{
-          color: '#687078',
-          fontSize: 13.5,
+          color: '#8A929B',
+          fontSize: 17,
           fontWeight: '400',
-          lineHeight: 19,
-          marginTop: 8,
-          marginBottom: 20,
+          lineHeight: 24,
+          marginTop: 10,
+          marginBottom: 28,
         }}>
         We’ll send you a verification code to continue.
       </Text>
@@ -64,11 +64,11 @@ function MobileNumberForm({
           {
             alignItems: 'center',
             backgroundColor: '#FFFFFF',
-            borderColor: '#DDD9CF',
+            borderColor: '#D9DCE0',
             borderRadius: 14,
-            borderWidth: 1.5,
+            borderWidth: 1,
             flexDirection: 'row',
-            height: 56,
+            height: 60,
             overflow: 'hidden',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 1 },
@@ -78,11 +78,7 @@ function MobileNumberForm({
           },
           !!errorMessage && { borderColor: '#EF4444' },
         ]}>
-        <CountryCodeSelector
-          countryCode={countryCode}
-          countryFlag={countryFlag}
-          onPress={onPressCountry}
-        />
+        <CountryCodeSelector countryCode={countryCode} />
 
         <TextInput
           style={{

@@ -1,31 +1,23 @@
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  Pressable,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import { Pressable, Text, TextInput, View, } from 'react-native';
 
-/**
- * OtpForm
- * State 2 UI container:
- * - "Enter OTP" title
- * - Masked dynamic phone number
- * - 6 discrete auto-advancing input cells with clipboard paste and backspace navigation
- * - Realtime countdown resend timer
- */
 function OtpForm({
   otpValue = '',
   onChangeOtp,
   phoneNumber = '',
   countryCode = '+91',
-  resendSeconds = 28,
+  resendSeconds = 30,
   onResendOtp,
   errorMessage,
 }) {
   const [timer, setTimer] = useState(resendSeconds);
   const [focusedIndex, setFocusedIndex] = useState(0);
   const inputsRef = useRef([]);
+
+  // Sync timer whenever dynamic resendSeconds updates from backend
+  useEffect(() => {
+    setTimer(resendSeconds);
+  }, [resendSeconds]);
 
   // Resend Countdown
   useEffect(() => {
@@ -84,7 +76,9 @@ function OtpForm({
     ? `${countryCode} ${phoneNumber.replace(/(\d{5})(\d{1,5})/, '$1 $2')}`
     : `${countryCode} 98765 43210`;
 
-  const formattedTimer = `00:${timer < 10 ? `0${timer}` : timer}`;
+  const minutes = Math.floor(timer / 60);
+  const seconds = timer % 60;
+  const formattedTimer = `${minutes < 10 ? `0${minutes}` : minutes}:${seconds < 10 ? `0${seconds}` : seconds}`;
 
   return (
     <View

@@ -22,10 +22,10 @@ function FullNameField({
       }}>
       <Text
         style={{
-          color: '#687078',
-          fontSize: 13,
+          color: '#17191C',
+          fontSize: 17,
           fontWeight: '600',
-          marginBottom: 6,
+          marginBottom: 10,
         }}>
         Full Name
       </Text>
@@ -35,48 +35,25 @@ function FullNameField({
           {
             alignItems: 'center',
             backgroundColor: '#FFFFFF',
-            borderColor: '#DDD9CF',
-            borderRadius: 14,
-            borderWidth: 1.5,
+            borderColor: '#D9DCE0',
+            borderRadius: 12,
+            borderWidth: 1,
             flexDirection: 'row',
-            height: 52,
-            paddingHorizontal: 14,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.04,
-            shadowRadius: 3,
-            elevation: 1,
+            height: 58,
+            paddingHorizontal: 18,
           },
           !!errorMessage && { borderColor: '#EF4444' },
         ]}>
-        {/* User Outline Icon */}
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 10,
-            width: 22,
-          }}>
-          <Text
-            style={{
-              color: '#687078',
-              fontSize: 16,
-            }}>
-            👤
-          </Text>
-        </View>
-
         <TextInput
           style={{
             color: '#17191C',
             flex: 1,
-            fontSize: 15.5,
-            fontWeight: '600',
+            fontSize: 17,
+            fontWeight: '400',
             height: '100%',
-            letterSpacing: -0.1,
           }}
-          placeholder="Mohammed Shamir"
-          placeholderTextColor="#9CA3AF"
+          placeholder="Enter your full name"
+          placeholderTextColor="#8A929B"
           value={value}
           onChangeText={onChangeName}
           autoCapitalize="words"

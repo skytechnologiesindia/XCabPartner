@@ -12,7 +12,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { OnboardingHeader, RegistrationButton } from '../../component/onboarding';
 import { useRegistration } from '../../context/RegistrationContext';
 
-const supportedLanguages = [
+export const supportedLanguages = [
   { id: 'en', name: 'English', nativeName: 'English', subtitle: 'Default Language' },
   { id: 'hi', name: 'Hindi', nativeName: 'हिन्दी', subtitle: 'हिंदी में जारी रखें' },
   { id: 'bn', name: 'Bengali', nativeName: 'বাংলা', subtitle: 'বাংলায় চালিয়ে যান' },

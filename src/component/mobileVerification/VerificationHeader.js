@@ -7,85 +7,67 @@ import {
 
 /**
  * VerificationHeader
- * Authentication navigation bar:
- * - Left: Back arrow (←)
- * - Center: TREEPS Master Logo & DRIVER APP
- * - Right: Need Help? action
+ * Top row with the right-aligned "Need Help?" action.
+ * - `onBack`: optional left back arrow (omitted on the login screen).
+ * - `backgroundColor`: transparent by default; pass a colour for a filled bar.
+ * - `topInset`: keeps it below the status bar on iOS.
  */
 function VerificationHeader({
   onBack,
+  title,
   onNeedHelp,
+  backgroundColor = 'transparent',
+  topInset = 0,
 }) {
   return (
     <View
       style={{
         alignItems: 'center',
+        backgroundColor,
         flexDirection: 'row',
-        justifyContent: 'space-between',
-        paddingHorizontal: 16,
-        paddingVertical: 10,
+        justifyContent: onBack ? 'space-between' : 'flex-end',
+        paddingBottom: backgroundColor === 'transparent' ? 4 : 14,
+        paddingHorizontal: 20,
+        paddingTop: topInset + (backgroundColor === 'transparent' ? 8 : 14),
         width: '100%',
       }}>
-      {/* 1. Left Back Button */}
-      <Pressable
-        style={({ pressed }) => [
-          {
-            alignItems: 'center',
-            height: 36,
-            justifyContent: 'center',
-            width: 36,
-          },
-          pressed && { opacity: 0.6 },
-        ]}
-        onPress={onBack}
-        hitSlop={{ top: 12, bottom: 12, left: 14, right: 14 }}
-        accessibilityRole="button"
-        accessibilityLabel="Go back"
-      >
+      {/* Back Action */}
+      {onBack ? (
+        <Pressable
+          style={({ pressed }) => [
+            {
+              alignItems: 'center',
+              height: 36,
+              justifyContent: 'center',
+              width: 36,
+            },
+            pressed && { opacity: 0.6 },
+          ]}
+          onPress={onBack}
+          hitSlop={{ top: 12, bottom: 12, left: 14, right: 14 }}
+          accessibilityRole="button"
+          accessibilityLabel="Go back"
+        >
+          <Text style={{ color: '#17191C', fontSize: 24, fontWeight: '600' }}>←</Text>
+        </Pressable>
+      ) : null}
+
+      {/* Optional title, left-aligned beside the back arrow */}
+      {title ? (
         <Text
+          numberOfLines={1}
           style={{
             color: '#17191C',
+            flex: 1,
             fontSize: 22,
             fontWeight: '700',
+            marginHorizontal: 12,
           }}>
-          ←
+          {title}
         </Text>
-      </Pressable>
+      ) : null}
 
-      {/* 2. Center Brand Logo */}
-      <View
-        style={{
-          alignItems: 'center',
-          justifyContent: 'center',
-        }}>
-        <View
-          style={{
-            alignItems: 'center',
-            flexDirection: 'row',
-          }}>
-          <Text
-            style={{
-              color: '#17191C',
-              fontSize: 26,
-              fontWeight: '900',
-              letterSpacing: 0.5,
-            }}>
-            TREEPS
-          </Text>
-        </View>
-        <Text
-          style={{
-            color: '#687078',
-            fontSize: 8.5,
-            fontWeight: '700',
-            letterSpacing: 3,
-            marginTop: 1,
-          }}>
-          D R I V E R   A P P
-        </Text>
-      </View>
-
-      {/* 3. Right Need Help Action */}
+      {/* Need Help Action */}
       <Pressable
         style={({ pressed }) => [
           {
@@ -103,7 +85,7 @@ function VerificationHeader({
         <Text
           style={{
             color: '#374151',
-            fontSize: 13,
+            fontSize: 15,
             fontWeight: '600',
           }}>
           Need Help?

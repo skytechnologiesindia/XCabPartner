@@ -1,33 +1,27 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
   Platform,
+  Pressable,
   ScrollView,
   StatusBar,
+  Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { OnboardingHeader, RegistrationProgress } from '../../component/onboarding';
 import {
   MobileNumberForm,
   OtpForm,
   VerificationActions,
-  VerificationHelper,
+  VerificationHeader,
   verificationConfig,
 } from '../../component/mobileVerification';
 import { useRegistration } from '../../context/RegistrationContext';
 import { post } from '../../utils/requestBuilder';
+import { storage, STORAGE_KEYS } from '../../utils/storage';
 
-/**
- * MobileVerificationScreen (Step 1 of 8)
- * Single unified screen supporting:
- * - State 1: Enter Mobile Number (Phone Mode)
- * - State 2: Enter OTP (OTP Mode)
- *
- * Toggles modes on the same screen without pushing a separate route.
- */
 function MobileVerificationScreen({
-  onBack,
   onSuccess,
 }) {
   const insets = useSafeAreaInsets();
@@ -38,18 +32,11 @@ function MobileVerificationScreen({
   const [otpValue, setOtpValue] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [resendSeconds, setResendSeconds] = useState("30");
 
-  // Handle Back Navigation
-  const handleBack = () => {
-    if (mode === 'otp') {
-      // Return to Phone mode within the SAME screen
-      setMode('phone');
-      setOtpValue('');
-      setErrorMessage('');
-    } else if (onBack) {
-      onBack();
-    }
-  };
+  // Clean & formatted phone derived in one place
+  const cleanedPhone = phoneNumber.replace(/[^0-9]/g, '');
+  const formattedPhone = `+91${cleanedPhone}`;
 
   // Handle "Need Help?"
   const handleNeedHelp = () => {
@@ -60,40 +47,58 @@ function MobileVerificationScreen({
     );
   };
 
+  // Terms & Conditions (no dedicated terms route exists yet)
+  const handleOpenTerms = () => {
+    Alert.alert(
+      'Terms & Conditions',
+      'Terms of Service, Privacy Policy and the Driver Partner Agreement apply to all TREEPS driver partners.',
+      [{ text: 'Close', style: 'cancel' }],
+    );
+  };
+
   // State 1 Action: Send OTP
   const handleSendOtp = async () => {
-    const cleaned = phoneNumber.replace(/[^0-9]/g, '');
-    if (cleaned.length !== verificationConfig.phoneLength) {
+    if (cleanedPhone.length !== verificationConfig.phoneLength) {
       setErrorMessage('Please enter a valid 10-digit mobile number.');
       return;
     }
-
     try {
       setIsLoading(true);
       setErrorMessage('');
 
-      // API Call: Send OTP
-      const response = await post('auth/send-otp', { phone: cleaned });
-      console.log('Send OTP Response:', response);
+      // API Call: Driver Send OTP
+      const response = await post('driver/auth/send-otp', {
+        phoneNumber: formattedPhone,
+      });
+      console.log('Driver Send OTP Response:', response);
 
-      // Check for API-level failure in response payload
-      if (response && (response.success === false || response.status === false || response.error)) {
-        const errorText = response.message || response.error || 'Failed to send OTP. Please try again.';
+      if (response && response.success === false) {
+        const errorText = response.error?.message || response.message || 'Failed to send OTP. Please try again.';
         setErrorMessage(errorText);
         return;
       }
 
+      const serverResendSeconds =
+        response?.data?.resendAfterSeconds ?? response?.data?.resendSeconds;
+      if (typeof serverResendSeconds === 'number' && serverResendSeconds > 0) {
+        setResendSeconds(serverResendSeconds);
+      }
+
+      console.log('Server Resend Seconds:', serverResendSeconds);
+
       updateRegistrationData('phone', phoneNumber);
-      // Switch SAME SCREEN into OTP mode
+      // Switch to OTP entry mode
       setMode('otp');
       setOtpValue('');
     } catch (error) {
       console.error('Send OTP Error:', error);
+      const apiError = error?.response?.data?.error;
       const serverMsg =
+        apiError?.message ||
         error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.response?.data?.response ||
-        error?.message ||
+        (error?.message === 'Network Error'
+          ? 'Network Error: Cannot connect to server. Ensure your backend server is running.'
+          : error?.message) ||
         'Failed to send OTP. Please check your network and try again.';
       setErrorMessage(serverMsg);
     } finally {
@@ -105,42 +110,78 @@ function MobileVerificationScreen({
   const handleVerifyOtp = async () => {
     const cleanedOtp = otpValue.replace(/[^0-9]/g, '');
     if (cleanedOtp.length !== verificationConfig.otpLength) {
-      setErrorMessage('Please enter the complete 6-digit verification code.');
+      setErrorMessage('Please enter the 6-digit OTP code.');
       return;
     }
 
     try {
       setIsLoading(true);
       setErrorMessage('');
-      const cleanedPhone = phoneNumber.replace(/[^0-9]/g, '');
 
-      // API Call: Verify OTP
-      const response = await post('auth/verify-otp', {
-        phone: cleanedPhone,
-        otp: cleanedOtp,
+      // API Call: Driver Verify OTP
+      const response = await post('driver/auth/verify-otp', {
+        phoneNumber: formattedPhone,
+        otp: String(cleanedOtp),
+        device: {
+          deviceId: `driver-${Platform.OS}-device`,
+          platform: Platform.OS === 'ios' ? 'IOS' : 'ANDROID',
+          appVersion: '1.4.2',
+        },
       });
-      console.log('Verify OTP Response:', response);
+      console.log('Driver Verify OTP Response:', response);
 
-      // Check for API-level failure in response payload
-      if (response && (response.success === false || response.status === false || response.error)) {
-        const errorText = response.message || response.error || 'Invalid OTP. Please try again.';
+      if (response && response.success === false) {
+        const errorText = response.error?.message || response.message || 'Invalid OTP. Please try again.';
         setErrorMessage(errorText);
         return;
       }
 
+      const driverData = response?.data?.driver;
+      const tokens = response?.data?.tokens;
+
       updateRegistrationData('phone', phoneNumber);
       updateRegistrationData('otpVerified', true);
+      if (driverData) {
+        updateRegistrationData('driverInfo', driverData);
+      }
+      if (tokens) {
+        updateRegistrationData('tokens', tokens);
+      }
+
+      // Save to local storage for persistent login
+      const authToken = tokens?.accessToken || response?.data?.token || tokens?.token;
+      if (authToken) {
+        await storage.setItem(STORAGE_KEYS.TOKEN, authToken);
+      }
+      await storage.setItem(STORAGE_KEYS.PHONE, phoneNumber);
+      await storage.setItem(STORAGE_KEYS.IS_LOGGED_IN, 'true');
+      if (driverData) {
+        await storage.setItem(STORAGE_KEYS.DRIVER_DATA, driverData);
+      }
+      // --- VERIFY STORAGE DEBUG LOG ---
+      const savedToken = await storage.getItem(STORAGE_KEYS.TOKEN);
+      const savedPhone = await storage.getItem(STORAGE_KEYS.PHONE);
+      const savedStatus = await storage.getItem(STORAGE_KEYS.IS_LOGGED_IN);
+      const savedDriver = await storage.getItem(STORAGE_KEYS.DRIVER_DATA, true);
+      console.log('✅ ================= STORAGE VERIFICATION =================');
+      console.log('📦 Saved Token:', savedToken);
+      console.log('📦 Saved Phone:', savedPhone);
+      console.log('📦 Is Logged In:', savedStatus);
+      console.log('📦 Driver Data:', savedDriver);
+      console.log('==========================================================');
 
       if (onSuccess) {
-        onSuccess(phoneNumber);
+        onSuccess(phoneNumber, response?.data);
       }
     } catch (error) {
       console.error('Verify OTP Error:', error);
+      const apiError = error?.response?.data?.error;
       const serverMsg =
+        apiError?.message ||
         error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.response?.data?.response ||
-        error?.message ||
+        (error?.message === 'Network Error'
+          ? 'Network Error: Cannot connect to server. Please check your connection.'
+          : error?.message) ||
         'Invalid or expired verification code. Please try again.';
       setErrorMessage(serverMsg);
     } finally {
@@ -157,14 +198,24 @@ function MobileVerificationScreen({
 
   // State 2 Action: Resend OTP
   const handleResendOtp = async () => {
-    const cleaned = phoneNumber.replace(/[^0-9]/g, '');
     try {
       setErrorMessage('');
-      const response = await post('auth/send-otp', { phone: cleaned });
-      if (response && (response.success === false || response.status === false || response.error)) {
-        setErrorMessage(response.message || response.error || 'Failed to resend code.');
+      const response = await post('driver/auth/send-otp', {
+        phoneNumber: formattedPhone,
+      });
+      console.log('Driver Resend OTP Response:', response);
+
+      if (response && response.success === false) {
+        setErrorMessage(response.error?.message || response.message || 'Failed to resend code.');
         return;
       }
+
+      const serverResendSeconds =
+        response?.data?.resendAfterSeconds ?? response?.data?.resendSeconds;
+      if (typeof serverResendSeconds === 'number' && serverResendSeconds > 0) {
+        setResendSeconds(serverResendSeconds);
+      }
+
       Alert.alert(
         'Code Sent',
         `A new 6-digit verification code has been sent to +91 ${phoneNumber}.`,
@@ -172,11 +223,10 @@ function MobileVerificationScreen({
       );
     } catch (error) {
       console.error('Resend OTP Error:', error);
+      const apiError = error?.response?.data?.error;
       const serverMsg =
+        apiError?.message ||
         error?.response?.data?.message ||
-        error?.response?.data?.error ||
-        error?.response?.data?.response ||
-        error?.message ||
         'Failed to resend code. Please try again.';
       setErrorMessage(serverMsg);
     }
@@ -185,50 +235,68 @@ function MobileVerificationScreen({
   const isPhoneValid = phoneNumber.replace(/[^0-9]/g, '').length === verificationConfig.phoneLength;
   const isOtpValid = otpValue.replace(/[^0-9]/g, '').length === verificationConfig.otpLength;
 
-  const statusBarHeight =
-    Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
-  const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
+  // Android draws below the (non-translucent) status bar, so only iOS needs the inset.
+  const safeTopInset = Platform.OS === 'ios' ? insets.top : 0;
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={{
-        backgroundColor: '#F7F5EF',
+        backgroundColor: '#FBFAF6',
         flex: 1,
-        paddingTop: safeTopPadding,
-      }}>
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#F7F5EF"
-        translucent={true}
+        backgroundColor="#FBFAF6"
+        translucent={false}
       />
 
-      {/* 1. Standard Header */}
-      <OnboardingHeader
-        onBack={handleBack}
+      {/* 1. Grey navigation bar: back + Need Help? */}
+      <VerificationHeader
         onNeedHelp={handleNeedHelp}
-      />
-
-      {/* 2. Step 1 of 8 Single Progress Bar */}
-      <RegistrationProgress
-        currentStep={1}
-        totalSteps={8}
+        topInset={safeTopInset}
       />
 
       <ScrollView
         style={{
-          backgroundColor: '#F7F5EF',
           flex: 1,
         }}
         contentContainerStyle={{
-          backgroundColor: '#F7F5EF',
           flexGrow: 1,
-          justifyContent: 'space-between',
-          paddingTop: 10,
+          paddingBottom: Math.max(insets.bottom, 16) + 8,
         }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
+        {/* 2. Brand */}
+        <View
+          style={{
+            alignItems: 'center',
+            marginBottom: 28,
+            marginTop: 8,
+          }}>
+          {/* <Text
+            style={{
+              color: '#17191C',
+              fontSize: 34,
+              fontWeight: '900',
+              letterSpacing: -1.2,
+            }}>
+            TREEPS
+          </Text>
+          <Text
+            style={{
+              color: '#687078',
+              fontSize: 10,
+              fontWeight: '700',
+              letterSpacing: 6,
+              marginTop: 2,
+            }}>
+            DRIVER APP
+          </Text> */}
+        </View>
+
         {/* 3. Dynamic Form State */}
         {mode === 'phone' ? (
           <MobileNumberForm
@@ -250,7 +318,7 @@ function MobileVerificationScreen({
             }}
             phoneNumber={phoneNumber}
             countryCode={verificationConfig.countryCode}
-            resendSeconds={verificationConfig.resendSeconds}
+            resendSeconds={resendSeconds}
             onResendOtp={handleResendOtp}
             errorMessage={errorMessage}
           />
@@ -265,10 +333,43 @@ function MobileVerificationScreen({
           onChangeNumber={handleChangeNumber}
         />
 
-        {/* 5. Lower Visual */}
-        <VerificationHelper />
+        {/* 5. Terms footer */}
+        {mode === 'phone' ? (
+          <View
+            style={{
+              alignItems: 'center',
+              marginTop: 'auto',
+              paddingHorizontal: 20,
+              paddingTop: 32,
+            }}>
+            <Text
+              style={{
+                color: '#687078',
+                fontSize: 13,
+                textAlign: 'center',
+              }}>
+              By continuing, you agree to our
+            </Text>
+            <Pressable
+              onPress={handleOpenTerms}
+              hitSlop={{ top: 8, bottom: 8, left: 12, right: 12 }}
+              accessibilityRole="link"
+              accessibilityLabel="Terms and Conditions">
+              <Text
+                style={{
+                  color: '#17191C',
+                  fontSize: 14,
+                  fontWeight: '500',
+                  marginTop: 4,
+                  textDecorationLine: 'underline',
+                }}>
+                Terms & Conditions
+              </Text>
+            </Pressable>
+          </View>
+        ) : null}
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -16,8 +16,8 @@ export const genderOptions = [
 
 export const initialFormValues = {
   fullName: '',
-  dateOfBirth: '12 Jan 1998',
-  gender: 'male',
+  dateOfBirth: '',
+  gender: '',
   email: '',
   profilePhoto: null,
 };

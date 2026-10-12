@@ -53,13 +53,6 @@ function LicenceUpload({
         />
       </View>
 
-      <View style={styles.infoNote}>
-        <Text style={styles.infoIcon}>ⓘ</Text>
-        <Text style={styles.infoText}>
-          Make sure the details on your licence are clear and readable.
-        </Text>
-      </View>
-
       {/* Document Preview Modal */}
       {previewSide ? (
         <Modal
@@ -163,29 +156,30 @@ function DocCard({ title, doc, onUpload, onView, onReplace, onRemove }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 18,
+    marginTop: 32,
     width: '100%',
   },
   sectionHeader: {
     color: '#17191C',
-    fontSize: 13,
-    fontWeight: '700',
-    marginBottom: 8,
+    fontSize: 17,
+    fontWeight: '600',
+    marginBottom: 12,
   },
   uploadRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 14,
   },
   card: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderColor: '#DDD9CF',
-    borderRadius: 8,
+    borderColor: '#CDD1D6',
+    borderRadius: 16,
     borderStyle: 'dashed',
     borderWidth: 1.5,
     flex: 1,
     justifyContent: 'center',
-    paddingVertical: 14,
+    minHeight: 150,
+    paddingVertical: 16,
   },
   cardUploaded: {
     backgroundColor: '#F7FDF9',
@@ -194,9 +188,9 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: '#687078',
-    fontSize: 12,
-    fontWeight: '700',
-    marginBottom: 6,
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 12,
   },
   uploadBtn: {
     alignItems: 'center',
@@ -204,12 +198,12 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   uploadIcon: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: 34,
+    marginBottom: 8,
   },
   uploadLabel: {
-    color: '#0284C7',
-    fontSize: 12,
+    color: '#0E8FA3',
+    fontSize: 17,
     fontWeight: '700',
   },
   uploadedContainer: {

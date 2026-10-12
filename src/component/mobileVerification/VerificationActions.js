@@ -27,7 +27,7 @@ function VerificationActions({
     <View
       style={{
         alignItems: 'center',
-        marginTop: 18,
+        marginTop: 24,
         paddingHorizontal: 20,
         width: '100%',
       }}>
@@ -37,8 +37,8 @@ function VerificationActions({
           {
             alignItems: 'center',
             backgroundColor: '#FFC928',
-            borderRadius: 16,
-            height: 52,
+            borderRadius: 14,
+            height: 58,
             justifyContent: 'center',
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },

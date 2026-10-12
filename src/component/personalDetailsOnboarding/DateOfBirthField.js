@@ -18,7 +18,7 @@ const MONTHS = [
  * Interactive date of birth selector with calendar icons and eligibility validation (18+ years).
  */
 function DateOfBirthField({
-  value = '12 Jan 1998',
+  value = '',
   onChangeDate,
   errorMessage,
 }) {
@@ -65,10 +65,10 @@ function DateOfBirthField({
       }}>
       <Text
         style={{
-          color: '#687078',
-          fontSize: 13,
+          color: '#17191C',
+          fontSize: 17,
           fontWeight: '600',
-          marginBottom: 6,
+          marginBottom: 10,
         }}>
         Date of Birth
       </Text>
@@ -79,18 +79,12 @@ function DateOfBirthField({
           {
             alignItems: 'center',
             backgroundColor: '#FFFFFF',
-            borderColor: '#DDD9CF',
-            borderRadius: 14,
-            borderWidth: 1.5,
+            borderColor: '#D9DCE0',
+            borderRadius: 12,
+            borderWidth: 1,
             flexDirection: 'row',
-            height: 52,
-            justifyContent: 'space-between',
-            paddingHorizontal: 14,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.04,
-            shadowRadius: 3,
-            elevation: 1,
+            height: 58,
+            paddingHorizontal: 18,
           },
           pressed && { backgroundColor: '#FAF8F1' },
           !!errorMessage && { borderColor: '#EF4444' },
@@ -99,41 +93,15 @@ function DateOfBirthField({
         accessibilityRole="button"
         accessibilityLabel={`Date of birth ${value}`}
       >
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            marginRight: 10,
-            width: 22,
-          }}>
-          <Text style={{ fontSize: 16 }}>📅</Text>
-        </View>
-
         <Text
           style={{
-            color: '#17191C',
+            color: value ? '#17191C' : '#8A929B',
             flex: 1,
-            fontSize: 15.5,
-            fontWeight: '600',
-            letterSpacing: -0.1,
+            fontSize: 17,
+            fontWeight: '400',
           }}>
           {value || 'Select Date of Birth'}
         </Text>
-
-        <View
-          style={{
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: 22,
-          }}>
-          <Text
-            style={{
-              color: '#687078',
-              fontSize: 15,
-            }}>
-            📅
-          </Text>
-        </View>
       </Pressable>
 
       {errorMessage ? (

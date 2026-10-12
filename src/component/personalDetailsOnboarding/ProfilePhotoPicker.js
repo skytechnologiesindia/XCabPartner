@@ -80,10 +80,6 @@ function ProfilePhotoPicker({
           )}
         </View>
 
-        {/* Yellow Camera Badge */}
-        <View style={styles.cameraBadge}>
-          <Text style={styles.cameraIcon}>📷</Text>
-        </View>
       </Pressable>
 
       {/* Label */}
@@ -203,42 +199,38 @@ const styles = StyleSheet.create({
   },
   avatarCircle: {
     alignItems: 'center',
-    backgroundColor: '#DCE4EC',
-    borderRadius: 50,
-    elevation: 2,
-    height: 100,
+    backgroundColor: '#ECEEF1',
+    borderRadius: 60,
+    height: 120,
     justifyContent: 'center',
     overflow: 'hidden',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
-    shadowRadius: 4,
-    width: 100,
+    width: 120,
   },
   avatarImage: {
-    borderRadius: 50,
-    height: 100,
-    width: 100,
+    borderRadius: 60,
+    height: 120,
+    width: 120,
   },
   silhouetteContainer: {
     alignItems: 'center',
     height: '100%',
     justifyContent: 'flex-end',
+    paddingBottom: 14,
     width: '100%',
   },
   silhouetteHead: {
-    backgroundColor: '#6B7A8C',
-    borderRadius: 15,
-    height: 30,
-    marginBottom: 5,
-    width: 30,
+    backgroundColor: '#BFC3CA',
+    borderRadius: 18,
+    height: 36,
+    marginBottom: 6,
+    width: 36,
   },
   silhouetteBody: {
-    backgroundColor: '#6B7A8C',
-    borderTopLeftRadius: 28,
-    borderTopRightRadius: 28,
-    height: 34,
-    width: 58,
+    backgroundColor: '#BFC3CA',
+    borderTopLeftRadius: 34,
+    borderTopRightRadius: 34,
+    height: 36,
+    width: 70,
   },
   cameraBadge: {
     alignItems: 'center',
@@ -262,11 +254,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   labelText: {
-    color: '#17191C',
-    fontSize: 14,
-    fontWeight: '700',
-    letterSpacing: -0.2,
-    marginTop: 10,
+    color: '#1A4FD6',
+    fontSize: 18,
+    fontWeight: '600',
+    marginTop: 14,
     textAlign: 'center',
   },
   errorText: {

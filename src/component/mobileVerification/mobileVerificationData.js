@@ -7,7 +7,7 @@ export const verificationConfig = {
   countryName: 'India',
   phoneLength: 10,
   otpLength: 6,
-  resendSeconds: 28,
+  resendSeconds: 30,
 };
 
 export const supportedCountries = [

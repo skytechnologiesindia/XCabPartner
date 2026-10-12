@@ -8,12 +8,14 @@ import { genderOptions } from './personalDetailsOnboardingData';
 
 /**
  * GenderSelector
- * 3-way segmented pill selection (Male, Female, Other) with icons.
+ * Radio-style options (Male, Female, Other by default).
+ * Pass `options` to show a subset.
  */
 function GenderSelector({
-  selectedGender = 'male',
+  selectedGender = '',
   onSelectGender,
   errorMessage,
+  options = genderOptions,
 }) {
   return (
     <View
@@ -23,10 +25,10 @@ function GenderSelector({
       }}>
       <Text
         style={{
-          color: '#687078',
-          fontSize: 13,
+          color: '#17191C',
+          fontSize: 17,
           fontWeight: '600',
-          marginBottom: 6,
+          marginBottom: 10,
         }}>
         Gender
       </Text>
@@ -34,10 +36,10 @@ function GenderSelector({
       <View
         style={{
           flexDirection: 'row',
-          gap: 8,
+          gap: 14,
           width: '100%',
         }}>
-        {genderOptions.map(option => {
+        {options.map(option => {
           const isSelected = selectedGender === option.id;
           return (
             <Pressable
@@ -45,21 +47,15 @@ function GenderSelector({
               style={({ pressed }) => [
                 {
                   alignItems: 'center',
-                  borderRadius: 14,
-                  borderWidth: 1.5,
-                  flex: 1,
+                  backgroundColor: '#FFFFFF',
+                  borderColor: isSelected ? '#17191C' : '#D9DCE0',
+                  borderRadius: 12,
+                  borderWidth: 1,
                   flexDirection: 'row',
-                  height: 48,
-                  justifyContent: 'center',
-                  paddingHorizontal: 8,
-                  shadowColor: '#000',
-                  shadowOffset: { width: 0, height: 1 },
-                  shadowOpacity: 0.03,
-                  shadowRadius: 2,
-                  elevation: 1,
-                  backgroundColor: isSelected ? '#FFF4C7' : '#FFFFFF',
-                  borderColor: isSelected ? '#FFC928' : '#DDD9CF',
+                  height: 62,
+                  paddingHorizontal: 16,
                 },
+                options.length > 2 ? { flex: 1 } : { width: '44%' },
                 pressed && { opacity: 0.85 },
               ]}
               onPress={() => onSelectGender && onSelectGender(option.id)}
@@ -67,20 +63,33 @@ function GenderSelector({
               accessibilityState={{ selected: isSelected }}
               accessibilityLabel={option.label}
             >
-              <Text
+              <View
                 style={{
-                  color: isSelected ? '#17191C' : '#687078',
-                  fontSize: 15,
-                  fontWeight: '700',
-                  marginRight: 6,
+                  alignItems: 'center',
+                  borderColor: '#17191C',
+                  borderRadius: 14,
+                  borderWidth: 2,
+                  height: 28,
+                  justifyContent: 'center',
+                  marginRight: 14,
+                  width: 28,
                 }}>
-                {option.symbol}
-              </Text>
+                {isSelected ? (
+                  <View
+                    style={{
+                      backgroundColor: '#17191C',
+                      borderRadius: 7,
+                      height: 14,
+                      width: 14,
+                    }}
+                  />
+                ) : null}
+              </View>
               <Text
                 style={{
-                  color: isSelected ? '#17191C' : '#687078',
-                  fontSize: 14,
-                  fontWeight: isSelected ? '800' : '600',
+                  color: '#17191C',
+                  fontSize: 17,
+                  fontWeight: '400',
                 }}>
                 {option.label}
               </Text>
