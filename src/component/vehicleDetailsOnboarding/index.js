@@ -1,8 +1,11 @@
 import VehicleDetailsForm from './VehicleDetailsForm';
 import {
+  documentTypes,
+  fuelTypes,
   initialVehicleValues,
   modelsByMake,
   vehicleColors,
+  vehicleDocumentConfig,
   vehicleMakes,
   vehicleTypes,
   vehicleYears,
@@ -10,9 +13,12 @@ import {
 
 export {
   VehicleDetailsForm,
+  documentTypes,
+  fuelTypes,
   initialVehicleValues,
   modelsByMake,
   vehicleColors,
+  vehicleDocumentConfig,
   vehicleMakes,
   vehicleTypes,
   vehicleYears,

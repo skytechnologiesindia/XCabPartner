@@ -6,15 +6,14 @@
  * No documents API exists yet, so statuses are derived from RegistrationContext.
  */
 export const documentItems = [
-  { id: 'vehicle', title: 'Vehicle - Car', icon: '🚗', tint: '#E3F5EC', route: 'RegVehicleDetails' },
   { id: 'licence', title: 'Driving License', icon: '🪪', tint: '#FFF0DD', route: 'RegDrivingLicence' },
   { id: 'photo', title: 'Photo and name', icon: '👤', tint: '#E4EEFD', route: 'PhotoAndName' },
   { id: 'vehicleNumber', title: 'Vehicle Number', icon: '🚘', tint: '#ECEEF1', route: 'RegVehicleDetails' },
-  { id: 'identity', title: 'Aadhaar or PAN card', icon: '🪪', tint: '#ECEEF1', route: 'RegPersonalDetails' },
-  { id: 'permit', title: 'Permit', icon: '📄', tint: '#ECEEF1', route: 'RegVehicleDocuments' },
-  { id: 'insurance', title: 'Cab Insurance', icon: '🛡️', tint: '#ECEEF1', route: 'RegVehicleDocuments' },
-  { id: 'fitness', title: 'Fitness Certificate', icon: '📋', tint: '#ECEEF1', route: 'RegVehicleDocuments' },
-  { id: 'permissions', title: 'Permissions (optional)', icon: '📍', tint: '#ECEEF1', route: 'RegLocation' },
+  { id: 'identity', title: 'Aadhaar or PAN card', icon: '🪪', tint: '#ECEEF1', route: 'AadhaarPan' },
+  { id: 'permit', title: 'Permit', icon: '📄', tint: '#ECEEF1', route: 'Permit' },
+  { id: 'insurance', title: 'Cab Insurance', icon: '🛡️', tint: '#ECEEF1', route: 'CabInsurance' },
+  { id: 'fitness', title: 'Fitness Certificate', icon: '📋', tint: '#ECEEF1', route: 'FitnessCertificate' },
+  { id: 'permissions', title: 'Permissions (optional)', icon: '📍', tint: '#ECEEF1', route: 'AppPermissions' },
 ];
 
 export const statusColors = {
@@ -63,18 +62,33 @@ export function getDocumentStatus(id, data) {
       return reviewState(!!data.vehicle?.registrationNumber);
     case 'identity':
       return reviewState(
-        !!data.aadhaar?.aadhaarNumber || !!data.aadhaar?.frontDocument,
+        !!data.aadhaar?.aadhaarNumber ||
+          !!data.aadhaar?.frontDocument ||
+          !!data.pan?.panNumber ||
+          !!data.pan?.frontDocument,
       );
     case 'permit':
-      return reviewState(isUploaded(vehicleDocs.permit));
+      return reviewState(
+        isUploaded(vehicleDocs.permit) ||
+          !!data.permit?.number ||
+          !!data.permit?.frontDocument,
+      );
     case 'insurance':
-      return reviewState(isUploaded(vehicleDocs.insurance));
+      return reviewState(
+        isUploaded(vehicleDocs.insurance) ||
+          !!data.insurance?.number ||
+          !!data.insurance?.frontDocument,
+      );
     case 'fitness':
-      return reviewState(isUploaded(vehicleDocs.fitness));
-    case 'permissions':
-      return data.location?.permissionGranted
-        ? { label: 'Granted', color: statusColors.green }
-        : null;
+      // Submitted from the Fitness Certificate screen (pending review).
+      if (data.fitness?.status === 'pending' && verificationStatus !== 'approved') {
+        return { label: 'Under verification...', color: statusColors.orange };
+      }
+      return reviewState(
+        isUploaded(vehicleDocs.fitness) ||
+          !!data.fitness?.number ||
+          !!data.fitness?.frontDocument,
+      );
     default:
       return null;
   }

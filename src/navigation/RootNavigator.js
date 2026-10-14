@@ -19,6 +19,12 @@ import VerificationPendingScreen from '../screens/VerificationPending/Verificati
 import VerificationApprovedScreen from '../screens/VerificationApproved/VerificationApprovedScreen';
 import DocumentsScreen from '../screens/Documents/DocumentsScreen';
 import PhotoAndNameScreen from '../screens/PhotoAndName/PhotoAndNameScreen';
+import AadhaarPanScreen from '../screens/AadhaarPan/AadhaarPanScreen';
+import PermitScreen from '../screens/Permit/PermitScreen';
+import CabInsuranceScreen from '../screens/Insurance/CabInsuranceScreen';
+import FitnessCertificateScreen from '../screens/Fitness/FitnessCertificateScreen';
+import AppPermissionsScreen from '../screens/AppPermissions/AppPermissionsScreen';
+import DocumentVerificationScreen from '../screens/DocumentVerification/DocumentVerificationScreen';
 
 const paper = colors.ivory50 || '#F7F5EE';
 
@@ -141,6 +147,16 @@ function createStepRoute(StepScreen, stepIndex) {
         }
         return;
       }
+      // Driving Licence is followed by Photo and name, then Vehicle Details.
+      if (stepIndex === 2) {
+        navigation.push('PhotoAndName', { fromRegistration: true });
+        return;
+      }
+      // Vehicle Details is followed by the Aadhaar or PAN card, then Vehicle Documents.
+      if (stepIndex === 3) {
+        navigation.push('AadhaarPan', { fromRegistration: true });
+        return;
+      }
       setRegistrationStep(stepIndex + 2);
       navigation.push(REGISTRATION_ROUTES[stepIndex + 1]);
     };
@@ -248,19 +264,134 @@ function DocumentsRoute({ navigation }) {
   );
 }
 
-function PhotoAndNameRoute({ navigation }) {
-  // Back and Submit always land on the Documents hub.
-  const goToDocuments = () => {
-    const { routes, index } = navigation.getState();
-    if (index > 0 && routes[index - 1].name === 'Documents') {
+/**
+ * Returns to the Documents hub: pops when it is directly underneath,
+ * otherwise replaces the current screen with it (no duplicate instances).
+ */
+function returnToDocuments(navigation) {
+  const { routes, index } = navigation.getState();
+  const documentsIndex = routes.findIndex(r => r.name === 'Documents');
+  if (documentsIndex >= 0 && documentsIndex < index) {
+    if (documentsIndex === index - 1) {
       navigation.goBack();
     } else {
-      navigation.replace('Documents');
+      // Documents is deeper in the stack: pop back to that instance.
+      navigation.popTo('Documents');
     }
+  } else {
+    navigation.replace('Documents');
+  }
+}
+
+function PhotoAndNameRoute({ navigation, route }) {
+  const { setRegistrationStep } = useRegistration();
+  const fromRegistration = Boolean(route.params && route.params.fromRegistration);
+
+  // Back always lands on the Documents hub.
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  // Submit continues the registration flow (Vehicle Details) when reached
+  // from the Driving Licence step; otherwise it returns to Documents.
+  const handleSubmit = () => {
+    if (fromRegistration) {
+      setRegistrationStep(4);
+      navigation.push(REGISTRATION_ROUTES[3]);
+      return;
+    }
+    goToDocuments();
   };
 
   return (
-    <PhotoAndNameScreen onBack={goToDocuments} onSubmit={goToDocuments} />
+    <PhotoAndNameScreen onBack={goToDocuments} onSubmit={handleSubmit} />
+  );
+}
+
+function AadhaarPanRoute({ navigation, route }) {
+  const fromRegistration = Boolean(route.params && route.params.fromRegistration);
+
+  // Back always returns to the Documents hub.
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  // Continue moves on to Permit when reached from Vehicle Details;
+  // otherwise (opened from Documents) it returns to the hub.
+  const handleSubmit = () => {
+    if (fromRegistration) {
+      navigation.push('Permit', { fromRegistration: true });
+      return;
+    }
+    goToDocuments();
+  };
+
+  return <AadhaarPanScreen onBack={goToDocuments} onSubmit={handleSubmit} />;
+}
+
+function PermitRoute({ navigation, route }) {
+  const fromRegistration = Boolean(route.params && route.params.fromRegistration);
+
+  // Back always returns to the Documents hub.
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  // Continue moves on to Cab Insurance when reached from Aadhaar/PAN;
+  // otherwise (opened from Documents) it returns to the hub.
+  const handleSubmit = () => {
+    if (fromRegistration) {
+      navigation.push('CabInsurance', { fromRegistration: true });
+      return;
+    }
+    goToDocuments();
+  };
+
+  return <PermitScreen onBack={goToDocuments} onSubmit={handleSubmit} />;
+}
+
+function CabInsuranceRoute({ navigation, route }) {
+  const fromRegistration = Boolean(route.params && route.params.fromRegistration);
+
+  // Back always returns to the Documents hub.
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  // Continue moves on to Fitness Certificate when reached from Permit;
+  // otherwise (opened from Documents) it returns to the hub.
+  const handleSubmit = () => {
+    if (fromRegistration) {
+      navigation.push('FitnessCertificate', { fromRegistration: true });
+      return;
+    }
+    goToDocuments();
+  };
+
+  return <CabInsuranceScreen onBack={goToDocuments} onSubmit={handleSubmit} />;
+}
+
+function FitnessCertificateRoute({ navigation }) {
+  // Back always returns to the Documents hub.
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  // After a successful submission show the verification screen. `replace`
+  // keeps the form out of the stack so Back never returns to it.
+  const handleSubmit = () => {
+    navigation.replace('DocumentVerification');
+  };
+
+  return (
+    <FitnessCertificateScreen onBack={goToDocuments} onSubmit={handleSubmit} />
+  );
+}
+
+function AppPermissionsRoute({ navigation }) {
+  return (
+    <AppPermissionsScreen onBack={() => returnToDocuments(navigation)} />
+  );
+}
+
+function DocumentVerificationRoute({ navigation }) {
+  const goToDocuments = () => returnToDocuments(navigation);
+
+  return (
+    <DocumentVerificationScreen
+      onBack={goToDocuments}
+      onBackToDocuments={goToDocuments}
+    />
   );
 }
 
@@ -325,6 +456,18 @@ function RootNavigator() {
       />
       <Stack.Screen name="Documents" component={DocumentsRoute} />
       <Stack.Screen name="PhotoAndName" component={PhotoAndNameRoute} />
+      <Stack.Screen name="AadhaarPan" component={AadhaarPanRoute} />
+      <Stack.Screen name="Permit" component={PermitRoute} />
+      <Stack.Screen name="CabInsurance" component={CabInsuranceRoute} />
+      <Stack.Screen
+        name="FitnessCertificate"
+        component={FitnessCertificateRoute}
+      />
+      <Stack.Screen name="AppPermissions" component={AppPermissionsRoute} />
+      <Stack.Screen
+        name="DocumentVerification"
+        component={DocumentVerificationRoute}
+      />
     </Stack.Navigator>
   );
 }

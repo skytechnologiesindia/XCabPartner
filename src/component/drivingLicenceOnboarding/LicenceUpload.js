@@ -16,20 +16,23 @@ function LicenceUpload({
   backDoc,
   onUploadDoc,
   onRemoveDoc,
+  heading = 'Upload Driving Licence',
+  docTitle = 'Driving Licence',
+  panel = false,
 }) {
   const [previewSide, setPreviewSide] = useState(null);
 
   const handleSimulateUpload = side => {
     onUploadDoc(side, {
-      name: `licence_${side}.jpg`,
+      name: `${docTitle.toLowerCase().replace(/\s+/g, '_')}_${side}.jpg`,
       status: 'uploaded',
       timestamp: new Date().toISOString(),
     });
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionHeader}>Upload Driving Licence</Text>
+    <View style={[styles.container, panel && styles.panel]}>
+      <Text style={styles.sectionHeader}>{heading}</Text>
 
       <View style={styles.uploadRow}>
         {/* Front Side */}
@@ -37,7 +40,7 @@ function LicenceUpload({
           title="Front Side"
           doc={frontDoc}
           onUpload={() => handleSimulateUpload('frontDocument')}
-          onView={() => setPreviewSide({ title: 'Licence Front Side', side: 'frontDocument' })}
+          onView={() => setPreviewSide({ title: `${docTitle} Front Side`, side: 'frontDocument' })}
           onReplace={() => handleSimulateUpload('frontDocument')}
           onRemove={() => onRemoveDoc('frontDocument')}
         />
@@ -47,7 +50,7 @@ function LicenceUpload({
           title="Back Side"
           doc={backDoc}
           onUpload={() => handleSimulateUpload('backDocument')}
-          onView={() => setPreviewSide({ title: 'Licence Back Side', side: 'backDocument' })}
+          onView={() => setPreviewSide({ title: `${docTitle} Back Side`, side: 'backDocument' })}
           onReplace={() => handleSimulateUpload('backDocument')}
           onRemove={() => onRemoveDoc('backDocument')}
         />
@@ -78,7 +81,7 @@ function LicenceUpload({
                   <Text style={styles.emblemIcon}>🏛️</Text>
                   <View>
                     <Text style={styles.licenceStateText}>UNION OF INDIA / STATE TRANSPORT</Text>
-                    <Text style={styles.licenceBadgeText}>DRIVING LICENCE</Text>
+                    <Text style={styles.licenceBadgeText}>{docTitle.toUpperCase()}</Text>
                   </View>
                 </View>
                 <View style={styles.licenceDetailsRow}>
@@ -115,7 +118,7 @@ function DocCard({ title, doc, onUpload, onView, onReplace, onRemove }) {
       <Text style={styles.cardTitle}>{title}</Text>
       {isUploaded ? (
         <View style={styles.uploadedContainer}>
-          <Text style={styles.checkBadge}>✓ Licence uploaded</Text>
+          <Text style={styles.checkBadge}>✓ Uploaded</Text>
           <View style={styles.actionsRow}>
             <Pressable
               style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.6 }]}
@@ -158,6 +161,12 @@ const styles = StyleSheet.create({
   container: {
     marginTop: 32,
     width: '100%',
+  },
+  panel: {
+    backgroundColor: '#F1F3F6',
+    borderRadius: 16,
+    marginTop: 28,
+    padding: 16,
   },
   sectionHeader: {
     color: '#17191C',

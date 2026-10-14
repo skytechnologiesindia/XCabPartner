@@ -15,6 +15,7 @@ import {
 function VerificationHeader({
   onBack,
   title,
+  centerTitle = false,
   onNeedHelp,
   backgroundColor = 'transparent',
   topInset = 0,
@@ -62,6 +63,7 @@ function VerificationHeader({
             fontSize: 22,
             fontWeight: '700',
             marginHorizontal: 12,
+            textAlign: centerTitle ? 'center' : 'left',
           }}>
           {title}
         </Text>

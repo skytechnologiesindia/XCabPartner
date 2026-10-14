@@ -25,6 +25,39 @@ export const initialRegistrationData = {
     backDocument: null,
   },
 
+  pan: {
+    panNumber: '',
+    frontDocument: null,
+    backDocument: null,
+  },
+
+  // Fitness Certificate (opened from the Documents hub)
+  fitness: {
+    number: '',
+    authority: '',
+    validTill: '',
+    status: '', // '' | 'pending'
+    frontDocument: null,
+    backDocument: null,
+  },
+
+  // Cab Insurance (opened from the Documents hub)
+  insurance: {
+    number: '',
+    company: '',
+    validTill: '',
+    frontDocument: null,
+    backDocument: null,
+  },
+
+  // Permit (opened from the Documents hub)
+  permit: {
+    number: '',
+    validTill: '',
+    frontDocument: null,
+    backDocument: null,
+  },
+
   // Step 3: Driving Licence
   drivingLicence: {
     licenceNumber: '',
