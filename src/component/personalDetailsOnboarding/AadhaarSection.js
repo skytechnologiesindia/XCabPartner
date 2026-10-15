@@ -6,6 +6,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import { pickDocumentImage } from '../../utils/imagePicker';
 
 /**
  * AadhaarSection
@@ -33,12 +34,13 @@ function AadhaarSection({
     onChangeAadhaar('aadhaarNumber', formatted);
   };
 
-  const handleUploadDoc = side => {
-    onChangeAadhaar(side, {
-      name: `aadhaar_${side}.jpg`,
-      status: 'uploaded',
-      timestamp: new Date().toISOString(),
-    });
+  const handleUploadDoc = async side => {
+    const doc = await pickDocumentImage(
+      `Aadhaar ${side === 'frontDocument' ? 'Front Side' : 'Back Side'}`,
+    );
+    if (doc) {
+      onChangeAadhaar(side, doc);
+    }
   };
 
   const handleRemoveDoc = side => {

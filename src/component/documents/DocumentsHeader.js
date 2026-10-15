@@ -7,13 +7,12 @@ import {
 
 /**
  * DocumentsHeader
- * Light grey bar: back arrow, "Documents" title, Help pill, language circle.
+ * Light grey bar: back arrow, "Documents" title, Help pill.
  * `topInset` extends the bar below the status bar on iOS.
  */
 function DocumentsHeader({
   onBack,
   onHelp,
-  onLanguage,
   topInset = 0,
 }) {
   return (
@@ -78,26 +77,6 @@ function DocumentsHeader({
         <Text style={{ color: '#17191C', fontSize: 16, fontWeight: '600' }}>Help</Text>
       </Pressable>
 
-      <Pressable
-        style={({ pressed }) => [
-          {
-            alignItems: 'center',
-            borderColor: '#9AA1A8',
-            borderRadius: 20,
-            borderWidth: 1,
-            height: 40,
-            justifyContent: 'center',
-            marginLeft: 10,
-            width: 40,
-          },
-          pressed && { opacity: 0.6 },
-        ]}
-        onPress={onLanguage}
-        accessibilityRole="button"
-        accessibilityLabel="Change language"
-      >
-        <Text style={{ color: '#17191C', fontSize: 15, fontWeight: '700' }}>अA</Text>
-      </Pressable>
     </View>
   );
 }

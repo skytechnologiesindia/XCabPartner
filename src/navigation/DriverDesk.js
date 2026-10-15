@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { Platform, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import BottomTabNavigator from './BottomTabNavigator';
 import EnterPinScreen from '../screens/EnterPin/EnterPinScreen';
@@ -14,6 +14,11 @@ import { colors } from '../assets/colors/colors';
 
 const paper = colors.ivory50 || '#F7F5EE';
 
+// Android already lays the window out below the status bar, so adding the top
+// inset again leaves a large empty gap above the header.
+const SAFE_EDGES =
+  Platform.OS === 'ios' ? ['top', 'left', 'right'] : ['left', 'right'];
+
 export default function DriverDesk({ navigation }) {
   const [tripStage, setTripStage] = useState('scanning');
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -23,7 +28,7 @@ export default function DriverDesk({ navigation }) {
   const [helpSafetyOpen, setHelpSafetyOpen] = useState(false);
 
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={styles.safeArea} edges={SAFE_EDGES}>
       <View style={styles.screen}>
         <BottomTabNavigator
           tripStage={tripStage}

@@ -18,6 +18,7 @@ import { VerificationHeader } from '../../component/mobileVerification';
 function DocumentVerificationScreen({
   onBack,
   onBackToDocuments,
+  onGoHome,
 }) {
   const insets = useSafeAreaInsets();
 
@@ -159,6 +160,31 @@ function DocumentVerificationScreen({
           </Text>
           <Text style={{ color: '#17191C', fontSize: 20, fontWeight: '800', marginLeft: 10 }}>→</Text>
         </Pressable>
+
+        {/* TEMPORARY: remove this button (and `onGoHome`) once the flow is final. */}
+        {onGoHome ? (
+          <Pressable
+            style={({ pressed }) => [
+              {
+                alignItems: 'center',
+                borderColor: '#17191C',
+                borderRadius: 12,
+                borderWidth: 1,
+                height: 52,
+                justifyContent: 'center',
+                marginTop: 12,
+              },
+              pressed && { opacity: 0.6 },
+            ]}
+            onPress={onGoHome}
+            accessibilityRole="button"
+            accessibilityLabel="Go to Home"
+          >
+            <Text style={{ color: '#17191C', fontSize: 16, fontWeight: '700' }}>
+              Go to Home (temporary)
+            </Text>
+          </Pressable>
+        ) : null}
       </View>
     </View>
   );

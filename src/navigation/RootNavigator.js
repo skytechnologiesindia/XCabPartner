@@ -6,7 +6,6 @@ import { colors } from '../assets/colors/colors';
 import DriverDesk from './DriverDesk';
 
 import SplashScreen from '../screens/Splash/SplashScreen';
-import LanguageScreen from '../screens/Language/LanguageScreen';
 import MobileVerificationScreen from '../screens/MobileVerification/MobileVerificationScreen';
 import PersonalDetailsOnboardingScreen from '../screens/PersonalDetailsOnboarding/PersonalDetailsOnboardingScreen';
 import DrivingLicenceOnboardingScreen from '../screens/DrivingLicenceOnboarding/DrivingLicenceOnboardingScreen';
@@ -45,15 +44,12 @@ const REGISTRATION_ROUTES = [
 ];
 
 /**
- * Builds a stack history: Language -> Step 1 -> ... -> Step `step`.
+ * Builds a stack history: Step 1 -> ... -> Step `step`.
  * Used when the app is (re)opened mid-flow so the back button still works.
  */
 function buildRegistrationRoutes(step) {
   const last = Math.min(Math.max(step, 1), REGISTRATION_ROUTES.length);
-  return [
-    { name: 'Language' },
-    ...REGISTRATION_ROUTES.slice(0, last).map(name => ({ name })),
-  ];
+  return REGISTRATION_ROUTES.slice(0, last).map(name => ({ name }));
 }
 
 function SplashRoute({ navigation }) {
@@ -83,29 +79,11 @@ function SplashRoute({ navigation }) {
       return;
     }
 
-    // 4. Default (new users / not verified yet) -> Language selection
-    navigation.replace('Language');
+    // 4. Default (new users / not verified yet) -> Mobile number + OTP
+    navigation.replace(REGISTRATION_ROUTES[0]);
   };
 
   return <SplashScreen onFinish={handleFinish} />;
-}
-
-function LanguageRoute({ navigation }) {
-  const { setRegistrationStep } = useRegistration();
-
-  return (
-    <LanguageScreen
-      onBack={() => {
-        if (navigation.canGoBack()) {
-          navigation.goBack();
-        }
-      }}
-      onContinue={() => {
-        setRegistrationStep(1);
-        navigation.push(REGISTRATION_ROUTES[0]);
-      }}
-    />
-  );
 }
 
 /**
@@ -391,6 +369,10 @@ function DocumentVerificationRoute({ navigation }) {
     <DocumentVerificationScreen
       onBack={goToDocuments}
       onBackToDocuments={goToDocuments}
+      // TEMPORARY: remove together with the button in the screen.
+      onGoHome={() =>
+        navigation.reset({ index: 0, routes: [{ name: 'DriverDesk' }] })
+      }
     />
   );
 }
@@ -419,7 +401,6 @@ function RootNavigator() {
   return (
     <Stack.Navigator initialRouteName="Splash" screenOptions={screenOptions}>
       <Stack.Screen name="Splash" component={SplashRoute} options={noGesture} />
-      <Stack.Screen name="Language" component={LanguageRoute} />
 
       <Stack.Screen name="RegMobile" component={MobileRoute} />
       <Stack.Screen

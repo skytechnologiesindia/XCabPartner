@@ -1,15 +1,19 @@
 import React, { useState } from 'react';
 import {
+  Image,
   Modal,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { pickDocumentImage } from '../../utils/imagePicker';
 
 /**
  * LicenceUpload
- * Upload cards for Driving Licence (Front Side & Back Side) with View/Replace/Remove modal preview.
+ * Shared front/back image upload cards (licence, RC, Road Tax, Aadhaar, PAN,
+ * Permit, Insurance, Fitness). Picks a real photo from camera/gallery, shows a
+ * thumbnail, and supports View / Replace / Remove.
  */
 function LicenceUpload({
   frontDoc,
@@ -22,13 +26,16 @@ function LicenceUpload({
 }) {
   const [previewSide, setPreviewSide] = useState(null);
 
-  const handleSimulateUpload = side => {
-    onUploadDoc(side, {
-      name: `${docTitle.toLowerCase().replace(/\s+/g, '_')}_${side}.jpg`,
-      status: 'uploaded',
-      timestamp: new Date().toISOString(),
-    });
+  // Opens camera/gallery (shared picker) and stores the real picked image.
+  const handlePickImage = async (side, label) => {
+    const doc = await pickDocumentImage(`${docTitle} - ${label}`);
+    if (doc) {
+      onUploadDoc(side, doc);
+    }
   };
+
+  const previewDoc =
+    previewSide && (previewSide.side === 'frontDocument' ? frontDoc : backDoc);
 
   return (
     <View style={[styles.container, panel && styles.panel]}>
@@ -39,9 +46,9 @@ function LicenceUpload({
         <DocCard
           title="Front Side"
           doc={frontDoc}
-          onUpload={() => handleSimulateUpload('frontDocument')}
+          onUpload={() => handlePickImage('frontDocument', 'Front Side')}
           onView={() => setPreviewSide({ title: `${docTitle} Front Side`, side: 'frontDocument' })}
-          onReplace={() => handleSimulateUpload('frontDocument')}
+          onReplace={() => handlePickImage('frontDocument', 'Front Side')}
           onRemove={() => onRemoveDoc('frontDocument')}
         />
 
@@ -49,9 +56,9 @@ function LicenceUpload({
         <DocCard
           title="Back Side"
           doc={backDoc}
-          onUpload={() => handleSimulateUpload('backDocument')}
+          onUpload={() => handlePickImage('backDocument', 'Back Side')}
           onView={() => setPreviewSide({ title: `${docTitle} Back Side`, side: 'backDocument' })}
-          onReplace={() => handleSimulateUpload('backDocument')}
+          onReplace={() => handlePickImage('backDocument', 'Back Side')}
           onRemove={() => onRemoveDoc('backDocument')}
         />
       </View>
@@ -76,25 +83,14 @@ function LicenceUpload({
                 </Pressable>
               </View>
 
-              <View style={styles.mockLicenceCard}>
-                <View style={styles.licenceEmblemRow}>
-                  <Text style={styles.emblemIcon}>🏛️</Text>
-                  <View>
-                    <Text style={styles.licenceStateText}>UNION OF INDIA / STATE TRANSPORT</Text>
-                    <Text style={styles.licenceBadgeText}>{docTitle.toUpperCase()}</Text>
-                  </View>
-                </View>
-                <View style={styles.licenceDetailsRow}>
-                  <View style={styles.licenceAvatarBox}>
-                    <Text style={styles.licenceAvatarIcon}>👤</Text>
-                  </View>
-                  <View style={styles.licenceInfoCol}>
-                    <Text style={styles.mockInfoLine}>DOC: {previewSide.side}</Text>
-                    <Text style={styles.mockInfoLine}>STATUS: VERIFIED DOCUMENT</Text>
-                    <Text style={styles.mockInfoLine}>TYPE: LMV-NT / COMMERCIAL</Text>
-                  </View>
-                </View>
-              </View>
+              {previewDoc && previewDoc.uri ? (
+                <Image
+                  source={{ uri: previewDoc.uri }}
+                  style={styles.previewImage}
+                  resizeMode="contain"
+                  accessibilityLabel={previewSide.title}
+                />
+              ) : null}
 
               <Pressable
                 style={styles.modalCloseButton}
@@ -118,6 +114,13 @@ function DocCard({ title, doc, onUpload, onView, onReplace, onRemove }) {
       <Text style={styles.cardTitle}>{title}</Text>
       {isUploaded ? (
         <View style={styles.uploadedContainer}>
+          {doc.uri ? (
+            <Image
+              source={{ uri: doc.uri }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          ) : null}
           <Text style={styles.checkBadge}>✓ Uploaded</Text>
           <View style={styles.actionsRow}>
             <Pressable
@@ -218,6 +221,19 @@ const styles = StyleSheet.create({
   uploadedContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  thumbnail: {
+    backgroundColor: '#ECEEF1',
+    borderRadius: 8,
+    height: 64,
+    marginBottom: 8,
+    width: 96,
+  },
+  previewImage: {
+    backgroundColor: '#F1F3F6',
+    borderRadius: 8,
+    height: 320,
+    width: '100%',
   },
   checkBadge: {
     color: '#18A66A',

@@ -7,7 +7,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import { images } from '../../assets/images';
+import { launchImageSource } from '../../utils/imagePicker';
 
 /**
  * ProfilePhotoPicker
@@ -24,19 +24,17 @@ function ProfilePhotoPicker({
 }) {
   const [modalVisible, setModalVisible] = useState(false);
 
-  const handleSelectSample = () => {
-    if (onChangePhoto) {
-      onChangePhoto(images.driverAvatar);
-    }
+  // Closes the sheet first so the system camera/gallery opens cleanly.
+  const handlePick = async source => {
     setModalVisible(false);
+    const doc = await launchImageSource(source);
+    if (doc && onChangePhoto) {
+      onChangePhoto(doc.uri);
+    }
   };
 
-  const handleSimulateCamera = () => {
-    if (onChangePhoto) {
-      onChangePhoto(images.driverAvatar);
-    }
-    setModalVisible(false);
-  };
+  const handleSelectSample = () => handlePick('gallery');
+  const handleSimulateCamera = () => handlePick('camera');
 
   const handleRemovePhoto = () => {
     if (onChangePhoto) {
