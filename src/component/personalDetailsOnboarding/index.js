@@ -3,9 +3,6 @@ import DateOfBirthField from './DateOfBirthField';
 import EmailField from './EmailField';
 import FullNameField from './FullNameField';
 import GenderSelector from './GenderSelector';
-import OnboardingContinueButton from './OnboardingContinueButton';
-import OnboardingHeader from './OnboardingHeader';
-import OnboardingProgress from './OnboardingProgress';
 import PersonalDetailsForm from './PersonalDetailsForm';
 import PersonalDetailsHelper from './PersonalDetailsHelper';
 import ProfilePhotoPicker from './ProfilePhotoPicker';
@@ -22,9 +19,6 @@ export {
   EmailField,
   FullNameField,
   GenderSelector,
-  OnboardingContinueButton,
-  OnboardingHeader,
-  OnboardingProgress,
   PersonalDetailsForm,
   PersonalDetailsHelper,
   ProfilePhotoPicker,

@@ -1,34 +1,29 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import {
   Alert,
-  Keyboard,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StatusBar,
-  Text,
-  View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  OnboardingHeader,
-  RegistrationButton,
-  RegistrationProgress,
-} from '../../component/onboarding';
+import { RegistrationButton } from '../../component/onboarding';
+import { VerificationHeader } from '../../component/mobileVerification';
 import {
   VehicleDetailsForm,
   initialVehicleValues,
+  vehicleDocumentConfig,
 } from '../../component/vehicleDetailsOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
 
 /**
  * VehicleDetailsOnboardingScreen (Step 4 of 8)
- * Configures driver's vehicle:
- * - Vehicle Type
- * - Brand / Make
- * - Model
- * - Year
- * - Color
- * - Registration Number
+ * Vehicle documents: choose Vehicle RC or Road Tax, then
+ * - Fuel Type
+ * - Front / Back images
+ * - Document number
+ * RC and Road Tax keep separate state; the RC number is stored as the
+ * vehicle's registrationNumber.
  */
 function VehicleDetailsOnboardingScreen({
   onBack,
@@ -36,72 +31,76 @@ function VehicleDetailsOnboardingScreen({
 }) {
   const insets = useSafeAreaInsets();
   const { registrationData, updateRegistrationData } = useRegistration();
-  const scrollViewRef = useRef(null);
 
-  const [formData, setFormData] = useState({
-    ...initialVehicleValues,
-    ...registrationData.vehicle,
+  const saved = { ...initialVehicleValues, ...registrationData.vehicle };
+
+  const [docType, setDocType] = useState('rc');
+  const [fuelType, setFuelType] = useState(saved.fuelType || '');
+  const [documents, setDocuments] = useState({
+    rc: {
+      number: saved.registrationNumber || '',
+      frontDocument: saved.rcDocuments?.frontDocument || null,
+      backDocument: saved.rcDocuments?.backDocument || null,
+    },
+    roadTax: {
+      number: saved.roadTax?.number || '',
+      frontDocument: saved.roadTax?.frontDocument || null,
+      backDocument: saved.roadTax?.backDocument || null,
+    },
   });
-
   const [errors, setErrors] = useState({});
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegFocused, setIsRegFocused] = useState(false);
 
-  useEffect(() => {
-    const hideSub = Keyboard.addListener(
-      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide',
-      () => {
-        setIsRegFocused(false);
-      },
-    );
+  const currentDoc = documents[docType];
 
-    return () => {
-      hideSub.remove();
-    };
-  }, []);
+  const handleChangeDocType = id => {
+    setDocType(id);
+    setErrors({});
+  };
 
-  const handleFieldChange = (field, value) => {
-    setFormData(prev => ({
+  const handleDocumentFieldChange = (field, value) => {
+    setDocuments(prev => ({
       ...prev,
-      [field]: value,
+      [docType]: { ...prev[docType], [field]: value },
     }));
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: null,
-      }));
+      setErrors(prev => ({ ...prev, [field]: null }));
     }
   };
 
-  // When focusing specifically on Registration Number, expand bottom space & scroll into view
-  const handleFocusRegistration = () => {
-    setIsRegFocused(true);
-    // Trigger scroll after keyboard begins animating up
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 100);
-    setTimeout(() => {
-      scrollViewRef.current?.scrollToEnd({ animated: true });
-    }, 280);
-  };
-
-  const handleBlurRegistration = () => {
-    setIsRegFocused(false);
+  const handleFuelChange = value => {
+    setFuelType(value);
+    if (errors.fuelType) {
+      setErrors(prev => ({ ...prev, fuelType: null }));
+    }
   };
 
   const handleNeedHelp = () => {
     Alert.alert(
       'TREEPS Support (24/7)',
-      'Need help selecting or entering your vehicle details?\n\nContact our 24/7 Driver Support at 1800-247-TREEPS (9222).',
+      'Need help with your vehicle documents?\n\nContact our 24/7 Driver Support at 1800-247-TREEPS (9222).',
       [{ text: 'Close', style: 'cancel' }],
     );
   };
 
+  const isDocValid =
+    (currentDoc.number || '').trim().length >= vehicleDocumentConfig.minNumberLength &&
+    !!currentDoc.frontDocument &&
+    !!currentDoc.backDocument;
+  const isFormValid = !!fuelType && isDocValid;
+
   const validateForm = () => {
     const newErrors = {};
+    const docName = docType === 'rc' ? 'RC' : 'Road Tax';
 
-    if (!formData.registrationNumber || formData.registrationNumber.trim().length < 6) {
-      newErrors.registrationNumber = 'Please enter a valid registration number (e.g. JH01AB1234).';
+    if (!fuelType) {
+      newErrors.fuelType = 'Please select a fuel type.';
+    }
+    if (!currentDoc.frontDocument || !currentDoc.backDocument) {
+      newErrors.documents = `Please upload both sides of your ${docName}.`;
+    }
+    if ((currentDoc.number || '').trim().length < vehicleDocumentConfig.minNumberLength) {
+      newErrors.number = `Please enter a valid ${docName} number.`;
     }
 
     setErrors(newErrors);
@@ -117,113 +116,77 @@ function VehicleDetailsOnboardingScreen({
 
     setTimeout(() => {
       setIsLoading(false);
-      updateRegistrationData('vehicle', formData);
+      // Keep existing vehicle fields (type/make/...) untouched.
+      updateRegistrationData('vehicle', {
+        registrationNumber: documents.rc.number,
+        fuelType,
+        rcDocuments: {
+          frontDocument: documents.rc.frontDocument,
+          backDocument: documents.rc.backDocument,
+        },
+        roadTax: documents.roadTax,
+      });
 
       if (onContinue) {
-        onContinue(formData);
+        onContinue(documents);
       }
     }, 300);
   };
 
-  const isFormValid =
-    !!formData.type &&
-    !!formData.make &&
-    !!formData.model &&
-    !!formData.year &&
-    !!formData.color &&
-    !!formData.registrationNumber &&
-    formData.registrationNumber.trim().length >= 6;
-
-  const statusBarHeight =
-    Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
-  const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
+  const safeTopInset = Platform.OS === 'ios' ? insets.top : 0;
   const safeBottomPadding = Math.max(insets.bottom, 16);
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={{
-        backgroundColor: '#F7F5EF',
+        backgroundColor: '#FBFAF6',
         flex: 1,
-        paddingTop: safeTopPadding,
-      }}>
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#F7F5EF"
-        translucent={true}
+        backgroundColor="#EEF0F2"
+        translucent={false}
       />
 
-      {/* 1. Header */}
-      <OnboardingHeader
+      <VerificationHeader
+        title="Vehicle Details"
         onBack={onBack}
         onNeedHelp={handleNeedHelp}
+        backgroundColor="#EEF0F2"
+        topInset={safeTopInset}
       />
 
-      {/* 2. Step 4 of 8 Progress */}
-      <RegistrationProgress currentStep={4} totalSteps={8} />
-
       <ScrollView
-        ref={scrollViewRef}
-        style={{
-          backgroundColor: '#F7F5EF',
-          flex: 1,
-        }}
+        style={{ flex: 1 }}
         contentContainerStyle={{
-          backgroundColor: '#F7F5EF',
           flexGrow: 1,
-          justifyContent: 'space-between',
-          paddingBottom: isRegFocused ? 360 : safeBottomPadding + 20,
-          paddingTop: 10,
+          paddingBottom: safeBottomPadding,
+          paddingTop: 24,
         }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3. Title & Subtitle */}
-        <View
-          style={{
-            paddingHorizontal: 20,
-            marginBottom: 16,
-          }}>
-          <Text
-            style={{
-              color: '#17191C',
-              fontSize: 27,
-              fontWeight: '900',
-              letterSpacing: -0.6,
-              lineHeight: 33,
-            }}>
-            Your Vehicle{'\n'}Details
-          </Text>
-          <Text
-            style={{
-              color: '#687078',
-              fontSize: 13.5,
-              fontWeight: '400',
-              lineHeight: 19,
-              marginTop: 6,
-            }}>
-            Tell us about your vehicle.
-          </Text>
-        </View>
-
-        {/* 4. Form Inputs */}
         <VehicleDetailsForm
-          formData={formData}
-          onChangeField={handleFieldChange}
-          onFocusRegistration={handleFocusRegistration}
-          onBlurRegistration={handleBlurRegistration}
+          docType={docType}
+          onChangeDocType={handleChangeDocType}
+          fuelType={fuelType}
+          onChangeFuelType={handleFuelChange}
+          documentData={currentDoc}
+          onChangeDocumentField={handleDocumentFieldChange}
           errors={errors}
         />
 
-        {/* 5. Primary CTA */}
         <RegistrationButton
           label="Continue"
           onPress={handleContinuePress}
           isDisabled={!isFormValid}
           isLoading={isLoading}
+          style={{ marginTop: 28 }}
         />
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

@@ -8,9 +8,9 @@ export const licenceConfig = {
 };
 
 export const initialLicenceValues = {
-  licenceNumber: 'JH01 2019 0012345',
-  dateOfBirth: '12 Jan 1998',
-  validUntil: '12 Jan 2035',
+  licenceNumber: '',
+  dateOfBirth: '',
+  validUntil: '',
   frontDocument: null,
   backDocument: null,
 };

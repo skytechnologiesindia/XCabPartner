@@ -34,6 +34,10 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>TREEPS needs camera access to capture your documents and profile photo.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>TREEPS needs photo library access so you can upload your documents and profile photo.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
 	<key>UILaunchStoryboardName</key>

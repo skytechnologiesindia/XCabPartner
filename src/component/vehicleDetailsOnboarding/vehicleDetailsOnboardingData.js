@@ -54,16 +54,45 @@ export const vehicleColors = [
   { label: 'Yellow', colorHex: '#FACC15', border: '#EAB308' },
 ];
 
+export const fuelTypes = ['Petrol', 'CNG', 'Diesel'];
+
+export const documentTypes = [
+  {
+    id: 'rc',
+    label: 'Vehicle RC',
+    numberLabel: 'RC',
+    placeholder: 'KA12EZ4231',
+    example: 'Eg: KA 12 EZ 4231',
+  },
+  {
+    id: 'roadTax',
+    label: 'Road Tax',
+    numberLabel: 'Road Tax',
+    placeholder: 'TN123456789',
+    example: 'Eg: TN 12 3456789',
+  },
+];
+
+export const vehicleDocumentConfig = {
+  minNumberLength: 6,
+};
+
 export const initialVehicleValues = {
   type: 'Sedan',
   make: 'Toyota',
   model: 'Etios',
   year: '2020',
   color: 'White',
-  registrationNumber: 'JH01AB1234',
+  registrationNumber: '',
+  fuelType: '',
+  rcDocuments: { frontDocument: null, backDocument: null },
+  roadTax: { number: '', frontDocument: null, backDocument: null },
 };
 
 export default {
+  fuelTypes,
+  documentTypes,
+  vehicleDocumentConfig,
   vehicleTypes,
   vehicleMakes,
   modelsByMake,

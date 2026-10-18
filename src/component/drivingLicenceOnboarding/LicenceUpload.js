@@ -1,44 +1,54 @@
 import React, { useState } from 'react';
 import {
+  Image,
   Modal,
   Pressable,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
+import { pickDocumentImage } from '../../utils/imagePicker';
 
 /**
  * LicenceUpload
- * Upload cards for Driving Licence (Front Side & Back Side) with View/Replace/Remove modal preview.
+ * Shared front/back image upload cards (licence, RC, Road Tax, Aadhaar, PAN,
+ * Permit, Insurance, Fitness). Picks a real photo from camera/gallery, shows a
+ * thumbnail, and supports View / Replace / Remove.
  */
 function LicenceUpload({
   frontDoc,
   backDoc,
   onUploadDoc,
   onRemoveDoc,
+  heading = 'Upload Driving Licence',
+  docTitle = 'Driving Licence',
+  panel = false,
 }) {
   const [previewSide, setPreviewSide] = useState(null);
 
-  const handleSimulateUpload = side => {
-    onUploadDoc(side, {
-      name: `licence_${side}.jpg`,
-      status: 'uploaded',
-      timestamp: new Date().toISOString(),
-    });
+  // Opens camera/gallery (shared picker) and stores the real picked image.
+  const handlePickImage = async (side, label) => {
+    const doc = await pickDocumentImage(`${docTitle} - ${label}`);
+    if (doc) {
+      onUploadDoc(side, doc);
+    }
   };
 
+  const previewDoc =
+    previewSide && (previewSide.side === 'frontDocument' ? frontDoc : backDoc);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.sectionHeader}>Upload Driving Licence</Text>
+    <View style={[styles.container, panel && styles.panel]}>
+      <Text style={styles.sectionHeader}>{heading}</Text>
 
       <View style={styles.uploadRow}>
         {/* Front Side */}
         <DocCard
           title="Front Side"
           doc={frontDoc}
-          onUpload={() => handleSimulateUpload('frontDocument')}
-          onView={() => setPreviewSide({ title: 'Licence Front Side', side: 'frontDocument' })}
-          onReplace={() => handleSimulateUpload('frontDocument')}
+          onUpload={() => handlePickImage('frontDocument', 'Front Side')}
+          onView={() => setPreviewSide({ title: `${docTitle} Front Side`, side: 'frontDocument' })}
+          onReplace={() => handlePickImage('frontDocument', 'Front Side')}
           onRemove={() => onRemoveDoc('frontDocument')}
         />
 
@@ -46,18 +56,11 @@ function LicenceUpload({
         <DocCard
           title="Back Side"
           doc={backDoc}
-          onUpload={() => handleSimulateUpload('backDocument')}
-          onView={() => setPreviewSide({ title: 'Licence Back Side', side: 'backDocument' })}
-          onReplace={() => handleSimulateUpload('backDocument')}
+          onUpload={() => handlePickImage('backDocument', 'Back Side')}
+          onView={() => setPreviewSide({ title: `${docTitle} Back Side`, side: 'backDocument' })}
+          onReplace={() => handlePickImage('backDocument', 'Back Side')}
           onRemove={() => onRemoveDoc('backDocument')}
         />
-      </View>
-
-      <View style={styles.infoNote}>
-        <Text style={styles.infoIcon}>ⓘ</Text>
-        <Text style={styles.infoText}>
-          Make sure the details on your licence are clear and readable.
-        </Text>
       </View>
 
       {/* Document Preview Modal */}
@@ -80,25 +83,14 @@ function LicenceUpload({
                 </Pressable>
               </View>
 
-              <View style={styles.mockLicenceCard}>
-                <View style={styles.licenceEmblemRow}>
-                  <Text style={styles.emblemIcon}>🏛️</Text>
-                  <View>
-                    <Text style={styles.licenceStateText}>UNION OF INDIA / STATE TRANSPORT</Text>
-                    <Text style={styles.licenceBadgeText}>DRIVING LICENCE</Text>
-                  </View>
-                </View>
-                <View style={styles.licenceDetailsRow}>
-                  <View style={styles.licenceAvatarBox}>
-                    <Text style={styles.licenceAvatarIcon}>👤</Text>
-                  </View>
-                  <View style={styles.licenceInfoCol}>
-                    <Text style={styles.mockInfoLine}>DOC: {previewSide.side}</Text>
-                    <Text style={styles.mockInfoLine}>STATUS: VERIFIED DOCUMENT</Text>
-                    <Text style={styles.mockInfoLine}>TYPE: LMV-NT / COMMERCIAL</Text>
-                  </View>
-                </View>
-              </View>
+              {previewDoc && previewDoc.uri ? (
+                <Image
+                  source={{ uri: previewDoc.uri }}
+                  style={styles.previewImage}
+                  resizeMode="contain"
+                  accessibilityLabel={previewSide.title}
+                />
+              ) : null}
 
               <Pressable
                 style={styles.modalCloseButton}
@@ -122,7 +114,14 @@ function DocCard({ title, doc, onUpload, onView, onReplace, onRemove }) {
       <Text style={styles.cardTitle}>{title}</Text>
       {isUploaded ? (
         <View style={styles.uploadedContainer}>
-          <Text style={styles.checkBadge}>✓ Licence uploaded</Text>
+          {doc.uri ? (
+            <Image
+              source={{ uri: doc.uri }}
+              style={styles.thumbnail}
+              resizeMode="cover"
+            />
+          ) : null}
+          <Text style={styles.checkBadge}>✓ Uploaded</Text>
           <View style={styles.actionsRow}>
             <Pressable
               style={({ pressed }) => [styles.actionBtn, pressed && { opacity: 0.6 }]}
@@ -163,29 +162,36 @@ function DocCard({ title, doc, onUpload, onView, onReplace, onRemove }) {
 
 const styles = StyleSheet.create({
   container: {
-    marginTop: 18,
+    marginTop: 32,
     width: '100%',
+  },
+  panel: {
+    backgroundColor: '#F1F3F6',
+    borderRadius: 16,
+    marginTop: 28,
+    padding: 16,
   },
   sectionHeader: {
     color: '#17191C',
-    fontSize: 13,
-    fontWeight: '700',
-    marginBottom: 8,
+    fontSize: 17,
+    fontWeight: '600',
+    marginBottom: 12,
   },
   uploadRow: {
     flexDirection: 'row',
-    gap: 12,
+    gap: 14,
   },
   card: {
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
-    borderColor: '#DDD9CF',
-    borderRadius: 8,
+    borderColor: '#CDD1D6',
+    borderRadius: 16,
     borderStyle: 'dashed',
     borderWidth: 1.5,
     flex: 1,
     justifyContent: 'center',
-    paddingVertical: 14,
+    minHeight: 150,
+    paddingVertical: 16,
   },
   cardUploaded: {
     backgroundColor: '#F7FDF9',
@@ -194,9 +200,9 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     color: '#687078',
-    fontSize: 12,
-    fontWeight: '700',
-    marginBottom: 6,
+    fontSize: 15,
+    fontWeight: '600',
+    marginBottom: 12,
   },
   uploadBtn: {
     alignItems: 'center',
@@ -204,17 +210,30 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
   },
   uploadIcon: {
-    fontSize: 20,
-    marginBottom: 2,
+    fontSize: 34,
+    marginBottom: 8,
   },
   uploadLabel: {
-    color: '#0284C7',
-    fontSize: 12,
+    color: '#0E8FA3',
+    fontSize: 17,
     fontWeight: '700',
   },
   uploadedContainer: {
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  thumbnail: {
+    backgroundColor: '#ECEEF1',
+    borderRadius: 8,
+    height: 64,
+    marginBottom: 8,
+    width: 96,
+  },
+  previewImage: {
+    backgroundColor: '#F1F3F6',
+    borderRadius: 8,
+    height: 320,
+    width: '100%',
   },
   checkBadge: {
     color: '#18A66A',

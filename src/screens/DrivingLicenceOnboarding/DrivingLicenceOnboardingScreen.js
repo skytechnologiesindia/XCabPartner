@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   Alert,
+  KeyboardAvoidingView,
   Platform,
   ScrollView,
   StatusBar,
@@ -8,11 +9,8 @@ import {
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import {
-  OnboardingHeader,
-  RegistrationButton,
-  RegistrationProgress,
-} from '../../component/onboarding';
+import { RegistrationButton } from '../../component/onboarding';
+import { VerificationHeader } from '../../component/mobileVerification';
 import {
   DrivingLicenceForm,
   initialLicenceValues,
@@ -71,12 +69,8 @@ function DrivingLicenceOnboardingScreen({
       newErrors.licenceNumber = 'Please enter a valid Driving Licence number.';
     }
 
-    if (!formData.dateOfBirth) {
-      newErrors.dateOfBirth = 'Date of birth is required.';
-    }
-
-    if (!formData.validUntil) {
-      newErrors.validUntil = 'Licence validity date is required.';
+    if (!formData.frontDocument || !formData.backDocument) {
+      newErrors.documents = 'Please upload both sides of your driving licence.';
     }
 
     setErrors(newErrors);
@@ -103,88 +97,80 @@ function DrivingLicenceOnboardingScreen({
   const isFormValid =
     !!formData.licenceNumber &&
     formData.licenceNumber.trim().length >= licenceConfig.minLicenceLength &&
-    !!formData.dateOfBirth &&
-    !!formData.validUntil;
+    !!formData.frontDocument &&
+    !!formData.backDocument;
 
-  const statusBarHeight =
-    Platform.OS === 'android' ? StatusBar.currentHeight || 28 : 0;
-  const safeTopPadding = Math.max(insets.top, statusBarHeight) + 8;
   const safeBottomPadding = Math.max(insets.bottom, 16);
 
   return (
-    <View
+    <KeyboardAvoidingView
       style={{
-        backgroundColor: '#F7F5EF',
+        backgroundColor: '#FBFAF6',
         flex: 1,
-        paddingTop: safeTopPadding,
-      }}>
+      }}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <StatusBar
         barStyle="dark-content"
-        backgroundColor="#F7F5EF"
-        translucent={true}
+        backgroundColor="#EEF0F2"
+        translucent={false}
       />
 
-      {/* 1. Header */}
-      <OnboardingHeader
+      {/* 1. Grey header: back + Need Help? */}
+      <VerificationHeader
         onBack={onBack}
         onNeedHelp={handleNeedHelp}
+        backgroundColor="#EEF0F2"
       />
-
-      {/* 2. Step 3 of 8 Progress */}
-      <RegistrationProgress currentStep={3} totalSteps={8} />
 
       <ScrollView
         style={{
-          backgroundColor: '#F7F5EF',
           flex: 1,
         }}
         contentContainerStyle={{
-          backgroundColor: '#F7F5EF',
           flexGrow: 1,
-          justifyContent: 'space-between',
           paddingBottom: safeBottomPadding,
-          paddingTop: 10,
+          paddingTop: 28,
         }}
         keyboardShouldPersistTaps="handled"
         bounces={false}
         showsVerticalScrollIndicator={false}
       >
-        {/* 3. Title & Subtitle */}
+        {/* 2. Title & Subtitle */}
         <View
           style={{
             paddingHorizontal: 20,
-            marginBottom: 16,
+            marginBottom: 28,
           }}>
           <Text
             style={{
               color: '#17191C',
-              fontSize: 27,
-              fontWeight: '900',
-              letterSpacing: -0.6,
-              lineHeight: 33,
+              fontSize: 32,
+              fontWeight: '800',
+              letterSpacing: -0.8,
+              lineHeight: 40,
             }}>
             Your Driving{'\n'}Licence
           </Text>
-          <Text
+          {/* <Text
             style={{
-              color: '#687078',
-              fontSize: 13.5,
+              color: '#8A929B',
+              fontSize: 17,
               fontWeight: '400',
-              lineHeight: 19,
-              marginTop: 6,
+              lineHeight: 24,
+              marginTop: 10,
             }}>
             Add your driving licence to continue.
-          </Text>
+          </Text> */}
         </View>
 
-        {/* 4. Form Inputs */}
+        {/* 3. Form Inputs */}
         <DrivingLicenceForm
           formData={formData}
           onChangeField={handleFieldChange}
           errors={errors}
         />
 
-        {/* 5. Primary CTA */}
+        {/* 4. Primary CTA */}
         <RegistrationButton
           label="Continue"
           onPress={handleContinuePress}
@@ -192,7 +178,7 @@ function DrivingLicenceOnboardingScreen({
           isLoading={isLoading}
         />
       </ScrollView>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 

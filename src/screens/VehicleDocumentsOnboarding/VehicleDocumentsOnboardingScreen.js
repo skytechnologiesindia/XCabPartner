@@ -22,6 +22,7 @@ import {
   initialDocumentsState,
 } from '../../component/vehicleDocumentsOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
+import { launchImageSource } from '../../utils/imagePicker';
 
 /**
  * VehicleDocumentsOnboardingScreen (Step 5 of 8)
@@ -59,12 +60,14 @@ function VehicleDocumentsOnboardingScreen({
     setIsPickerVisible(true);
   };
 
-  const handleSelectUploadSource = source => {
+  const handleSelectUploadSource = async source => {
     if (!selectedDocForUpload) return;
     const docId = selectedDocForUpload.id;
     setIsPickerVisible(false);
 
-    // 1. Set uploading status with spinner
+    const previous = documentsState[docId];
+
+    // 1. Show the uploading state while the camera/gallery is open
     setDocumentsState(prev => ({
       ...prev,
       [docId]: {
@@ -73,21 +76,22 @@ function VehicleDocumentsOnboardingScreen({
       },
     }));
 
-    // 2. Simulate upload process
-    setTimeout(() => {
-      const mockFileName = `${docId}_doc_${source}_${Date.now().toString().slice(-4)}.jpg`;
-      const mockUri = `https://images.unsplash.com/photo-1586281380349-632531db7ed4?w=600&auto=format&fit=crop&q=80`;
+    // 2. Pick a real image ('camera' | 'gallery'); restore state on cancel
+    const picked = await launchImageSource(source === 'camera' ? 'camera' : 'gallery');
+    if (!picked) {
+      setDocumentsState(prev => ({ ...prev, [docId]: previous }));
+      return;
+    }
 
-      setDocumentsState(prev => ({
-        ...prev,
-        [docId]: {
-          status: 'uploaded',
-          uri: mockUri,
-          fileName: mockFileName,
-          uploadedAt: new Date().toISOString(),
-        },
-      }));
-    }, 400);
+    setDocumentsState(prev => ({
+      ...prev,
+      [docId]: {
+        status: 'uploaded',
+        uri: picked.uri,
+        fileName: picked.name,
+        uploadedAt: picked.timestamp,
+      },
+    }));
   };
 
   const handleRemoveDocument = doc => {
@@ -418,65 +422,6 @@ function VehicleDocumentsOnboardingScreen({
                     }}
                   >
                     Select from gallery or files
-                  </Text>
-                </View>
-                <Text
-                  style={{
-                    color: '#9CA3AF',
-                    fontSize: 20,
-                    fontWeight: '600',
-                  }}
-                >
-                  ›
-                </Text>
-              </Pressable>
-
-              <Pressable
-                style={({ pressed }) => [
-                  {
-                    alignItems: 'center',
-                    backgroundColor: '#FFFDF5',
-                    borderColor: '#FFD966',
-                    borderRadius: 14,
-                    borderWidth: 1.2,
-                    flexDirection: 'row',
-                    paddingHorizontal: 14,
-                    paddingVertical: 12,
-                  },
-                  pressed && { backgroundColor: '#F0ECE1' },
-                ]}
-                onPress={() => handleSelectUploadSource('sample')}
-              >
-                <View
-                  style={{
-                    alignItems: 'center',
-                    backgroundColor: '#FFF4C7',
-                    borderRadius: 10,
-                    height: 38,
-                    justifyContent: 'center',
-                    width: 38,
-                  }}
-                >
-                  <Text style={{ fontSize: 18 }}>⚡</Text>
-                </View>
-                <View style={{ flex: 1, marginLeft: 12 }}>
-                  <Text
-                    style={{
-                      color: '#17191C',
-                      fontSize: 14.5,
-                      fontWeight: '700',
-                    }}
-                  >
-                    Instant Demo Upload
-                  </Text>
-                  <Text
-                    style={{
-                      color: '#687078',
-                      fontSize: 11.5,
-                      marginTop: 2,
-                    }}
-                  >
-                    Simulate verified document for testing
                   </Text>
                 </View>
                 <Text
