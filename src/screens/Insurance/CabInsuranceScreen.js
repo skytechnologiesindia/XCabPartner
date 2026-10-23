@@ -61,8 +61,8 @@ function CabInsuranceScreen({
     (formData.number || '').trim().length >= permitConfig.minNumberLength &&
     !!formData.company &&
     isValidityInFuture(formData.validTill) &&
-    !!formData.frontDocument &&
-    !!formData.backDocument;
+    // [API] Front photo only: the API has one photo slot for this document.
+    !!formData.frontDocument;
 
   const validateForm = () => {
     const newErrors = {};
@@ -77,8 +77,8 @@ function CabInsuranceScreen({
     } else if (!isValidityInFuture(formData.validTill)) {
       newErrors.validTill = 'Insurance validity date cannot be in the past.';
     }
-    if (!formData.frontDocument || !formData.backDocument) {
-      newErrors.documents = 'Please upload both sides of your insurance.';
+    if (!formData.frontDocument) {
+      newErrors.documents = 'Please upload the front of your insurance.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -91,6 +91,7 @@ function CabInsuranceScreen({
     setIsLoading(true);
     // Stored locally (no insurance API exists yet).
     updateRegistrationData('insurance', formData);
+    console.log('CAB_INSURANCE saved:', formData);
     setIsLoading(false);
     if (onSubmit) {
       onSubmit(formData);
@@ -132,6 +133,7 @@ function CabInsuranceScreen({
           formData={formData}
           onChangeField={handleFieldChange}
           errors={errors}
+          showBack={false}
           extraFields={
             <InsuranceCompanyField
               value={formData.company}

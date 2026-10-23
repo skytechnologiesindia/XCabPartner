@@ -1,4 +1,6 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
+import { storage, STORAGE_KEYS } from '../utils/storage';
+import { authService } from '../api';
 
 /**
  * Initial Registration State Structure
@@ -30,6 +32,10 @@ export const initialRegistrationData = {
     frontDocument: null,
     backDocument: null,
   },
+
+  // [API] Which identity proof the driver picked: 'aadhaar' | 'pan'.
+  // PERSONAL_IDENTITY sends only ONE of them (option AADHAAR or PAN_CARD).
+  identityType: '',
 
   // Fitness Certificate (opened from the Documents hub)
   fitness: {
@@ -123,6 +129,65 @@ export function RegistrationProvider({ children }) {
 
   const [registrationData, setRegistrationData] = useState(initialRegistrationData);
 
+  // [API] Latest GET /driver/me reply: { driver, nextStep, documents }.
+  // The server decides the screen, so this (not local flags) is the source of
+  // truth for "submitted / under review / rejected / approved".
+  const [driverSession, setDriverSession] = useState(null);
+
+  // [API] Latest GET /driver/documents/requirements steps (which step cards
+  // to show and which options are AVAILABLE / COMING_SOON).
+  const [requirements, setRequirements] = useState(null);
+
+  // ---- Draft persistence --------------------------------------------------
+  // [API] Nothing is uploaded while the driver fills the steps; everything is
+  // sent once on Submit. The guide says the draft must survive the app being
+  // closed, so registrationData is saved to storage and restored on start.
+  const [draftLoaded, setDraftLoaded] = useState(false);
+  const saveTimer = useRef(null);
+
+  useEffect(() => {
+    storage.getItem(STORAGE_KEYS.ONBOARDING_DRAFT, true).then(draft => {
+      if (draft) {
+        setRegistrationData(prev => ({ ...prev, ...draft }));
+      }
+      setDraftLoaded(true);
+    });
+  }, []);
+
+  useEffect(() => {
+    if (!draftLoaded) {
+      return undefined;
+    }
+    // Debounced so typing does not write to storage on every key press.
+    clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => {
+      storage.setItem(STORAGE_KEYS.ONBOARDING_DRAFT, registrationData);
+    }, 500);
+    return () => clearTimeout(saveTimer.current);
+  }, [registrationData, draftLoaded]);
+
+  // [API] After a successful submit the guide says "delete the draft".
+  const clearDraft = async () => {
+    clearTimeout(saveTimer.current);
+    setRegistrationData(prev => ({
+      ...initialRegistrationData,
+      // Keep the login info; only the document answers are cleared.
+      phone: prev.phone,
+      otpVerified: prev.otpVerified,
+    }));
+    await storage.clearDraft();
+  };
+
+  // [API] Logout: call the API, then delete the token AND the draft.
+  const logoutDriver = async () => {
+    clearTimeout(saveTimer.current);
+    await authService.logout();
+    setRegistrationData(initialRegistrationData);
+    setRegistrationStep(1);
+    setDriverSession(null);
+    setRequirements(null);
+  };
+
   // Partial update helper
   const updateRegistrationData = (section, payload) => {
     setRegistrationData(prev => {
@@ -215,6 +280,14 @@ export function RegistrationProvider({ children }) {
     approveDriver,
     enterDriverDesk,
     resetRegistration,
+    // [API] server state + draft helpers
+    draftLoaded,
+    driverSession,
+    setDriverSession,
+    requirements,
+    setRequirements,
+    clearDraft,
+    logoutDriver,
   };
 
   return (

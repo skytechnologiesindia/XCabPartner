@@ -68,6 +68,8 @@ function AadhaarPanForm({
         heading={`Upload ${activeDoc.uploadName} Images`}
         docTitle={activeDoc.label}
         panel
+        // [API] PERSONAL_IDENTITY has one photo slot: PERSONAL_IDENTITY_FRONT.
+        showBack={false}
         frontDoc={documentData.frontDocument}
         backDoc={documentData.backDocument}
         onUploadDoc={onChangeDocumentField}

@@ -7,6 +7,12 @@ export const STORAGE_KEYS = {
     PHONE: 'driver_phone',
     IS_LOGGED_IN: 'driver_is_logged_in',
     DRIVER_DATA: 'driver_profile_data',
+    // [API] verify-otp needs a deviceId that is made once per install and kept
+    // forever, so it is saved here (and is NOT removed on logout).
+    DEVICE_ID: 'driver_device_id',
+    // [API] The guide says the document steps are kept on the phone until the
+    // single submit, and the draft must survive the app being closed.
+    ONBOARDING_DRAFT: 'driver_onboarding_draft',
 };
 
 // 2. Common Safe Helpers (JSON & Error handle ke sath)
@@ -47,7 +53,7 @@ export const storage = {
     // Logout ke waqt all auth data clear karna
     clearAuth: async () => {
         try {
-            await AsyncStorage.multiRemove([
+            await AsyncStorage.removeMany([
                 STORAGE_KEYS.TOKEN,
                 STORAGE_KEYS.PHONE,
                 STORAGE_KEYS.IS_LOGGED_IN,
@@ -55,6 +61,16 @@ export const storage = {
             ]);
         } catch (e) {
             console.error('Storage clear error:', e);
+        }
+    },
+
+    // [API] Logout deletes the draft too, but a 401 must keep it (the guide:
+    // "Delete the token, Screen 1. Keep the draft"), so it has its own helper.
+    clearDraft: async () => {
+        try {
+            await AsyncStorage.removeItem(STORAGE_KEYS.ONBOARDING_DRAFT);
+        } catch (e) {
+            console.error('Storage draft clear error:', e);
         }
     },
 };

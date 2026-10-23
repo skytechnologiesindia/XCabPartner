@@ -8,6 +8,8 @@ import RidesScreen from '../screens/Rides/RidesScreen';
 import EarningsScreen from '../screens/Earnings/EarningsScreen';
 import AlertsScreen from '../screens/Alerts/AlertsScreen';
 import ProfileScreen from '../screens/Profile/ProfileScreen';
+import { useRegistration } from '../context/RegistrationContext';
+import { resetToLogin } from './navigationRef';
 
 const NavigationContext = createContext({
   tripStage: 'scanning',
@@ -69,6 +71,7 @@ function AlertsScreenWrapper({ navigation }) {
 }
 
 function ProfileScreenWrapper({ navigation }) {
+  const { logoutDriver } = useRegistration();
   const {
     onOpenSettings,
     onOpenVehicleDocuments,
@@ -86,7 +89,12 @@ function ProfileScreenWrapper({ navigation }) {
         onOpenPersonalDetails={onOpenPersonalDetails}
         onOpenEmergencyContact={onOpenEmergencyContact}
         onOpenHelpSafety={onOpenHelpSafety}
-        onLogout={() => navigation && navigation.navigate('Desk')}
+        // [API] Was: go back to the Desk tab (no real logout). Now POST
+        // /driver/auth/logout, delete the token and the draft, open Screen 1.
+        onLogout={async () => {
+          await logoutDriver();
+          resetToLogin();
+        }}
       />
     </TabScreenContainer>
   );

@@ -21,6 +21,21 @@ import {
 } from '../../component/personalDetailsOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
 
+// [API] Name rule from the guide: 2-50 characters, at least 2 letters,
+// letters (any language), spaces and . ' ’ - only; no digits; no hyphen at the
+// start or end and no "--".
+// (Written without \p{L} regex escapes, which older Hermes builds do not support.)
+const NAME_PUNCTUATION = /[ .'’-]/g;
+const NOT_A_NAME_CHARACTER = /[0-9_!@#$%^&*()+=[\]{};:"\\|,<>/?~`]/;
+function isValidApiName(value) {
+  const name = (value || '').trim();
+  if (name.length < 2 || name.length > 50) return false;
+  if (NOT_A_NAME_CHARACTER.test(name)) return false;
+  // Whatever is left after removing spaces and . ' ’ - counts as letters.
+  if (name.replace(NAME_PUNCTUATION, '').length < 2) return false;
+  return !name.startsWith('-') && !name.endsWith('-') && !name.includes('--');
+}
+
 const photoNameGenders = genderOptions.filter(
   option => option.id === 'male' || option.id === 'female',
 );
@@ -64,6 +79,12 @@ function PhotoAndNameScreen({
     const newErrors = {};
     if (!formData.fullName || formData.fullName.trim().length < personalDetailsConfig.minNameLength) {
       newErrors.fullName = `Please enter full legal name (minimum ${personalDetailsConfig.minNameLength} characters).`;
+    } else if (!isValidApiName(formData.fullName)) {
+      newErrors.fullName = 'Use letters only (no digits), up to 50 characters.';
+    }
+    // [API] PERSONAL_INFO needs one face photo (PERSONAL_INFO_PHOTO).
+    if (!formData.profilePhoto) {
+      newErrors.profilePhoto = 'Please add a photo of your face.';
     }
     if (!formData.dateOfBirth) {
       newErrors.dateOfBirth = 'Date of birth is required.';
@@ -80,8 +101,9 @@ function PhotoAndNameScreen({
       return;
     }
     setIsLoading(true);
-    // Details are stored locally (no personal-details API exists yet).
+    // Stored locally; sent later with every other step from the Documents hub.
     updateRegistrationData('personalDetails', formData);
+    console.log('PERSONAL_INFO saved:', formData);
     setIsLoading(false);
     if (onSubmit) {
       onSubmit(formData);
@@ -90,6 +112,8 @@ function PhotoAndNameScreen({
 
   const isFormValid =
     (formData.fullName || '').trim().length >= personalDetailsConfig.minNameLength &&
+    isValidApiName(formData.fullName) &&
+    !!formData.profilePhoto &&
     !!formData.dateOfBirth &&
     !!formData.gender;
 
