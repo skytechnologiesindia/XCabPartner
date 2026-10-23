@@ -1,26 +1,92 @@
-import React from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
+  ActivityIndicator,
   Alert,
+  AppState,
   Platform,
   Pressable,
+  RefreshControl,
+  ScrollView,
   StatusBar,
   Text,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { VerificationHeader } from '../../component/mobileVerification';
+import { documentItems, statusColors } from '../../component/documents';
+import { useRegistration } from '../../context/RegistrationContext';
+import { driverService, ERROR_CODES, NEXT_STEP } from '../../api';
+import { showAccountBannedAlert } from '../../utils/apiAlerts';
+
+// [API] App-owned labels for the step keys in /me documents.
+const STEP_TITLES = {
+  VEHICLE: 'Vehicle type',
+  ...Object.fromEntries(
+    documentItems.filter(item => item.stepKey).map(item => [item.stepKey, item.title]),
+  ),
+};
+
+const STATUS_TEXT = {
+  PENDING: { label: 'Pending', color: statusColors.orange },
+  APPROVED: { label: 'Approved', color: statusColors.green },
+  REJECTED: { label: 'Rejected', color: statusColors.red },
+};
 
 /**
- * DocumentVerificationScreen
- * Shown after a document has been submitted. `onBack` (header arrow) and
- * `onBackToDocuments` (bottom button) both return to the Documents hub.
+ * DocumentVerificationScreen: "Under review" (Screen 6 of the guide).
+ *
+ * [API] Was a static page with "Back to Documents". After the submit the
+ * documents can no longer be edited (a second submit gets 409), so now it:
+ *   - shows each submitted step with Pending / Approved / Rejected (from /me)
+ *   - calls GET /driver/me on pull-to-refresh, on "Refresh status" and when
+ *     the app comes back to the foreground (there is no push notification yet)
+ *   - calls onNextStep(nextStep) as soon as the server moves the driver on
  */
 function DocumentVerificationScreen({
-  onBack,
-  onBackToDocuments,
+  onNextStep,
   onGoHome,
 }) {
   const insets = useSafeAreaInsets();
+  const { driverSession, setDriverSession } = useRegistration();
+  const [refreshing, setRefreshing] = useState(false);
+  const documents = (driverSession && driverSession.documents) || [];
+  // Kept in a ref so a new onNextStep function from the parent does not
+  // re-create refresh() and trigger the effect below again.
+  const onNextStepRef = useRef(onNextStep);
+  onNextStepRef.current = onNextStep;
+
+  const refresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const me = await driverService.getMe();
+      setDriverSession(me);
+      // [API] "When nextStep changes: open that screen."
+      if (me.nextStep !== NEXT_STEP.WAIT_FOR_REVIEW && onNextStepRef.current) {
+        onNextStepRef.current(me.nextStep);
+      }
+    } catch (error) {
+      if (error.code === ERROR_CODES.ACCOUNT_BANNED) {
+        showAccountBannedAlert();
+      } else if (error.code !== ERROR_CODES.UNAUTHORIZED) {
+        // UNAUTHORIZED is handled by the api client (back to phone screen).
+        Alert.alert(error.isNetworkError ? 'No internet' : 'Could not refresh', error.message);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [setDriverSession]);
+
+  // [API] Refresh when the screen opens and whenever the app returns to the
+  // foreground, so an admin decision shows up without a restart.
+  useEffect(() => {
+    refresh();
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') {
+        refresh();
+      }
+    });
+    return () => subscription.remove();
+  }, [refresh]);
 
   const handleNeedHelp = () => {
     Alert.alert(
@@ -36,22 +102,28 @@ function DocumentVerificationScreen({
     <View style={{ backgroundColor: '#FBFAF6', flex: 1 }}>
       <StatusBar barStyle="dark-content" backgroundColor="#EEF0F2" translucent={false} />
 
+      {/* [API] No Back arrow: this is the driver's current step, not a page
+          on top of the Documents hub. */}
       <VerificationHeader
         title="Document Verification"
         centerTitle
-        onBack={onBack}
         onNeedHelp={handleNeedHelp}
         backgroundColor="#EEF0F2"
         topInset={safeTopInset}
       />
 
-      <View
-        style={{
+      <ScrollView
+        style={{ flex: 1 }}
+        contentContainerStyle={{
           alignItems: 'center',
-          flex: 1,
+          flexGrow: 1,
           justifyContent: 'center',
           paddingHorizontal: 32,
-        }}>
+          paddingVertical: 24,
+        }}
+        // [API] pull-to-refresh calls GET /driver/me
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+      >
         {/* Illustration: document with magnifying glass */}
         <View
           style={{
@@ -132,7 +204,39 @@ function DocumentVerificationScreen({
           }}>
           We will verify your document{'\n'}as soon as possible.
         </Text>
-      </View>
+
+        {/* [API] Checklist built from /me documents, in screen order. */}
+        {documents.length > 0 ? (
+          <View style={{ alignSelf: 'stretch', marginTop: 28 }}>
+            {documents.map(doc => {
+              const status = STATUS_TEXT[doc.status] || STATUS_TEXT.PENDING;
+              return (
+                <View
+                  key={doc.key}
+                  style={{
+                    borderBottomColor: '#EEECE5',
+                    borderBottomWidth: 1,
+                    paddingVertical: 10,
+                  }}>
+                  <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <Text style={{ color: '#17191C', fontSize: 15, fontWeight: '600' }}>
+                      {STEP_TITLES[doc.key] || doc.key}
+                    </Text>
+                    <Text style={{ color: status.color, fontSize: 14, fontWeight: '600' }}>
+                      {status.label}
+                    </Text>
+                  </View>
+                  {doc.reviewNote ? (
+                    <Text style={{ color: '#687078', fontSize: 13, marginTop: 2 }}>
+                      {doc.reviewNote}
+                    </Text>
+                  ) : null}
+                </View>
+              );
+            })}
+          </View>
+        ) : null}
+      </ScrollView>
 
       <View
         style={{
@@ -151,14 +255,19 @@ function DocumentVerificationScreen({
             },
             pressed && { backgroundColor: '#E5B422' },
           ]}
-          onPress={onBackToDocuments}
+          // [API] Was "Back to Documents"; now asks the server for the latest status.
+          onPress={refresh}
+          disabled={refreshing}
           accessibilityRole="button"
-          accessibilityLabel="Back to Documents"
+          accessibilityLabel="Refresh status"
         >
-          <Text style={{ color: '#17191C', fontSize: 18, fontWeight: '800' }}>
-            Back to Documents
-          </Text>
-          <Text style={{ color: '#17191C', fontSize: 20, fontWeight: '800', marginLeft: 10 }}>→</Text>
+          {refreshing ? (
+            <ActivityIndicator color="#17191C" />
+          ) : (
+            <Text style={{ color: '#17191C', fontSize: 18, fontWeight: '800' }}>
+              Refresh status
+            </Text>
+          )}
         </Pressable>
 
         {/* TEMPORARY: remove this button (and `onGoHome`) once the flow is final. */}

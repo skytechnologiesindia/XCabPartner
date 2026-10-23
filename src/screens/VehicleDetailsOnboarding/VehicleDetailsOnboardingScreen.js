@@ -34,7 +34,8 @@ function VehicleDetailsOnboardingScreen({
 
   const saved = { ...initialVehicleValues, ...registrationData.vehicle };
 
-  const [docType, setDocType] = useState('rc');
+  // [API] Start on the document the driver picked before (RC or Road Tax).
+  const [docType, setDocType] = useState(saved.numberDocType || 'rc');
   const [fuelType, setFuelType] = useState(saved.fuelType || '');
   const [documents, setDocuments] = useState({
     rc: {
@@ -117,7 +118,10 @@ function VehicleDetailsOnboardingScreen({
     setTimeout(() => {
       setIsLoading(false);
       // Keep existing vehicle fields (type/make/...) untouched.
+      console.log('VEHICLE_NUMBER saved:', docType, fuelType, documents[docType]);
       updateRegistrationData('vehicle', {
+        // [API] Which document VEHICLE_NUMBER sends: option VEHICLE_RC or ROAD_TAX.
+        numberDocType: docType,
         registrationNumber: documents.rc.number,
         fuelType,
         rcDocuments: {
