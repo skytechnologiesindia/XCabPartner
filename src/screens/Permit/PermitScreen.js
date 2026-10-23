@@ -84,6 +84,7 @@ function PermitScreen({
     setIsLoading(true);
     // Stored locally (no permit API exists yet).
     updateRegistrationData('permit', formData);
+    console.log('PERMIT saved:', formData);
     setIsLoading(false);
     if (onSubmit) {
       onSubmit(formData);

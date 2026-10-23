@@ -17,6 +17,7 @@ import {
   licenceConfig,
 } from '../../component/drivingLicenceOnboarding';
 import { useRegistration } from '../../context/RegistrationContext';
+import { isValidityInFuture } from '../../component/permit';
 
 /**
  * DrivingLicenceOnboardingScreen (Step 3 of 8)
@@ -73,6 +74,13 @@ function DrivingLicenceOnboardingScreen({
       newErrors.documents = 'Please upload both sides of your driving licence.';
     }
 
+    // [API] expiryDate is required and must be today or later.
+    if (!formData.validUntil) {
+      newErrors.validUntil = 'Please select the licence validity date.';
+    } else if (!isValidityInFuture(formData.validUntil)) {
+      newErrors.validUntil = 'Your licence has expired.';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -87,6 +95,7 @@ function DrivingLicenceOnboardingScreen({
     setTimeout(() => {
       setIsLoading(false);
       updateRegistrationData('drivingLicence', formData);
+      console.log('DRIVING_LICENCE saved:', formData);
 
       if (onContinue) {
         onContinue(formData);
@@ -98,7 +107,9 @@ function DrivingLicenceOnboardingScreen({
     !!formData.licenceNumber &&
     formData.licenceNumber.trim().length >= licenceConfig.minLicenceLength &&
     !!formData.frontDocument &&
-    !!formData.backDocument;
+    !!formData.backDocument &&
+    // [API] the licence expiry date is now required too
+    isValidityInFuture(formData.validUntil);
 
   const safeBottomPadding = Math.max(insets.bottom, 16);
 

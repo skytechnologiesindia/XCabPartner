@@ -14,6 +14,7 @@ function DocumentsHeader({
   onBack,
   onHelp,
   topInset = 0,
+  title = 'Documents',
 }) {
   return (
     <View
@@ -53,7 +54,7 @@ function DocumentsHeader({
           fontWeight: '700',
           marginLeft: 14,
         }}>
-        Documents
+        {title}
       </Text>
 
       <Pressable

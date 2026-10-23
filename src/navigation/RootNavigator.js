@@ -1,9 +1,14 @@
 import React, { useRef } from 'react';
+import { Alert } from 'react-native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { useRegistration } from '../context/RegistrationContext';
-import { getOnboardingCompleted } from '../component/onboarding';
 import { colors } from '../assets/colors/colors';
 import DriverDesk from './DriverDesk';
+// [API] Routing now follows the server (`nextStep` from GET /driver/me).
+import { driverService, getToken, ERROR_CODES } from '../api';
+import { resetToNextStep } from './navigationRef';
+import { showAccountBannedAlert } from '../utils/apiAlerts';
+import ApplicationRejectedScreen from '../screens/ApplicationRejected/ApplicationRejectedScreen';
 
 import SplashScreen from '../screens/Splash/SplashScreen';
 import MobileVerificationScreen from '../screens/MobileVerification/MobileVerificationScreen';
@@ -17,6 +22,7 @@ import ReviewSubmissionScreen from '../screens/ReviewSubmission/ReviewSubmission
 import VerificationPendingScreen from '../screens/VerificationPending/VerificationPendingScreen';
 import VerificationApprovedScreen from '../screens/VerificationApproved/VerificationApprovedScreen';
 import DocumentsScreen from '../screens/Documents/DocumentsScreen';
+import VehicleTypeScreen from '../screens/Documents/VehicleTypeScreen';
 import PhotoAndNameScreen from '../screens/PhotoAndName/PhotoAndNameScreen';
 import AadhaarPanScreen from '../screens/AadhaarPan/AadhaarPanScreen';
 import PermitScreen from '../screens/Permit/PermitScreen';
@@ -52,35 +58,48 @@ function buildRegistrationRoutes(step) {
   return REGISTRATION_ROUTES.slice(0, last).map(name => ({ name }));
 }
 
+/**
+ * Splash (Screen 3 of the guide): runs on every app open.
+ *
+ * [API] The old version decided the screen from local flags
+ * (verificationStatus, registrationStep). Those can be stale (e.g. the admin
+ * approved the driver while the app was closed), so now:
+ *   no token  -> phone number screen
+ *   token     -> GET /driver/me -> open the screen for `nextStep`
+ */
 function SplashRoute({ navigation }) {
-  const { registrationData, registrationStep } = useRegistration();
+  const { setDriverSession } = useRegistration();
 
-  const handleFinish = () => {
-    // 1. Already verified driver -> Driver Desk
-    if (registrationData.verificationStatus === 'approved') {
-      navigation.reset({ index: 0, routes: [{ name: 'DriverDesk' }] });
+  const goToLogin = () => navigation.replace(REGISTRATION_ROUTES[0]);
+
+  const handleFinish = async () => {
+    // [API] "Skip the call and open Screen 1 if no token is saved."
+    const token = await getToken();
+    if (!token) {
+      goToLogin();
       return;
     }
 
-    // 2. Under verification review -> Verification Pending
-    if (registrationData.verificationStatus === 'pending') {
-      navigation.reset({ index: 0, routes: [{ name: 'VerificationPending' }] });
-      return;
-    }
+    try {
+      const me = driverService.getMe();
+      setDriverSession(me);
+      resetToNextStep(navigation, me.nextStep);
+    } catch (error) {
+      if (error.code === ERROR_CODES.UNAUTHORIZED) {
+        return;
+      }
+      if (error.code === ERROR_CODES.ACCOUNT_BANNED) {
+        showAccountBannedAlert(goToLogin);
+        return;
+      }
 
-    // 3. Onboarding finished earlier -> resume registration
-    if (
-      getOnboardingCompleted() &&
-      registrationData.phone &&
-      registrationData.otpVerified
-    ) {
-      const routes = buildRegistrationRoutes(registrationStep);
-      navigation.reset({ index: routes.length - 1, routes });
-      return;
+      Alert.alert(
+        error.isNetworkError ? 'No internet' : 'Something went wrong',
+        error.message,
+        [{ text: 'Retry', onPress: handleFinish }],
+        { cancelable: false },
+      );
     }
-
-    // 4. Default (new users / not verified yet) -> Mobile number + OTP
-    navigation.replace(REGISTRATION_ROUTES[0]);
   };
 
   return <SplashScreen onFinish={handleFinish} />;
@@ -146,20 +165,20 @@ function createStepRoute(StepScreen, stepIndex) {
 }
 
 function MobileRoute({ navigation }) {
-  const { setRegistrationStep } = useRegistration();
   const hasNavigated = useRef(false);
 
   return (
     <MobileVerificationScreen
-      onSuccess={() => {
+      onSuccess={me => {
         // Fires only after the backend verified the OTP. Guard against repeats.
         if (hasNavigated.current) {
           return;
         }
         hasNavigated.current = true;
-        // Step 3: Driving Licence. Replace so Back never returns to the OTP screen.
-        setRegistrationStep(3);
-        navigation.replace(REGISTRATION_ROUTES[2]);
+        // [API] Was: always go to Driving Licence. Now open the screen for the
+        // `nextStep` from GET /driver/me, because a returning driver can be
+        // under review, approved, etc. Reset so Back never returns to OTP.
+        resetToNextStep(navigation, me.nextStep);
       }}
     />
   );
@@ -225,21 +244,38 @@ function VerificationApprovedRoute({ navigation }) {
   );
 }
 
-function DocumentsRoute({ navigation }) {
+function DocumentsRoute({ navigation, route }) {
+  // [API] The hub has three modes:
+  //   'submit' -> nextStep SUBMIT_DOCUMENTS: fill every step, then Submit
+  //   'fix'    -> nextStep FIX_DOCUMENTS: only the REJECTED steps, Resubmit
+  //   'view'   -> opened from the Driver Desk: statuses only, nothing to send
+  const mode = (route.params && route.params.mode) || 'view';
+
   return (
     <DocumentsScreen
+      mode={mode}
+      // [API] After a successful submit the server decides the next screen
+      // (normally WAIT_FOR_REVIEW -> Under review).
+      onSubmitted={me => resetToNextStep(navigation, me.nextStep)}
       onBack={() => {
         if (navigation.canGoBack()) {
           navigation.goBack();
-        } else {
+        } else if (mode === 'view') {
           navigation.replace('DriverDesk');
         }
+        // [API] In submit/fix mode the hub is the first screen: a driver who
+        // is not approved must not reach the Driver Desk, so Back does nothing.
       }}
       onOpenDocument={routeName =>
         navigation.navigate(routeName, { fromDocuments: true })
       }
+      onOpenVehicleType={() => navigation.navigate('VehicleType')}
     />
   );
+}
+
+function VehicleTypeRoute({ navigation }) {
+  return <VehicleTypeScreen onBack={() => navigation.goBack()} />;
 }
 
 /**
@@ -345,14 +381,11 @@ function FitnessCertificateRoute({ navigation }) {
   // Back always returns to the Documents hub.
   const goToDocuments = () => returnToDocuments(navigation);
 
-  // After a successful submission show the verification screen. `replace`
-  // keeps the form out of the stack so Back never returns to it.
-  const handleSubmit = () => {
-    navigation.replace('DocumentVerification');
-  };
-
+  // [API] Was: jump to DocumentVerification as if the certificate had been
+  // sent. Nothing is uploaded per step any more; every step is sent together
+  // from the Documents hub, so Continue just goes back there.
   return (
-    <FitnessCertificateScreen onBack={goToDocuments} onSubmit={handleSubmit} />
+    <FitnessCertificateScreen onBack={goToDocuments} onSubmit={goToDocuments} />
   );
 }
 
@@ -362,19 +395,27 @@ function AppPermissionsRoute({ navigation }) {
   );
 }
 
+/**
+ * Under review (Screen 6 of the guide), nextStep WAIT_FOR_REVIEW.
+ * [API] There is no push notification yet, so the screen calls GET
+ * /driver/me again (pull-to-refresh, button, app back to foreground) and
+ * moves on as soon as `nextStep` changes (FIX_DOCUMENTS, READY, REJECTED).
+ */
 function DocumentVerificationRoute({ navigation }) {
-  const goToDocuments = () => returnToDocuments(navigation);
-
   return (
     <DocumentVerificationScreen
-      onBack={goToDocuments}
-      onBackToDocuments={goToDocuments}
+      onNextStep={nextStep => resetToNextStep(navigation, nextStep)}
       // TEMPORARY: remove together with the button in the screen.
       onGoHome={() =>
         navigation.reset({ index: 0, routes: [{ name: 'DriverDesk' }] })
       }
     />
   );
+}
+
+/** [API] nextStep REJECTED: end state, the driver cannot resubmit. */
+function ApplicationRejectedRoute() {
+  return <ApplicationRejectedScreen />;
 }
 
 const PersonalDetailsRoute = createStepRoute(PersonalDetailsOnboardingScreen, 1);
@@ -436,6 +477,7 @@ function RootNavigator() {
         options={noGesture}
       />
       <Stack.Screen name="Documents" component={DocumentsRoute} />
+      <Stack.Screen name="VehicleType" component={VehicleTypeRoute} />
       <Stack.Screen name="PhotoAndName" component={PhotoAndNameRoute} />
       <Stack.Screen name="AadhaarPan" component={AadhaarPanRoute} />
       <Stack.Screen name="Permit" component={PermitRoute} />
@@ -448,6 +490,13 @@ function RootNavigator() {
       <Stack.Screen
         name="DocumentVerification"
         component={DocumentVerificationRoute}
+        options={noGesture}
+      />
+      {/* [API] new end-state screen for nextStep REJECTED */}
+      <Stack.Screen
+        name="ApplicationRejected"
+        component={ApplicationRejectedRoute}
+        options={noGesture}
       />
     </Stack.Navigator>
   );

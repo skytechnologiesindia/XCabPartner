@@ -25,7 +25,8 @@ function AadhaarPanScreen({
   const insets = useSafeAreaInsets();
   const { registrationData, updateRegistrationData } = useRegistration();
 
-  const [docType, setDocType] = useState('aadhaar');
+  // [API] Start on the identity the driver picked before (saved as identityType).
+  const [docType, setDocType] = useState(registrationData.identityType || 'aadhaar');
   const [documents, setDocuments] = useState({
     aadhaar: {
       number: registrationData.aadhaar?.aadhaarNumber || '',
@@ -67,18 +68,18 @@ function AadhaarPanScreen({
     );
   };
 
+  // [API] Front photo only: the API has one identity photo slot.
   const isFormValid =
     activeConfig.isValidNumber(currentDoc.number || '') &&
-    !!currentDoc.frontDocument &&
-    !!currentDoc.backDocument;
+    !!currentDoc.frontDocument;
 
   const validateForm = () => {
     const newErrors = {};
     if (!activeConfig.isValidNumber(currentDoc.number || '')) {
       newErrors.number = activeConfig.errorMessage;
     }
-    if (!currentDoc.frontDocument || !currentDoc.backDocument) {
-      newErrors.documents = `Please upload both sides of your ${activeConfig.uploadName}.`;
+    if (!currentDoc.frontDocument) {
+      newErrors.documents = `Please upload the front of your ${activeConfig.uploadName}.`;
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -90,7 +91,11 @@ function AadhaarPanScreen({
     }
 
     setIsLoading(true);
-    // Stored locally (no identity-document API exists yet).
+    // Stored locally; sent later with every other step from the Documents hub.
+    // [API] Remember which document was picked: only that one is sent
+    // (option AADHAAR or PAN_CARD).
+    updateRegistrationData('identityType', docType);
+    console.log('PERSONAL_IDENTITY saved:', docType, documents[docType]);
     updateRegistrationData('aadhaar', {
       aadhaarNumber: documents.aadhaar.number,
       frontDocument: documents.aadhaar.frontDocument,

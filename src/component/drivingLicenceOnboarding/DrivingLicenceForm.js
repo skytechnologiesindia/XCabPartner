@@ -6,6 +6,9 @@ import {
   View,
 } from 'react-native';
 import LicenceUpload from './LicenceUpload';
+// Imported from the file (not the permit index) to avoid a circular import:
+// PermitForm itself imports LicenceUpload from this folder.
+import { ValidTillField } from '../permit/PermitForm';
 
 /**
  * DrivingLicenceForm
@@ -59,6 +62,15 @@ function DrivingLicenceForm({
       {errors.documents ? (
         <Text style={styles.errorText}>{errors.documents}</Text>
       ) : null}
+
+      {/* [API] New field: the DRIVING_LICENCE step requires an expiryDate,
+          and an expired licence cannot be submitted. */}
+      <ValidTillField
+        docTitle="Driving Licence"
+        value={formData.validUntil}
+        onChange={value => onChangeField('validUntil', value)}
+        errorMessage={errors.validUntil}
+      />
     </View>
   );
 }

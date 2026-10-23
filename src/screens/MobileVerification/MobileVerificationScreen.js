@@ -18,14 +18,16 @@ import {
   verificationConfig,
 } from '../../component/mobileVerification';
 import { useRegistration } from '../../context/RegistrationContext';
-import { post } from '../../utils/requestBuilder';
-import { storage, STORAGE_KEYS } from '../../utils/storage';
+// [API] Screens now call services instead of raw post('driver/auth/...').
+// The services build the request, save the token and throw an ApiError.
+import { authService, driverService, ERROR_CODES } from '../../api';
+import { showAccountBannedAlert } from '../../utils/apiAlerts';
 
 function MobileVerificationScreen({
   onSuccess,
 }) {
   const insets = useSafeAreaInsets();
-  const { registrationData, updateRegistrationData } = useRegistration();
+  const { registrationData, updateRegistrationData, setDriverSession } = useRegistration();
 
   const [mode, setMode] = useState('phone'); // 'phone' | 'otp'
   const [phoneNumber, setPhoneNumber] = useState(registrationData.phone || '');
@@ -36,7 +38,47 @@ function MobileVerificationScreen({
 
   // Clean & formatted phone derived in one place
   const cleanedPhone = phoneNumber.replace(/[^0-9]/g, '');
-  const formattedPhone = `+91${cleanedPhone}`;
+  // [API] The server does not clean the number, so it must arrive exactly as
+  // "+91XXXXXXXXXX" (spaces removed, +91 added).
+  const formattedPhone = authService.toE164(cleanedPhone);
+
+  // [API] Shared error -> UI handling. Decides from `error.code`, never from
+  // the message text; `error.message` is written for the driver and shown as is.
+  const handleAuthError = error => {
+    switch (error.code) {
+      case ERROR_CODES.INVALID_INPUT:
+        setErrorMessage(
+          mode === 'phone'
+            ? 'Enter a valid mobile number.'
+            : 'Something is wrong with this request. Please try again.',
+        );
+        break;
+      case ERROR_CODES.OTP_INVALID:
+        setErrorMessage('That code is not right. Please try again.');
+        break;
+      case ERROR_CODES.OTP_EXPIRED:
+      case ERROR_CODES.OTP_ATTEMPTS_EXCEEDED:
+        // The current code can no longer be used: the driver must ask for a
+        // new one with "Resend code".
+        setOtpValue('');
+        setErrorMessage(
+          error.code === ERROR_CODES.OTP_EXPIRED
+            ? 'Code expired. Please send a new code.'
+            : 'Too many wrong tries. Please send a new code.',
+        );
+        break;
+      case ERROR_CODES.ACCOUNT_BANNED:
+        showAccountBannedAlert();
+        break;
+      case ERROR_CODES.CONFLICT:
+        setErrorMessage('Please request a new code and try again.');
+        break;
+      default:
+        // RATE_LIMITED, OTP_PROVIDER_ERROR, NETWORK_ERROR, INTERNAL_ERROR:
+        // show the server's message; the driver retries with the button.
+        setErrorMessage(error.message);
+    }
+  };
 
   // Handle "Need Help?"
   const handleNeedHelp = () => {
@@ -58,49 +100,29 @@ function MobileVerificationScreen({
 
   // State 1 Action: Send OTP
   const handleSendOtp = async () => {
-    if (cleanedPhone.length !== verificationConfig.phoneLength) {
-      setErrorMessage('Please enter a valid 10-digit mobile number.');
+    // [API] Guide rule: 10 digits and the first one 6, 7, 8 or 9.
+    if (!authService.isValidIndianMobile(cleanedPhone)) {
+      setErrorMessage('Enter a valid mobile number.');
       return;
     }
     try {
       setIsLoading(true);
       setErrorMessage('');
 
-      // API Call: Driver Send OTP
-      const response = await post('driver/auth/send-otp', {
-        phoneNumber: formattedPhone,
-      });
-      console.log('Driver Send OTP Response:', response);
+      // [API] POST /driver/auth/send-otp -> { expiresInSeconds, resendAfterSeconds }
+      const data = await authService.sendOtp(formattedPhone);
 
-      if (response && response.success === false) {
-        const errorText = response.error?.message || response.message || 'Failed to send OTP. Please try again.';
-        setErrorMessage(errorText);
-        return;
+      // [API] Start the "Resend code" countdown from the server's value.
+      if (typeof data?.resendAfterSeconds === 'number' && data.resendAfterSeconds > 0) {
+        setResendSeconds(data.resendAfterSeconds);
       }
-
-      const serverResendSeconds =
-        response?.data?.resendAfterSeconds ?? response?.data?.resendSeconds;
-      if (typeof serverResendSeconds === 'number' && serverResendSeconds > 0) {
-        setResendSeconds(serverResendSeconds);
-      }
-
-      console.log('Server Resend Seconds:', serverResendSeconds);
 
       updateRegistrationData('phone', phoneNumber);
       // Switch to OTP entry mode
       setMode('otp');
       setOtpValue('');
     } catch (error) {
-      console.error('Send OTP Error:', error);
-      const apiError = error?.response?.data?.error;
-      const serverMsg =
-        apiError?.message ||
-        error?.response?.data?.message ||
-        (error?.message === 'Network Error'
-          ? 'Network Error: Cannot connect to server. Ensure your backend server is running.'
-          : error?.message) ||
-        'Failed to send OTP. Please check your network and try again.';
-      setErrorMessage(serverMsg);
+      handleAuthError(error);
     } finally {
       setIsLoading(false);
     }
@@ -118,72 +140,27 @@ function MobileVerificationScreen({
       setIsLoading(true);
       setErrorMessage('');
 
-      // API Call: Driver Verify OTP
-      const response = await post('driver/auth/verify-otp', {
-        phoneNumber: formattedPhone,
-        otp: String(cleanedOtp),
-        device: {
-          deviceId: `driver-${Platform.OS}-device`,
-          platform: Platform.OS === 'ios' ? 'IOS' : 'ANDROID',
-          appVersion: '1.4.2',
-        },
-      });
-      console.log('Driver Verify OTP Response:', response);
-
-      if (response && response.success === false) {
-        const errorText = response.error?.message || response.message || 'Invalid OTP. Please try again.';
-        setErrorMessage(errorText);
-        return;
-      }
-
-      const driverData = response?.data?.driver;
-      const tokens = response?.data?.tokens;
+      // [API] POST /driver/auth/verify-otp. The service sends the real device
+      // block (install id, platform, app version) and saves the access token.
+      // [API] The token is no longer printed to the console: it is a login
+      // secret and must not end up in logs.
+      const data = await authService.verifyOtp(formattedPhone, cleanedOtp);
 
       updateRegistrationData('phone', phoneNumber);
       updateRegistrationData('otpVerified', true);
-      if (driverData) {
-        updateRegistrationData('driverInfo', driverData);
-      }
-      if (tokens) {
-        updateRegistrationData('tokens', tokens);
-      }
+      updateRegistrationData('driverInfo', data.driver);
 
-      // Save to local storage for persistent login
-      const authToken = tokens?.accessToken || response?.data?.token || tokens?.token;
-      if (authToken) {
-        await storage.setItem(STORAGE_KEYS.TOKEN, authToken);
-      }
-      await storage.setItem(STORAGE_KEYS.PHONE, phoneNumber);
-      await storage.setItem(STORAGE_KEYS.IS_LOGGED_IN, 'true');
-      if (driverData) {
-        await storage.setItem(STORAGE_KEYS.DRIVER_DATA, driverData);
-      }
-      // --- VERIFY STORAGE DEBUG LOG ---
-      const savedToken = await storage.getItem(STORAGE_KEYS.TOKEN);
-      const savedPhone = await storage.getItem(STORAGE_KEYS.PHONE);
-      const savedStatus = await storage.getItem(STORAGE_KEYS.IS_LOGGED_IN);
-      const savedDriver = await storage.getItem(STORAGE_KEYS.DRIVER_DATA, true);
-      console.log('✅ ================= STORAGE VERIFICATION =================');
-      console.log('📦 Saved Token:', savedToken);
-      console.log('📦 Saved Phone:', savedPhone);
-      console.log('📦 Is Logged In:', savedStatus);
-      console.log('📦 Driver Data:', savedDriver);
-      console.log('==========================================================');
+      // [API] Next step after login: call GET /driver/me and open the screen
+      // named by `nextStep`. Do NOT decide from `isNewDriver`: a returning
+      // driver can be at any step.
+      const me = await driverService.getMe();
+      setDriverSession(me);
 
       if (onSuccess) {
-        onSuccess(phoneNumber, response?.data);
+        onSuccess(me);
       }
     } catch (error) {
-      console.error('Verify OTP Error:', error);
-      const apiError = error?.response?.data?.error;
-      const serverMsg =
-        apiError?.message ||
-        error?.response?.data?.message ||
-        (error?.message === 'Network Error'
-          ? 'Network Error: Cannot connect to server. Please check your connection.'
-          : error?.message) ||
-        'Invalid or expired verification code. Please try again.';
-      setErrorMessage(serverMsg);
+      handleAuthError(error);
     } finally {
       setIsLoading(false);
     }
@@ -200,20 +177,11 @@ function MobileVerificationScreen({
   const handleResendOtp = async () => {
     try {
       setErrorMessage('');
-      const response = await post('driver/auth/send-otp', {
-        phoneNumber: formattedPhone,
-      });
-      console.log('Driver Resend OTP Response:', response);
+      // [API] "Resend code" is the same send-otp call (limit: one per 30 s).
+      const data = await authService.sendOtp(formattedPhone);
 
-      if (response && response.success === false) {
-        setErrorMessage(response.error?.message || response.message || 'Failed to resend code.');
-        return;
-      }
-
-      const serverResendSeconds =
-        response?.data?.resendAfterSeconds ?? response?.data?.resendSeconds;
-      if (typeof serverResendSeconds === 'number' && serverResendSeconds > 0) {
-        setResendSeconds(serverResendSeconds);
+      if (typeof data?.resendAfterSeconds === 'number' && data.resendAfterSeconds > 0) {
+        setResendSeconds(data.resendAfterSeconds);
       }
 
       Alert.alert(
@@ -222,17 +190,13 @@ function MobileVerificationScreen({
         [{ text: 'OK' }],
       );
     } catch (error) {
-      console.error('Resend OTP Error:', error);
-      const apiError = error?.response?.data?.error;
-      const serverMsg =
-        apiError?.message ||
-        error?.response?.data?.message ||
-        'Failed to resend code. Please try again.';
-      setErrorMessage(serverMsg);
+      handleAuthError(error);
     }
   };
 
-  const isPhoneValid = phoneNumber.replace(/[^0-9]/g, '').length === verificationConfig.phoneLength;
+  // [API] Same rule as handleSendOtp, so Continue is only enabled for a number
+  // the server will accept.
+  const isPhoneValid = authService.isValidIndianMobile(phoneNumber.replace(/[^0-9]/g, ''));
   const isOtpValid = otpValue.replace(/[^0-9]/g, '').length === verificationConfig.otpLength;
 
   // Android draws below the (non-translucent) status bar, so only iOS needs the inset.

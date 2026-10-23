@@ -7,9 +7,17 @@ const PICKER_OPTIONS = {
   maxWidth: 1600,
   maxHeight: 1600,
   selectionLimit: 1,
+  // [API] Ask iOS to hand over a JPEG instead of HEIC (the iPhone default),
+  // because the server only accepts JPG and PNG.
+  assetRepresentationMode: 'compatible',
 };
 
-const MAX_FILE_BYTES = 10 * 1024 * 1024;
+// [API] The server refuses any photo over 2 MB (was 10 MB here). With the
+// 1600px / 0.8 settings above a document photo is usually 200-600 KB.
+const MAX_FILE_BYTES = 2 * 1024 * 1024;
+
+// [API] Only JPG and PNG are accepted; HEIC, WebP, GIF and PDF are refused.
+const ALLOWED_TYPES = ['image/jpeg', 'image/jpg', 'image/png'];
 
 /** Asks for the Android CAMERA permission. Returns true when it is granted. */
 async function ensureCameraPermission() {
@@ -83,8 +91,25 @@ export async function launchImageSource(source) {
   if (!asset || !asset.uri) {
     return null;
   }
+  console.log('Picked image:', {
+    source,
+    type: asset.type, // e.g. image/jpeg, image/png, image/heic, image/webp
+    fileName: asset.fileName,
+    sizeKB: asset.fileSize ? Math.round(asset.fileSize / 1024) : null,
+    width: asset.width,
+    height: asset.height,
+  });
+
+  // [API] Check the size right after picking and ask again if it is too big,
+  // so the driver does not find out only when the submit fails.
   if (asset.fileSize && asset.fileSize > MAX_FILE_BYTES) {
-    Alert.alert('Image too large', 'Please choose an image smaller than 10 MB.');
+    console.log('Image rejected: bigger than 2 MB', asset.fileSize);
+    Alert.alert('Image too large', 'Please choose an image smaller than 2 MB.');
+    return null;
+  }
+  if (asset.type && !ALLOWED_TYPES.includes(asset.type.toLowerCase())) {
+    console.log('Image rejected: not JPG/PNG', asset.type);
+    Alert.alert('Unsupported image', 'Please use a JPG or PNG photo.');
     return null;
   }
 

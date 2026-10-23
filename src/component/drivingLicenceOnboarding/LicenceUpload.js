@@ -23,6 +23,9 @@ function LicenceUpload({
   heading = 'Upload Driving Licence',
   docTitle = 'Driving Licence',
   panel = false,
+  // [API] The API has ONE photo slot for identity, insurance and fitness
+  // (front only) and two for licence, registration and permit.
+  showBack = true,
 }) {
   const [previewSide, setPreviewSide] = useState(null);
 
@@ -53,14 +56,16 @@ function LicenceUpload({
         />
 
         {/* Back Side */}
-        <DocCard
-          title="Back Side"
-          doc={backDoc}
-          onUpload={() => handlePickImage('backDocument', 'Back Side')}
-          onView={() => setPreviewSide({ title: `${docTitle} Back Side`, side: 'backDocument' })}
-          onReplace={() => handlePickImage('backDocument', 'Back Side')}
-          onRemove={() => onRemoveDoc('backDocument')}
-        />
+        {showBack ? (
+          <DocCard
+            title="Back Side"
+            doc={backDoc}
+            onUpload={() => handlePickImage('backDocument', 'Back Side')}
+            onView={() => setPreviewSide({ title: `${docTitle} Back Side`, side: 'backDocument' })}
+            onReplace={() => handlePickImage('backDocument', 'Back Side')}
+            onRemove={() => onRemoveDoc('backDocument')}
+          />
+        ) : null}
       </View>
 
       {/* Document Preview Modal */}

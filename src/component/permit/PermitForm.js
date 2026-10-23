@@ -32,17 +32,9 @@ function PermitForm({
   placeholder = 'TN123456789',
   example = 'Eg: TN 12 3456789',
   extraFields = null,
+  // [API] false for Cab Insurance and Fitness: the API takes the front only.
+  showBack = true,
 }) {
-  const [pickerOpen, setPickerOpen] = useState(false);
-
-  // Shown as soon as an already-expired date is picked, so a disabled
-  // Continue button always has a visible reason.
-  const validTillError =
-    errors.validTill ||
-    (formData.validTill && !isValidityInFuture(formData.validTill)
-      ? 'This date has already passed. Please select a future date.'
-      : null);
-
   const handleNumberChange = text => {
     onChangeField('number', text.toUpperCase().replace(/[^A-Z0-9]/g, ''));
   };
@@ -54,6 +46,7 @@ function PermitForm({
         heading={`Upload ${docTitle.replace('Cab ', '')} Images`}
         docTitle={docTitle}
         panel
+        showBack={showBack}
         frontDoc={formData.frontDocument}
         backDoc={formData.backDocument}
         onUploadDoc={onChangeField}
@@ -90,6 +83,36 @@ function PermitForm({
       {extraFields}
 
       {/* 4. Valid Till */}
+      <ValidTillField
+        docTitle={docTitle}
+        value={formData.validTill}
+        onChange={value => onChangeField('validTill', value)}
+        errorMessage={errors.validTill}
+      />
+    </View>
+  );
+}
+
+/**
+ * ValidTillField
+ * "Valid Till" date input + picker, stored as "12 Feb 2026".
+ *
+ * [API] Pulled out of PermitForm unchanged so the Driving Licence screen can
+ * reuse it: the API's DRIVING_LICENCE step requires an expiryDate.
+ */
+export function ValidTillField({ docTitle = 'Document', value, onChange, errorMessage, style }) {
+  const [pickerOpen, setPickerOpen] = useState(false);
+
+  // Shown as soon as an already-expired date is picked, so a disabled
+  // Continue button always has a visible reason.
+  const validTillError =
+    errorMessage ||
+    (value && !isValidityInFuture(value)
+      ? 'This date has already passed. Please select a future date.'
+      : null);
+
+  return (
+    <View style={style}>
       <Text style={[styles.label, { marginTop: 32 }]}>Valid Till</Text>
       <Pressable
         style={({ pressed }) => [
@@ -105,9 +128,9 @@ function PermitForm({
           style={[
             styles.inputText,
             { paddingVertical: 0 },
-            !formData.validTill && { color: '#8A929B' },
+            !value && { color: '#8A929B' },
           ]}>
-          {formData.validTill || 'Select date'}
+          {value || 'Select date'}
         </Text>
         <Text style={styles.calendarGlyph}>📅</Text>
       </Pressable>
@@ -115,9 +138,9 @@ function PermitForm({
 
       {pickerOpen ? (
         <DatePickerModal
-          currentValue={formData.validTill}
-          onSelect={value => {
-            onChangeField('validTill', value);
+          currentValue={value}
+          onSelect={picked => {
+            onChange(picked);
             setPickerOpen(false);
           }}
           onClose={() => setPickerOpen(false)}

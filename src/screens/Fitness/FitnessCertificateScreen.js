@@ -63,8 +63,8 @@ function FitnessCertificateScreen({
     (formData.number || '').trim().length >= permitConfig.minNumberLength &&
     !!formData.authority &&
     isValidityInFuture(formData.validTill) &&
-    !!formData.frontDocument &&
-    !!formData.backDocument;
+    // [API] Front photo only: the API has one photo slot for this document.
+    !!formData.frontDocument;
 
   const validateForm = () => {
     const newErrors = {};
@@ -79,8 +79,8 @@ function FitnessCertificateScreen({
     } else if (!isValidityInFuture(formData.validTill)) {
       newErrors.validTill = 'Certificate validity date cannot be in the past.';
     }
-    if (!formData.frontDocument || !formData.backDocument) {
-      newErrors.documents = 'Please upload both sides of your fitness certificate.';
+    if (!formData.frontDocument) {
+      newErrors.documents = 'Please upload the front of your fitness certificate.';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -96,9 +96,12 @@ function FitnessCertificateScreen({
     }
     setIsLoading(true);
     try {
-      // No fitness certificate API exists yet: the submission is stored locally
-      // and marked pending. Replace with the API call when it is available.
-      updateRegistrationData('fitness', { ...formData, status: 'pending' });
+      // [API] Saved on the phone only. Nothing is uploaded per step: every
+      // step is sent together by "Submit for verification" on the Documents hub.
+      // (The old local status: 'pending' was dropped; the real status now
+      // comes from GET /driver/me.)
+      updateRegistrationData('fitness', formData);
+      console.log('FITNESS saved:', formData);
       if (onSubmit) {
         await onSubmit(formData);
       }
@@ -149,6 +152,7 @@ function FitnessCertificateScreen({
           formData={formData}
           onChangeField={handleFieldChange}
           errors={errors}
+          showBack={false}
           extraFields={
             <InsuranceCompanyField
               label="Issuing Authority"
