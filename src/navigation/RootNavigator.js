@@ -81,7 +81,7 @@ function SplashRoute({ navigation }) {
     }
 
     try {
-      const me = driverService.getMe();
+      const me = await driverService.getMe();
       setDriverSession(me);
       resetToNextStep(navigation, me.nextStep);
     } catch (error) {

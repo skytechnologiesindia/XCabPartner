@@ -35,6 +35,7 @@ function MobileVerificationScreen({
   const [errorMessage, setErrorMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [resendSeconds, setResendSeconds] = useState("30");
+  const [showOtpSent, setShowOtpSent] = useState(false);
 
   // Clean & formatted phone derived in one place
   const cleanedPhone = phoneNumber.replace(/[^0-9]/g, '');
@@ -45,39 +46,20 @@ function MobileVerificationScreen({
   // [API] Shared error -> UI handling. Decides from `error.code`, never from
   // the message text; `error.message` is written for the driver and shown as is.
   const handleAuthError = error => {
-    switch (error.code) {
-      case ERROR_CODES.INVALID_INPUT:
-        setErrorMessage(
-          mode === 'phone'
-            ? 'Enter a valid mobile number.'
-            : 'Something is wrong with this request. Please try again.',
-        );
-        break;
-      case ERROR_CODES.OTP_INVALID:
-        setErrorMessage('That code is not right. Please try again.');
-        break;
-      case ERROR_CODES.OTP_EXPIRED:
-      case ERROR_CODES.OTP_ATTEMPTS_EXCEEDED:
-        // The current code can no longer be used: the driver must ask for a
-        // new one with "Resend code".
-        setOtpValue('');
-        setErrorMessage(
-          error.code === ERROR_CODES.OTP_EXPIRED
-            ? 'Code expired. Please send a new code.'
-            : 'Too many wrong tries. Please send a new code.',
-        );
-        break;
-      case ERROR_CODES.ACCOUNT_BANNED:
-        showAccountBannedAlert();
-        break;
-      case ERROR_CODES.CONFLICT:
-        setErrorMessage('Please request a new code and try again.');
-        break;
-      default:
-        // RATE_LIMITED, OTP_PROVIDER_ERROR, NETWORK_ERROR, INTERNAL_ERROR:
-        // show the server's message; the driver retries with the button.
-        setErrorMessage(error.message);
+    if (error.code === ERROR_CODES.ACCOUNT_BANNED) {
+      showAccountBannedAlert();
+      return;
     }
+    // The current code can no longer be used: clear it so the driver asks for
+    // a new one with "Resend code".
+    if (
+      error.code === ERROR_CODES.OTP_EXPIRED ||
+      error.code === ERROR_CODES.OTP_ATTEMPTS_EXCEEDED
+    ) {
+      setOtpValue('');
+    }
+    // Always show the message sent by the server.
+    setErrorMessage(error.message);
   };
 
   // Handle "Need Help?"
@@ -139,11 +121,6 @@ function MobileVerificationScreen({
     try {
       setIsLoading(true);
       setErrorMessage('');
-
-      // [API] POST /driver/auth/verify-otp. The service sends the real device
-      // block (install id, platform, app version) and saves the access token.
-      // [API] The token is no longer printed to the console: it is a login
-      // secret and must not end up in logs.
       const data = await authService.verifyOtp(formattedPhone, cleanedOtp);
 
       updateRegistrationData('phone', phoneNumber);
@@ -184,11 +161,8 @@ function MobileVerificationScreen({
         setResendSeconds(data.resendAfterSeconds);
       }
 
-      Alert.alert(
-        'Code Sent',
-        `A new 6-digit verification code has been sent to +91 ${phoneNumber}.`,
-        [{ text: 'OK' }],
-      );
+      setShowOtpSent(true);
+      setTimeout(() => setShowOtpSent(false), 1500);
     } catch (error) {
       handleAuthError(error);
     }
@@ -286,6 +260,19 @@ function MobileVerificationScreen({
             onResendOtp={handleResendOtp}
             errorMessage={errorMessage}
           />
+        )}
+
+        {showOtpSent && (
+          <Text
+            style={{
+              alignSelf: 'center',
+              color: '#1E8E3E',
+              fontSize: 14,
+              fontWeight: '600',
+              marginTop: 12,
+            }}>
+            OTP sent successfully
+          </Text>
         )}
 
         {/* 4. Action Buttons */}

@@ -40,6 +40,10 @@ apiClient.interceptors.request.use(async config => {
 apiClient.interceptors.response.use(
   response => {
     const body = response.data;
+    console.log(
+      `API response ${response.config?.url}:`,
+      JSON.stringify(body, null, 2),
+    );
     if (body && body.success === false) {
       return Promise.reject(
         toApiError({ response: { status: response.status, data: body } }),
@@ -57,6 +61,11 @@ apiClient.interceptors.response.use(
     if (apiError.code === ERROR_CODES.UNAUTHORIZED && hadToken) {
       await handleSessionExpired();
     }
+
+    console.log(
+      'API error response:',
+      JSON.stringify(error.response?.data ?? { message: error.message }, null, 2),
+    );
 
     // [API] Log every error with its requestId so the backend can find it.
     if (__DEV__) {
